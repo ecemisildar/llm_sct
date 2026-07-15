@@ -1,0 +1,11 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+15,"('robot_3', 'robot_4')",right,front,EV_move_forward,EV_rotate_clockwise
+27,"('robot_1', 'robot_8')",left,front,EV_move_forward,EV_rotate_counterclockwise
+39,"('robot_0', 'robot_5')",back,back,EV_move_forward,EV_move_forward
+44,"('robot_2', 'robot_7')",left,back,EV_move_forward,EV_move_forward
+44,"('robot_0', 'robot_3')",left,back,EV_rotate_counterclockwise,EV_move_forward
+47,"('robot_2', 'robot_7')",right,right,EV_move_forward,EV_move_forward
+64,"('robot_2', 'robot_7')",back,right,EV_move_forward,EV_move_forward
+69,"('robot_4', 'robot_5')",right,right,EV_move_forward,EV_move_forward
+82,"('robot_0', 'robot_8')",right,left,EV_move_forward,EV_move_forward
+84,"('robot_5', 'robot_8')",left,right,EV_move_forward,EV_move_forward

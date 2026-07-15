@@ -1,0 +1,21 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+22,"('robot_3', 'robot_8')",right,right,EV_move_forward,EV_move_forward
+24,"('robot_3', 'robot_8')",right,right,CONTACT_RECOVERY,CONTACT_RECOVERY
+29,"('robot_5', 'robot_9')",back,back,EV_move_forward,EV_move_forward
+39,"('robot_3', 'robot_7')",back,left,EV_rotate_clockwise,EV_move_forward
+47,"('robot_5', 'robot_9')",right,right,EV_move_forward,none
+51,"('robot_0', 'robot_2')",right,right,none,EV_rotate_clockwise
+54,"('robot_1', 'robot_5')",right,front,none,EV_move_forward
+58,"('robot_1', 'robot_5')",right,left,EV_move_forward,EV_rotate_clockwise
+61,"('robot_5', 'robot_9')",right,right,EV_move_forward,EV_rotate_clockwise
+66,"('robot_1', 'robot_5')",right,right,EV_rotate_counterclockwise,EV_move_forward
+69,"('robot_5', 'robot_9')",front,left,EV_rotate_counterclockwise,EV_rotate_counterclockwise
+71,"('robot_3', 'robot_8')",right,back,EV_rotate_counterclockwise,EV_rotate_counterclockwise
+74,"('robot_3', 'robot_8')",front,back,none,EV_move_forward
+75,"('robot_5', 'robot_9')",right,left,EV_move_forward,CONTACT_RECOVERY
+76,"('robot_5', 'box2::link::collision')",front,,CONTACT_RECOVERY,
+83,"('robot_1', 'robot_9')",left,right,EV_move_forward,EV_move_forward
+94,"('robot_0', 'robot_5')",right,right,EV_move_forward,EV_rotate_counterclockwise
+99,"('robot_5', 'robot_9')",back,left,EV_move_forward,EV_move_forward
+105,"('robot_1', 'robot_9')",right,back,EV_move_forward,EV_move_forward
+106,"('robot_0', 'robot_5')",right,front,EV_move_forward,EV_move_forward
