@@ -336,26 +336,15 @@ def generate_launch_description():
                 # output="screen",
             )
 
-            cpp_node = Node(
-                package="leo_image",
+            image_processor_node = Node(
+                package="leo_image_processing",
                 executable="image_processor",
                 name="image_processor",
                 namespace=ns,
                 parameters=[
                     {"use_sim_time": True},
                     {"depth_topic": f"/{ns}/depth_camera/depth_image"},
-                    {"zone_log_enabled": False},
-                    {"process_every_nth_depth_frame": 1},
-                    {"enter_thresh": 0.70},
-                    {"exit_thresh": 0.90},
-                    {"side_enter_thresh": 0.70},
-                    {"side_exit_thresh": 0.90},
-                    {"near_ratio_min": 0.01},
-                    {"hold_ms": 250},
-                    {"corner_hold_ms": 250},
-                    {"side_hold_ms": 250},
-                    {"depth_watchdog_enabled": True},
-                    {"depth_stall_timeout_s": 4.0},
+                    {"obstacle_threshold": 0.70},
                 ],
                 output="screen"
             )
@@ -367,7 +356,7 @@ def generate_launch_description():
                 behavior_node,
                 TimerAction(
                     period=2.0,
-                    actions=[cpp_node],
+                    actions=[image_processor_node],
                 ),
             ]
 
