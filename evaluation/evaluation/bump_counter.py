@@ -31,7 +31,9 @@ Logs CSV to the configured run directory as bumps_<label>.csv.
 import csv
 import math
 import re
+import struct
 import time
+import zlib
 from collections import deque
 from pathlib import Path
 from typing import Dict, Tuple, Any, Optional
@@ -368,7 +370,7 @@ class BumpCounter(Node):
             "image": image,
         }
 
-    def _write_depth_preview_pgm(self, path: Path, image: np.ndarray):
+    def _write_depth_preview_png(self, path: Path, image: np.ndarray):
         arr = image.astype(np.float32, copy=False)
         finite = np.isfinite(arr)
         if not np.any(finite):
@@ -383,9 +385,25 @@ class BumpCounter(Node):
             normalized = np.where(finite, normalized, 0.0)
             preview = np.clip(normalized * 255.0, 0.0, 255.0).astype(np.uint8)
 
-        with path.open("wb") as f:
-            f.write(f"P5\n{preview.shape[1]} {preview.shape[0]}\n255\n".encode("ascii"))
-            f.write(preview.tobytes())
+        def chunk(kind: bytes, data: bytes) -> bytes:
+            payload = kind + data
+            return (
+                struct.pack(">I", len(data))
+                + payload
+                + struct.pack(">I", zlib.crc32(payload) & 0xFFFFFFFF)
+            )
+
+        height, width = preview.shape
+        scanlines = b"".join(
+            b"\x00" + preview[row].tobytes() for row in range(height)
+        )
+        png = (
+            b"\x89PNG\r\n\x1a\n"
+            + chunk("IHDR".encode(), struct.pack(">IIBBBBB", width, height, 8, 0, 0, 0, 0))
+            + chunk("IDAT".encode(), zlib.compress(scanlines))
+            + chunk("IEND".encode(), b"")
+        )
+        path.write_bytes(png)
 
     def _collision_robots(self, entity_a: str, entity_b: str):
         robots = []
@@ -426,9 +444,9 @@ class BumpCounter(Node):
                 robot_dir.mkdir(parents=True, exist_ok=True)
                 prefix = f"frame_{frame_index:02d}_{frame['stamp_sec']}_{frame['stamp_nsec']}"
                 npy_path = robot_dir / f"{prefix}.npy"
-                pgm_path = robot_dir / f"{prefix}.pgm"
+                png_path = robot_dir / f"{prefix}.png"
                 np.save(npy_path, frame["image"])
-                self._write_depth_preview_pgm(pgm_path, frame["image"])
+                self._write_depth_preview_png(png_path, frame["image"])
                 wrote_any = True
                 index_rows.append([
                     int(self.bump_total),
@@ -447,7 +465,7 @@ class BumpCounter(Node):
                     frame["height"],
                     frame["width"],
                     str(npy_path.relative_to(self.log_dir)),
-                    str(pgm_path.relative_to(self.log_dir)),
+                    str(png_path.relative_to(self.log_dir)),
                 ])
 
         if index_rows:

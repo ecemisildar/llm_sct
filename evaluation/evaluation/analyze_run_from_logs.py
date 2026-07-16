@@ -15,10 +15,10 @@ import xml.etree.ElementTree as ET
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIRS = [
-    PACKAGE_ROOT / "results_exp",
-    PACKAGE_ROOT / "results",
+    PACKAGE_ROOT / "results" / "results_exploration",
+    PACKAGE_ROOT / "results" / "results_patrolling",
 ]
-WORLD_SDF = PACKAGE_ROOT / "leo_exploration" / "worlds" / "random_world.sdf"
+WORLD_SDF = PACKAGE_ROOT / "worlds" / "random_world.sdf"
 
 ENV_MIN = -5
 ENV_MAX = 5

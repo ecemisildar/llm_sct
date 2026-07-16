@@ -39,7 +39,7 @@ def _kill_gazebo_processes(*_args, **_kwargs):
         r"ruby .*gz sim",
         r"^gz sim ",
         r"^ign gazebo ",
-        r"ign gazebo .*random_world\.sdf",
+        r"ign gazebo .*random_world_rgb\.sdf",
         r"gzserver",
         r"gzclient",
         r"parameter_bridge",
@@ -59,7 +59,7 @@ def _kill_gazebo_processes(*_args, **_kwargs):
 def generate_launch_description():
     # Setup project paths
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
-    pkg_project_gazebo = get_package_share_directory("leo_exploration")
+    pkg_project_gazebo = get_package_share_directory("leo_patrolling")
     existing_ign_path = os.environ.get("IGN_GAZEBO_RESOURCE_PATH", "")
     existing_gz_path = os.environ.get("GZ_SIM_RESOURCE_PATH", "")
     model_path = os.path.join(pkg_project_gazebo, "models")
@@ -72,7 +72,7 @@ def generate_launch_description():
 
     sim_world = DeclareLaunchArgument(
         "sim_world",
-        default_value=os.path.join(pkg_project_gazebo, "worlds", "random_world.sdf"),
+        default_value=os.path.join(pkg_project_gazebo, "worlds", "random_world_rgb.sdf"),
         description="Path to the Gazebo world file",
     )
     headless = DeclareLaunchArgument(
@@ -109,7 +109,7 @@ def generate_launch_description():
             "src",
             "llm_sct",
             "results",
-            "results_exploration",
+            "results_patrolling",
         ),
         description="Directory to write run artifacts",
     )
@@ -118,7 +118,7 @@ def generate_launch_description():
         default_value=os.path.join(
             pkg_project_gazebo,
             "config",
-            "sup_no_backward.yaml",
+            "sup_patrolling.yaml",
         ),
         description="YAML file to copy into each run folder",
     )

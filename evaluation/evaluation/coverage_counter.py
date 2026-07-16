@@ -27,8 +27,6 @@ class CoverageCounter(Node):
         super().__init__("coverage_counter")
 
         # fixed settings (no args)
-        package_root = Path(get_package_share_directory("leo_exploration"))
-
         results_dir_default = Path.home() / "sct_ws" / "src" / "llm_sct" / "results"
         self.results_root = Path(
             str(self.declare_parameter("results_dir", str(results_dir_default)).value)
@@ -69,7 +67,9 @@ class CoverageCounter(Node):
         self.world_sdf = (
             Path(sim_world)
             if sim_world
-            else package_root / "worlds" / "random_world.sdf"
+            else Path(get_package_share_directory("leo_exploration"))
+            / "worlds"
+            / "random_world.sdf"
         )
 
         yaml_group = self.metadata_yaml_path.stem if self.metadata_yaml_path else "unknown_yaml"

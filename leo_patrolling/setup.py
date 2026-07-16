@@ -2,7 +2,7 @@ from glob import glob
 
 from setuptools import find_packages, setup
 
-package_name = 'leo_exploration'
+package_name = 'leo_patrolling'
 
 setup(
     name=package_name,
@@ -26,7 +26,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'robot_supervisor = leo_exploration.robot_supervisor:main',
+            'robot_supervisor = leo_patrolling.robot_supervisor:main',
         ],
     },
 )

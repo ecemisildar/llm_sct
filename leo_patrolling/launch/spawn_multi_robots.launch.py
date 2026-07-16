@@ -233,12 +233,12 @@ def generate_launch_description():
                 f"/{ns}/depth_camera/image@sensor_msgs/msg/Image[ignition.msgs.Image",
                 f"/{ns}/depth_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image",
                 f"/{ns}/depth_camera/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo",
-                f"/world/random_world/model/{ns}/link/{ns}/base_footprint/sensor/contact_sensor/contact"
+                f"/world/random_world_rgb/model/{ns}/link/{ns}/base_footprint/sensor/contact_sensor/contact"
                 f"@ros_gz_interfaces/msg/Contacts[ignition.msgs.Contacts",
             ]
 
         bridge_args += [
-            "/world/random_world/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
+            "/world/random_world_rgb/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
         ]
 
         bridge_node = Node(
@@ -319,22 +319,22 @@ def generate_launch_description():
                 output="screen",
             )
 
-            behavior_node = Node(
-                package="leo_exploration",
-                executable="robot_supervisor",
-                name="robot_supervisor",
-                namespace=ns,
-                parameters=[
-                    {"enabled": auto_start_supervisor},
-                    {"motion_hold_duration": 1.0},
-                    {"supervisor_yaml_path": LaunchConfiguration("metadata_yaml_path")},
-                    {"random_seed": random_seed},
-                    {"run_id": run_id},
-                    {"results_dir": LaunchConfiguration("results_dir")},
-                    {"total_robots": LaunchConfiguration("total_robots")},
-                ],
-                # output="screen",
-            )
+            # behavior_node = Node(
+            #     package="leo_exploration",
+            #     executable="robot_supervisor",
+            #     name="robot_supervisor",
+            #     namespace=ns,
+            #     parameters=[
+            #         {"enabled": auto_start_supervisor},
+            #         {"motion_hold_duration": 1.0},
+            #         {"supervisor_yaml_path": LaunchConfiguration("metadata_yaml_path")},
+            #         {"random_seed": random_seed},
+            #         {"run_id": run_id},
+            #         {"results_dir": LaunchConfiguration("results_dir")},
+            #         {"total_robots": LaunchConfiguration("total_robots")},
+            #     ],
+            #     # output="screen",
+            # )
 
             image_processor_node = Node(
                 package="leo_image_processing",
@@ -353,7 +353,7 @@ def generate_launch_description():
                 state_pub,
                 spawn_node,
                 spawn_offset_tf,
-                behavior_node,
+                # behavior_node,
                 TimerAction(
                     period=2.0,
                     actions=[image_processor_node],
