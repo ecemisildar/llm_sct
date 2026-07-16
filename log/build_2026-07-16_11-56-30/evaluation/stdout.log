@@ -1,0 +1,47 @@
+running egg_info
+creating ../build/evaluation/evaluation.egg-info
+writing ../build/evaluation/evaluation.egg-info/PKG-INFO
+writing dependency_links to ../build/evaluation/evaluation.egg-info/dependency_links.txt
+writing entry points to ../build/evaluation/evaluation.egg-info/entry_points.txt
+writing requirements to ../build/evaluation/evaluation.egg-info/requires.txt
+writing top-level names to ../build/evaluation/evaluation.egg-info/top_level.txt
+writing manifest file '../build/evaluation/evaluation.egg-info/SOURCES.txt'
+reading manifest file '../build/evaluation/evaluation.egg-info/SOURCES.txt'
+writing manifest file '../build/evaluation/evaluation.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/ecem/sct_ws/src/llm_sct/build/evaluation/build
+creating /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib
+creating /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+copying evaluation/__init__.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+copying evaluation/coverage_counter.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+copying evaluation/analyze_run_from_logs.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+copying evaluation/bump_counter.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+copying evaluation/aggregate_runs.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+running install
+running install_lib
+creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/__init__.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/coverage_counter.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/analyze_run_from_logs.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/bump_counter.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/aggregate_runs.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/coverage_counter.py to coverage_counter.cpython-310.pyc
+byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/analyze_run_from_logs.py to analyze_run_from_logs.cpython-310.pyc
+byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/bump_counter.py to bump_counter.cpython-310.pyc
+byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/aggregate_runs.py to aggregate_runs.cpython-310.pyc
+running install_data
+creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index
+creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index/resource_index
+creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index/resource_index/packages
+copying resource/evaluation -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index/resource_index/packages
+copying package.xml -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/evaluation
+running install_egg_info
+Copying ../build/evaluation/evaluation.egg-info to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation-0.0.0-py3.10.egg-info
+running install_scripts
+Installing aggregate_runs script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+Installing analyze_run_from_logs script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+Installing bump_counter script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+Installing coverage_counter script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+writing list of installed files to '/home/ecem/sct_ws/src/llm_sct/build/evaluation/install.log'

@@ -1,0 +1,3 @@
+[console_scripts]
+image_processor = leo_image_processing:main
+

@@ -1,0 +1,32 @@
+[0.845s] Invoking command in '/home/ecem/sct_ws/src/llm_sct/leo_image_processing': PYTHONPATH=/home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/leo_image_processing build --build-base /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/build install --record /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/install.log --single-version-externally-managed install_data
+[1.086s] running egg_info
+[1.087s] creating ../build/leo_image_processing/leo_image_processing.egg-info
+[1.087s] writing ../build/leo_image_processing/leo_image_processing.egg-info/PKG-INFO
+[1.088s] writing dependency_links to ../build/leo_image_processing/leo_image_processing.egg-info/dependency_links.txt
+[1.088s] writing entry points to ../build/leo_image_processing/leo_image_processing.egg-info/entry_points.txt
+[1.088s] writing requirements to ../build/leo_image_processing/leo_image_processing.egg-info/requires.txt
+[1.088s] writing top-level names to ../build/leo_image_processing/leo_image_processing.egg-info/top_level.txt
+[1.088s] writing manifest file '../build/leo_image_processing/leo_image_processing.egg-info/SOURCES.txt'
+[1.090s] reading manifest file '../build/leo_image_processing/leo_image_processing.egg-info/SOURCES.txt'
+[1.091s] writing manifest file '../build/leo_image_processing/leo_image_processing.egg-info/SOURCES.txt'
+[1.091s] running build
+[1.091s] running build_py
+[1.091s] creating /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/build
+[1.091s] creating /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/build/lib
+[1.091s] copying leo_image_processing.py -> /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/build/lib
+[1.091s] running install
+[1.091s] running install_lib
+[1.092s] copying /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/build/lib/leo_image_processing.py -> /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/lib/python3.10/site-packages
+[1.093s] byte-compiling /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/lib/python3.10/site-packages/leo_image_processing.py to leo_image_processing.cpython-310.pyc
+[1.094s] running install_data
+[1.094s] creating /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/share/ament_index
+[1.094s] creating /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/share/ament_index/resource_index
+[1.094s] creating /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/share/ament_index/resource_index/packages
+[1.095s] copying resource/leo_image_processing -> /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/share/ament_index/resource_index/packages
+[1.095s] copying package.xml -> /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/share/leo_image_processing
+[1.095s] running install_egg_info
+[1.096s] Copying ../build/leo_image_processing/leo_image_processing.egg-info to /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/lib/python3.10/site-packages/leo_image_processing-0.0.0-py3.10.egg-info
+[1.097s] running install_scripts
+[1.120s] Installing image_processor script to /home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/lib/leo_image_processing
+[1.120s] writing list of installed files to '/home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/install.log'
+[1.153s] Invoked command in '/home/ecem/sct_ws/src/llm_sct/leo_image_processing' returned '0': PYTHONPATH=/home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ecem/sct_ws/src/llm_sct/install/leo_image_processing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/leo_image_processing build --build-base /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/build install --record /home/ecem/sct_ws/src/llm_sct/build/leo_image_processing/install.log --single-version-externally-managed install_data

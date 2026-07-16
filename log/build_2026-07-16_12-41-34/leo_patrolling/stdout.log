@@ -1,0 +1,25 @@
+running egg_info
+writing ../build/leo_patrolling/leo_patrolling.egg-info/PKG-INFO
+writing dependency_links to ../build/leo_patrolling/leo_patrolling.egg-info/dependency_links.txt
+writing entry points to ../build/leo_patrolling/leo_patrolling.egg-info/entry_points.txt
+writing requirements to ../build/leo_patrolling/leo_patrolling.egg-info/requires.txt
+writing top-level names to ../build/leo_patrolling/leo_patrolling.egg-info/top_level.txt
+reading manifest file '../build/leo_patrolling/leo_patrolling.egg-info/SOURCES.txt'
+writing manifest file '../build/leo_patrolling/leo_patrolling.egg-info/SOURCES.txt'
+running build
+running build_py
+copying leo_patrolling/robot_supervisor.py -> /home/ecem/sct_ws/src/llm_sct/build/leo_patrolling/build/lib/leo_patrolling
+running install
+running install_lib
+copying /home/ecem/sct_ws/src/llm_sct/build/leo_patrolling/build/lib/leo_patrolling/robot_supervisor.py -> /home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/lib/python3.10/site-packages/leo_patrolling
+byte-compiling /home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/lib/python3.10/site-packages/leo_patrolling/robot_supervisor.py to robot_supervisor.cpython-310.pyc
+running install_data
+copying config/sup_patrolling.yaml -> /home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/share/leo_patrolling/config
+copying ../worlds/random_world_rgb.sdf -> /home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/share/leo_patrolling/worlds
+running install_egg_info
+removing '/home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/lib/python3.10/site-packages/leo_patrolling-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../build/leo_patrolling/leo_patrolling.egg-info to /home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/lib/python3.10/site-packages/leo_patrolling-0.0.0-py3.10.egg-info
+running install_scripts
+Installing color_detector script to /home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/lib/leo_patrolling
+Installing robot_supervisor script to /home/ecem/sct_ws/src/llm_sct/install/leo_patrolling/lib/leo_patrolling
+writing list of installed files to '/home/ecem/sct_ws/src/llm_sct/build/leo_patrolling/install.log'

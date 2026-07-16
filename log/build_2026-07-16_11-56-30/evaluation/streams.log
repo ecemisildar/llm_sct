@@ -1,0 +1,49 @@
+[0.817s] Invoking command in '/home/ecem/sct_ws/src/llm_sct/evaluation': PYTHONPATH=/home/ecem/sct_ws/src/llm_sct/build/evaluation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/evaluation build --build-base /home/ecem/sct_ws/src/llm_sct/build/evaluation/build install --record /home/ecem/sct_ws/src/llm_sct/build/evaluation/install.log --single-version-externally-managed install_data
+[1.088s] running egg_info
+[1.088s] creating ../build/evaluation/evaluation.egg-info
+[1.088s] writing ../build/evaluation/evaluation.egg-info/PKG-INFO
+[1.088s] writing dependency_links to ../build/evaluation/evaluation.egg-info/dependency_links.txt
+[1.089s] writing entry points to ../build/evaluation/evaluation.egg-info/entry_points.txt
+[1.089s] writing requirements to ../build/evaluation/evaluation.egg-info/requires.txt
+[1.089s] writing top-level names to ../build/evaluation/evaluation.egg-info/top_level.txt
+[1.089s] writing manifest file '../build/evaluation/evaluation.egg-info/SOURCES.txt'
+[1.090s] reading manifest file '../build/evaluation/evaluation.egg-info/SOURCES.txt'
+[1.091s] writing manifest file '../build/evaluation/evaluation.egg-info/SOURCES.txt'
+[1.091s] running build
+[1.091s] running build_py
+[1.091s] creating /home/ecem/sct_ws/src/llm_sct/build/evaluation/build
+[1.092s] creating /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib
+[1.092s] creating /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+[1.092s] copying evaluation/__init__.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+[1.092s] copying evaluation/coverage_counter.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+[1.092s] copying evaluation/analyze_run_from_logs.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+[1.092s] copying evaluation/bump_counter.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+[1.092s] copying evaluation/aggregate_runs.py -> /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation
+[1.092s] running install
+[1.092s] running install_lib
+[1.093s] creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+[1.093s] copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/__init__.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+[1.093s] copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/coverage_counter.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+[1.093s] copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/analyze_run_from_logs.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+[1.093s] copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/bump_counter.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+[1.093s] copying /home/ecem/sct_ws/src/llm_sct/build/evaluation/build/lib/evaluation/aggregate_runs.py -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation
+[1.093s] byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/__init__.py to __init__.cpython-310.pyc
+[1.094s] byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/coverage_counter.py to coverage_counter.cpython-310.pyc
+[1.097s] byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/analyze_run_from_logs.py to analyze_run_from_logs.cpython-310.pyc
+[1.101s] byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/bump_counter.py to bump_counter.cpython-310.pyc
+[1.103s] byte-compiling /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation/aggregate_runs.py to aggregate_runs.cpython-310.pyc
+[1.105s] running install_data
+[1.105s] creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index
+[1.105s] creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index/resource_index
+[1.105s] creating /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index/resource_index/packages
+[1.105s] copying resource/evaluation -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/ament_index/resource_index/packages
+[1.105s] copying package.xml -> /home/ecem/sct_ws/src/llm_sct/install/evaluation/share/evaluation
+[1.105s] running install_egg_info
+[1.107s] Copying ../build/evaluation/evaluation.egg-info to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages/evaluation-0.0.0-py3.10.egg-info
+[1.107s] running install_scripts
+[1.127s] Installing aggregate_runs script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+[1.127s] Installing analyze_run_from_logs script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+[1.127s] Installing bump_counter script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+[1.127s] Installing coverage_counter script to /home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/evaluation
+[1.127s] writing list of installed files to '/home/ecem/sct_ws/src/llm_sct/build/evaluation/install.log'
+[1.148s] Invoked command in '/home/ecem/sct_ws/src/llm_sct/evaluation' returned '0': PYTHONPATH=/home/ecem/sct_ws/src/llm_sct/build/evaluation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ecem/sct_ws/src/llm_sct/install/evaluation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/evaluation build --build-base /home/ecem/sct_ws/src/llm_sct/build/evaluation/build install --record /home/ecem/sct_ws/src/llm_sct/build/evaluation/install.log --single-version-externally-managed install_data

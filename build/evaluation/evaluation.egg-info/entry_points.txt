@@ -1,0 +1,6 @@
+[console_scripts]
+aggregate_runs = evaluation.aggregate_runs:main
+analyze_run_from_logs = evaluation.analyze_run_from_logs:main
+bump_counter = evaluation.bump_counter:main
+coverage_counter = evaluation.coverage_counter:main
+

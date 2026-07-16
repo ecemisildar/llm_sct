@@ -15,7 +15,7 @@ setup(
         ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
         ('share/' + package_name + '/config', glob('config/*.yaml')),
         ('share/' + package_name + '/rviz', glob('rviz/*.rviz')),
-        ('share/' + package_name + '/worlds', ['../worlds/random_world.sdf']),
+        ('share/' + package_name + '/worlds', glob('../worlds/*.sdf')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'robot_supervisor = leo_patrolling.robot_supervisor:main',
+            'color_detector = leo_patrolling.color_detector:main',
         ],
     },
 )
