@@ -1,4 +1,0 @@
-[console_scripts]
-color_detector = leo_patrolling.color_detector:main
-robot_supervisor = leo_patrolling.robot_supervisor:main
-

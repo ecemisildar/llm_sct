@@ -238,7 +238,7 @@ def generate_launch_description():
             ]
 
         bridge_args += [
-            "/world/random_world_rgb/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
+            "/world/random_world/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
         ]
 
         bridge_node = Node(

@@ -23,6 +23,9 @@ from ament_index_python.packages import get_package_share_directory
 from leo_patrolling.sct import SCT
 
 
+TARGET_COLOR_ORDER = ("red", "green", "blue")
+
+
 @dataclass
 class ActionSpec:
     """How to execute a controllable event in the ROS node."""
@@ -164,6 +167,8 @@ class RobotSupervisor(Node):
             ).value
         )
         self.pending_color_events = set()
+        self.reached_colors = set()
+        self.all_colors_reached = False
 
         # -------------------------------
         # Load SCT YAML
@@ -502,14 +507,47 @@ class RobotSupervisor(Node):
     def color_event_callback(self, msg):
         event = msg.data.strip()
         if event in {
+            "EV_red_not_visible",
             "EV_red_visible",
             "EV_red_reached",
+            "EV_green_not_visible",
             "EV_green_visible",
             "EV_green_reached",
+            "EV_blue_not_visible",
             "EV_blue_visible",
             "EV_blue_reached",
         }:
             self.pending_color_events.add(event)
+
+        match = re.fullmatch(r"EV_(red|green|blue)_reached", event)
+        if match is None or self.all_colors_reached:
+            return
+
+        color = match.group(1)
+        if color in self.reached_colors:
+            return
+
+        expected_color = TARGET_COLOR_ORDER[len(self.reached_colors)]
+        if color != expected_color:
+            self.get_logger().warning(
+                f"Reached {color} out of order; waiting for {expected_color}."
+            )
+            return
+
+        self.reached_colors.add(color)
+        self.get_logger().info(
+            f"Reached {color}; progress: "
+            f"{len(self.reached_colors)}/{len(TARGET_COLOR_ORDER)} colors"
+        )
+
+        if len(self.reached_colors) == len(TARGET_COLOR_ORDER):
+            self.all_colors_reached = True
+            self._publish_stop()
+            self.get_logger().info(
+                "Targets reached in red, green, blue order; stopping supervisor node."
+            )
+            if rclpy.ok():
+                rclpy.shutdown()
 
     def _consume_color_event(self, event: str) -> bool:
         if event not in self.pending_color_events:
@@ -520,17 +558,26 @@ class RobotSupervisor(Node):
     def red_visible_check(self, sup_data):
         return self._consume_color_event("EV_red_visible")
 
+    def red_not_visible_check(self, sup_data):
+        return self._consume_color_event("EV_red_not_visible")
+
     def red_reached_check(self, sup_data):
         return self._consume_color_event("EV_red_reached")
 
     def green_visible_check(self, sup_data):
         return self._consume_color_event("EV_green_visible")
 
+    def green_not_visible_check(self, sup_data):
+        return self._consume_color_event("EV_green_not_visible")
+
     def green_reached_check(self, sup_data):
         return self._consume_color_event("EV_green_reached")
 
     def blue_visible_check(self, sup_data):
         return self._consume_color_event("EV_blue_visible")
+
+    def blue_not_visible_check(self, sup_data):
+        return self._consume_color_event("EV_blue_not_visible")
 
     def blue_reached_check(self, sup_data):
         return self._consume_color_event("EV_blue_reached")
@@ -674,10 +721,13 @@ class RobotSupervisor(Node):
         add("path_clear", self.clear_path_check)
         add("obstacle_left", self.left_check)
         add("obstacle_right", self.right_check)
+        add("red_not_visible", self.red_not_visible_check)
         add("red_visible", self.red_visible_check)
         add("red_reached", self.red_reached_check)
+        add("green_not_visible", self.green_not_visible_check)
         add("green_visible", self.green_visible_check)
         add("green_reached", self.green_reached_check)
+        add("blue_not_visible", self.blue_not_visible_check)
         add("blue_visible", self.blue_visible_check)
         add("blue_reached", self.blue_reached_check)
 

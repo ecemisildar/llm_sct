@@ -18,7 +18,7 @@ RESULTS_DIRS = [
     PACKAGE_ROOT / "results" / "results_exploration",
     PACKAGE_ROOT / "results" / "results_patrolling",
 ]
-WORLD_SDF = PACKAGE_ROOT / "worlds" / "random_world.sdf"
+WORLD_SDF = PACKAGE_ROOT / "worlds" / "random_world_rgb.sdf"
 
 ENV_MIN = -5
 ENV_MAX = 5
@@ -198,6 +198,48 @@ def load_obstacle_rectangles(world_sdf: Path):
     return obstacles
 
 
+def load_colored_target_boxes(world_sdf: Path):
+    """Load the red, green, and blue visual boxes without treating them as obstacles."""
+    if not world_sdf.exists():
+        return []
+    try:
+        root = ET.parse(world_sdf).getroot()
+    except ET.ParseError:
+        return []
+    world = root.find("world")
+    if world is None:
+        return []
+
+    targets = []
+    target_colors = {
+        "red_box": "red",
+        "green_box": "green",
+        "blue_box": "blue",
+    }
+    for model in world.findall("model"):
+        color = target_colors.get(model.get("name", ""))
+        if color is None:
+            continue
+        model_pose = parse_pose(model.findtext("pose"))
+        for link in model.findall("link"):
+            link_pose = parse_pose(link.findtext("pose"))
+            for visual in link.findall("visual"):
+                size_text = visual.findtext("geometry/box/size")
+                if not size_text:
+                    continue
+                visual_pose = parse_pose(visual.findtext("pose"))
+                sx, sy, _ = (float(v) for v in size_text.split())
+                targets.append((
+                    model_pose[0] + link_pose[0] + visual_pose[0],
+                    model_pose[1] + link_pose[1] + visual_pose[1],
+                    sx,
+                    sy,
+                    model_pose[5] + link_pose[5] + visual_pose[5],
+                    color,
+                ))
+    return targets
+
+
 def world_sdf_for_run(run_dir: Path) -> Path:
     status_path = run_dir / "SAVE_STATUS.txt"
     if status_path.exists():
@@ -333,7 +375,7 @@ def compute_blocked_cells(cells, obstacles, grid_size, occupancy_threshold):
     return blocked
 
 
-def plot_coverage_map(cells, visited, blocked, paths, out_png: Path):
+def plot_coverage_map(cells, visited, blocked, paths, target_boxes, out_png: Path):
     fig, ax = plt.subplots(figsize=(8, 8))
     ax.set_xlabel("X (m)", fontsize=16)
     ax.set_ylabel("Y (m)", fontsize=16)
@@ -352,6 +394,17 @@ def plot_coverage_map(cells, visited, blocked, paths, out_png: Path):
             facecolor=color, edgecolor="black", alpha=0.3
         )
         ax.add_patch(rect)
+
+    for x, y, sx, sy, yaw, color in target_boxes:
+        ax.add_patch(plt.Polygon(
+            rect_corners(x, y, sx, sy, yaw),
+            closed=True,
+            facecolor=color,
+            edgecolor="black",
+            linewidth=2.5,
+            alpha=0.95,
+            zorder=4,
+        ))
 
     for robot, pts in sorted(paths.items()):
         if len(pts) < 2:
@@ -486,13 +539,15 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
     paths = read_robot_paths(paths_csv) if paths_csv.exists() else {}
 
     cells = build_cells(ENV_MIN, ENV_MAX)
-    obstacles = load_obstacle_rectangles(world_sdf_for_run(run_dir))
+    world_sdf = world_sdf_for_run(run_dir)
+    obstacles = load_obstacle_rectangles(world_sdf)
+    target_boxes = load_colored_target_boxes(world_sdf)
     blocked = compute_blocked_cells(
         cells, obstacles, GRID_SIZE, OBSTACLE_OCCUPANCY_THRESHOLD
     )
 
     map_out = run_dir / "coverage_map_offline.png"
-    plot_coverage_map(cells, visited, blocked, paths, map_out)
+    plot_coverage_map(cells, visited, blocked, paths, target_boxes, map_out)
 
     cov_csv = run_dir / "coverage_timeseries.csv"
     if not cov_csv.exists():

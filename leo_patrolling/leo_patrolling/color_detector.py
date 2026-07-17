@@ -136,9 +136,10 @@ class ColorDetector(Node):
             event = f"EV_{color}_reached"
         elif visible:
             event = f"EV_{color}_visible"
+        else:
+            event = f"EV_{color}_not_visible"
         if event != self.last_color_event[color]:
-            if event is not None:
-                self.event_publisher.publish(String(data=event))
+            self.event_publisher.publish(String(data=event))
             self.last_color_event[color] = event
 
     def rgb_callback(self, message: Image):
