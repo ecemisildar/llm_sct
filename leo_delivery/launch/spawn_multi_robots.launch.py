@@ -17,7 +17,7 @@ from launch.actions import (
     Shutdown,
     TimerAction,
 )
-from launch.event_handlers import OnShutdown
+from launch.event_handlers import OnProcessExit, OnShutdown
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -100,6 +100,8 @@ def generate_launch_description():
                 },
                 {"results_dir": LaunchConfiguration("results_dir")},
                 {"metadata_yaml_path": LaunchConfiguration("metadata_yaml_path")},
+                {"shutdown_on_task_complete": True},
+                {"task_progress_on_complete": 1},
                 {
                     f"launch_{name}": ParameterValue(
                         LaunchConfiguration(name), value_type=str
@@ -244,7 +246,7 @@ def generate_launch_description():
             )
 
             behavior_node = Node(
-                package="leo_patrolling",
+                package="leo_delivery",
                 executable="robot_supervisor",
                 name="robot_supervisor",
                 namespace=ns,
@@ -256,7 +258,7 @@ def generate_launch_description():
                     {"results_dir": LaunchConfiguration("results_dir")},
                     {"total_robots": LaunchConfiguration("total_robots")},
                 ],
-                # output="screen",
+                output="screen",
             )
 
             image_processor_node = Node(
@@ -273,7 +275,7 @@ def generate_launch_description():
             )
 
             color_detector_node = Node(
-                package="leo_patrolling",
+                package="leo_delivery",
                 executable="color_detector",
                 name="color_detector",
                 namespace=ns,
@@ -310,6 +312,12 @@ def generate_launch_description():
                         output="screen",
                     )
                 ]
+            )
+        ),
+        RegisterEventHandler(
+            OnProcessExit(
+                target_action=plot_node,
+                on_exit=[Shutdown(reason="all delivery robots reached a goal")],
             )
         ),
         TimerAction(

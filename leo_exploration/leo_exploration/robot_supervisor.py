@@ -14,7 +14,6 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String, Float32
-from std_srvs.srv import SetBool
 from nav_msgs.msg import Odometry
 from ros_gz_interfaces.msg import Contacts
 
@@ -123,8 +122,6 @@ class RobotSupervisor(Node):
         random.seed(robot_seed)
         self.robot_seed = robot_seed
 
-        self.enabled = bool(self.declare_parameter("enabled", False).value)
-        self.static_mode = bool(self.declare_parameter("static", False).value)
         
         self.sct_decision_log_enabled = bool(
             self.declare_parameter("sct_decision_log_enabled", True).value
@@ -197,7 +194,6 @@ class RobotSupervisor(Node):
         # -------------------------------
         # State (actuation)
         # -------------------------------
-        self.stop_sent = False
         self.active_event: Optional[str] = None
         self.active_twist = Twist()
         self.motion_until = 0.0
@@ -260,14 +256,8 @@ class RobotSupervisor(Node):
         # -------------------------------
         # SCT callbacks for UCEs (data-driven, but still attaches known sensors)
         # -------------------------------
-        # Timer + service
+        # Supervisor timer
         self.timer = self.create_timer(self.supervisor_period, self.timer_callback)
-        self.enable_service = self.create_service(SetBool, "enable_supervisor", self.handle_enable_supervisor)
-        self.enable_service_explore = self.create_service(
-            SetBool,
-            "enable_supervisor_explore",
-            self.handle_enable_supervisor_explore,
-        )
 
         # -------------------------------
         # Action table (data-driven)
@@ -394,19 +384,8 @@ class RobotSupervisor(Node):
         #     flush=True,
         # )
 
-    def _set_enabled(self, enable: bool):
-        self.enabled = bool(enable)
-        self.stop_sent = False
-        self._cancel_all_motion()
-        if not self.enabled:
-            self._publish_stop()
-
     def _publish_cmd(self, twist: Twist):
         self.executed_event_pub.publish(String(data=self._current_command_event_label()))
-        # Testing mode: clamp all outgoing cmd_vel values to zero.
-        if self.static_mode:
-            self.cmd_pub.publish(Twist())
-            return
         self.cmd_pub.publish(twist)
 
     def _run_log_dir(self) -> Path:
@@ -576,7 +555,7 @@ class RobotSupervisor(Node):
         self.right_obstacle_distance_m = distance if math.isfinite(distance) else float("inf")
 
     def contact_callback(self, msg: Contacts):
-        if not self.contact_recovery_enabled or not self.enabled:
+        if not self.contact_recovery_enabled:
             return
         if not msg.contacts:
             return
@@ -665,36 +644,6 @@ class RobotSupervisor(Node):
         add("path_clear", self.clear_path_check)
         add("obstacle_left", self.left_check)
         add("obstacle_right", self.right_check)
-
-    # -------------------------------
-    # Enable service
-    # -------------------------------
-    def handle_enable_supervisor(self, request, response):
-        # Backward-compatible entry point: keep current mission, only toggle enabled state.
-        self._set_enabled(request.data)
-        if self.enabled:
-            response.message = (
-                f"Supervisor enabled (mission={self.current_mission}, yaml={os.path.basename(self.current_yaml_path)})."
-            )
-        else:
-            response.message = "Supervisor disabled."
-        response.success = True
-        return response
-
-    def handle_enable_supervisor_explore(self, request, response):
-        if bool(request.data):
-            ok, detail = self._switch_mission("explore")
-            if not ok:
-                response.success = False
-                response.message = detail
-                return response
-        self._set_enabled(request.data)
-        response.success = True
-        if self.enabled:
-            response.message = f"Supervisor enabled for explore ({detail})."
-        else:
-            response.message = "Supervisor disabled."
-        return response
 
     def _namespace_index(self) -> int:
         if self.ns.startswith("robot_"):
@@ -918,14 +867,6 @@ class RobotSupervisor(Node):
     # Supervisor tick
     # -------------------------------
     def timer_callback(self):
-        if not self.enabled:
-            if not self.stop_sent:
-                self._cancel_all_motion()
-                self._publish_stop()
-                self.stop_sent = True
-            return
-
-        self.stop_sent = False
         now = time.time()
 
         if now < self.contact_recovery_until:

@@ -44,6 +44,12 @@ class CoverageCounter(Node):
         self.prompt_file_path = Path(self.prompt_file_path_raw) if self.prompt_file_path_raw else None
         self.prompt_text = str(self.declare_parameter("prompt_text", "").value)
         self.run_duration = float(self.declare_parameter("run_duration", 200.0).value)
+        self.shutdown_on_task_complete = bool(
+            self.declare_parameter("shutdown_on_task_complete", False).value
+        )
+        self.task_progress_on_complete = int(
+            self.declare_parameter("task_progress_on_complete", 3).value
+        )
         self.flush_interval_sec = float(self.declare_parameter("flush_interval_sec", 3.0).value)
         self.flush_max_rows = int(self.declare_parameter("flush_max_rows", 2000).value)
         launch_parameter_names = (
@@ -237,7 +243,7 @@ class CoverageCounter(Node):
         if not msg.data or robot_index in self.completed_robots:
             return
         self.completed_robots.add(robot_index)
-        self.robot_task_progress[robot_index] = 3
+        self.robot_task_progress[robot_index] = self.task_progress_on_complete
         self._write_status(f"robot_{robot_index} completed the patrolling task.\n")
         if len(self.completed_robots) == self.total_robots:
             self.task_completion_duration = time.time() - self._wall_start
@@ -246,6 +252,8 @@ class CoverageCounter(Node):
                 f"Task duration: {self.task_completion_duration:.3f}s\n"
             )
             self._write_task_result()
+            if self.shutdown_on_task_complete:
+                self.shutdown_and_save()
 
     def _on_metrics_timer(self):
         if self._saving_now:

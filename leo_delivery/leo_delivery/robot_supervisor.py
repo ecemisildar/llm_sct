@@ -19,10 +19,10 @@ from ros_gz_interfaces.msg import Contacts, Entity
 from ros_gz_interfaces.srv import DeleteEntity
 
 from ament_index_python.packages import get_package_share_directory
-from leo_patrolling.sct import SCT
+from leo_delivery.sct import SCT
 
 
-TARGET_COLOR_ORDER = ("red", "green", "blue")
+TARGET_COLORS = ("red", "green", "blue")
 
 
 @dataclass
@@ -175,15 +175,16 @@ class RobotSupervisor(Node):
         )
         self.pending_color_events = set()
         self.deferred_color_events = {}
+        self.pending_received_colors = set()
         self.reached_colors = set()
         self.all_colors_reached = False
 
         # -------------------------------
         # Load SCT YAML
         # -------------------------------
-        self.config_dir = os.path.join(get_package_share_directory("leo_patrolling"), "config")
+        self.config_dir = os.path.join(get_package_share_directory("leo_delivery"), "config")
         self.explicit_yaml_path = str(self.declare_parameter("supervisor_yaml_path", "").value).strip()
-        self.current_mission = "patrolling"
+        self.current_mission = "delivery"
         self.current_yaml_path = ""
         self._load_initial_sct()
         
@@ -239,6 +240,9 @@ class RobotSupervisor(Node):
         # -------------------------------
         self.cmd_pub = self.create_publisher(Twist, "cmd_vel", 10)
         self.executed_event_pub = self.create_publisher(String, "executed_event", 10)
+        self.delivery_message_pub = self.create_publisher(
+            String, "/delivery/color_messages", 10
+        )
         self.task_complete_pub = self.create_publisher(
             Bool, f"/{self.ns}/task_complete", 10
         )
@@ -255,6 +259,12 @@ class RobotSupervisor(Node):
             String,
             "color_events",
             self.color_event_callback,
+            10,
+        )
+        self.create_subscription(
+            String,
+            "/delivery/color_messages",
+            self.delivery_message_callback,
             10,
         )
         self.sub_odom = self.create_subscription(Odometry, "odom", self.odom_callback, 10)
@@ -308,6 +318,18 @@ class RobotSupervisor(Node):
                     "sup_data": None,
                 }
         self._install_uncontrollable_callbacks()
+        self._install_delivery_controllable_callbacks()
+
+    def _install_delivery_controllable_callbacks(self):
+        for color in TARGET_COLORS:
+            event = f"EV_pub_{color}"
+            if event in self.sct.EV:
+                self.sct.add_callback(
+                    self.sct.EV[event],
+                    lambda _sup_data, color=color: self._publish_delivery_color(color),
+                    None,
+                    None,
+                )
 
     def _load_initial_sct(self):
         if self.explicit_yaml_path:
@@ -323,7 +345,7 @@ class RobotSupervisor(Node):
                 f"Loaded initial mission '{self.current_mission}' from explicit YAML {os.path.basename(config_path)}"
             )
             return
-        config_path = os.path.join(self.config_dir, "sup_patrolling.yaml")
+        config_path = os.path.join(self.config_dir, "sup_delivery.yaml")
         if not os.path.exists(config_path):
             self.get_logger().error(
                 f"Supervisor YAML not found: {config_path}"
@@ -335,23 +357,23 @@ class RobotSupervisor(Node):
             f"Loaded initial mission '{self.current_mission}' from {os.path.basename(config_path)}"
         )
 
-    def _switch_mission(self, mission: str) -> Tuple[bool, str]:
-        if self.explicit_yaml_path:
-            return True, os.path.basename(self.current_yaml_path or self.explicit_yaml_path)
-        config_path = os.path.join(self.config_dir, "sup_patrolling.yaml")
-        if not os.path.exists(config_path):
-            return False, f"Supervisor YAML not found: {config_path}"
-        try:
-            self._load_sct_from_yaml(config_path)
-        except Exception as exc:
-            return False, f"Failed to load {os.path.basename(config_path)}: {exc}"
-        self.current_mission = "patrolling"
-        self.current_yaml_path = config_path
-        self._last_printed_sup_states = None
-        self.get_logger().info(
-            f"Switched mission to 'patrolling' using {os.path.basename(config_path)}"
-        )
-        return True, os.path.basename(config_path)
+    # def _switch_mission(self, mission: str) -> Tuple[bool, str]:
+    #     if self.explicit_yaml_path:
+    #         return True, os.path.basename(self.current_yaml_path or self.explicit_yaml_path)
+    #     config_path = os.path.join(self.config_dir, "sup_delivery.yaml")
+    #     if not os.path.exists(config_path):
+    #         return False, f"Supervisor YAML not found: {config_path}"
+    #     try:
+    #         self._load_sct_from_yaml(config_path)
+    #     except Exception as exc:
+    #         return False, f"Failed to load {os.path.basename(config_path)}: {exc}"
+    #     self.current_mission = "delivery"
+    #     self.current_yaml_path = config_path
+    #     self._last_printed_sup_states = None
+    #     self.get_logger().info(
+    #         f"Switched mission to 'delivery' using {os.path.basename(config_path)}"
+    #     )
+    #     return True, os.path.basename(config_path)
 
 
     def _publish_cmd(self, twist: Twist):
@@ -408,6 +430,8 @@ class RobotSupervisor(Node):
             for event in self.sct.last_uncontrollable_events
         ]
         for event in uncontrollable_events:
+            if event == "EV_path_clear":
+                continue
             if event == "EV_red_reached" or event == "EV_green_reached" or event == "EV_blue_reached":
                 self.get_logger().info(f"############################# REACHED: {event} #############################")
             elif event == "EV_red_visible" or event == "EV_green_visible" or event == "EV_blue_visible":
@@ -495,6 +519,43 @@ class RobotSupervisor(Node):
 
         self._accept_color_event(event)
 
+    def delivery_message_callback(self, msg: String):
+        try:
+            sender, color = msg.data.strip().split(":", 1)
+        except ValueError:
+            return
+        color = color.lower()
+        if sender == self.ns or color not in TARGET_COLORS:
+            return
+        match = re.fullmatch(r"robot_(\d+)", sender)
+        if match is None or int(match.group(1)) >= self.robot_index:
+            return
+        self.pending_received_colors.add(color)
+        self.get_logger().info(
+            f"DELIVERY RECEIVED: EV_received_{color} from {sender}"
+        )
+        self._cancel_all_motion()
+        self._publish_stop()
+
+    def _publish_delivery_color(self, color: str):
+        self.delivery_message_pub.publish(String(data=f"{self.ns}:{color}"))
+        self.get_logger().info(f"DELIVERY PUBLISHED: EV_pub_{color}")
+
+    def _consume_received_color(self, color: str) -> bool:
+        if color not in self.pending_received_colors:
+            return False
+        self.pending_received_colors.remove(color)
+        return True
+
+    def received_red_check(self, _sup_data):
+        return self._consume_received_color("red")
+
+    def received_green_check(self, _sup_data):
+        return self._consume_received_color("green")
+
+    def received_blue_check(self, _sup_data):
+        return self._consume_received_color("blue")
+
     def _accept_color_event(self, event: str):
         """Queue a color event when no motion event is executing."""
         color = event.split("_")[1]
@@ -515,35 +576,21 @@ class RobotSupervisor(Node):
         if color in self.reached_colors:
             return
 
-        expected_color = TARGET_COLOR_ORDER[len(self.reached_colors)]
-        if color != expected_color:
-            self.get_logger().warning(
-                f"Reached {color} out of order; waiting for {expected_color}."
-            )
-            return
-
         self.reached_colors.add(color)
         self.task_progress_pub.publish(Int32(data=len(self.reached_colors)))
         self.task_progress_event_pub.publish(String(data=color))
         self.get_logger().info(
             f"Reached {color}; progress: "
-            f"{len(self.reached_colors)}/{len(TARGET_COLOR_ORDER)} colors"
+            f"{len(self.reached_colors)}/{len(TARGET_COLORS)} colors"
         )
 
-        if (
-            len(self.reached_colors) == len(TARGET_COLOR_ORDER)
-            and not self.task_complete_sent
-        ):
+        if not self.task_complete_sent:
             self.all_colors_reached = True
             self.task_complete_sent = True
             self.task_complete_pub.publish(Bool(data=True))
             self._publish_stop()
             self.get_logger().info(
-                "Targets reached in red, green, blue order; final events published."
-            )
-            self.completion_shutdown_timer = self.create_timer(
-                self.completion_shutdown_delay,
-                self._shutdown_after_completion,
+                f"Delivery goal {color} reached; waiting for all robots."
             )
 
     def _shutdown_after_completion(self):
@@ -764,7 +811,7 @@ class RobotSupervisor(Node):
 
     def right_check(self, sup_data):
         return "RIGHT" in self._effective_obstacle_zones()
-
+    
     def _install_uncontrollable_callbacks(self):
         # Attach callbacks only for events that exist in current supervisor YAML.
         def add(ev: str, fn):
@@ -785,6 +832,9 @@ class RobotSupervisor(Node):
         add("blue_not_visible", self.blue_not_visible_check)
         add("blue_visible", self.blue_visible_check)
         add("blue_reached", self.blue_reached_check)
+        add("received_red", self.received_red_check)
+        add("received_green", self.received_green_check)
+        add("received_blue", self.received_blue_check)
 
     def _namespace_index(self) -> int:
         if self.ns.startswith("robot_"):

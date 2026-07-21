@@ -2,7 +2,6 @@ import math
 import os
 import random
 import time
-import xml.etree.ElementTree as ET
 
 import xacro
 
@@ -22,116 +21,34 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 
-def _parse_pose(pose_text: str | None):
-    if not pose_text:
-        return (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    vals = [float(v) for v in pose_text.split()]
-    while len(vals) < 6:
-        vals.append(0.0)
-    return tuple(vals[:6])
-
-
-def _load_world_obstacles(world_path: str):
-    root = ET.parse(world_path).getroot()
-    world = root.find("world")
-    if world is None:
-        return []
-
-    obstacles = []
-    for model in world.findall("model"):
-        name = model.get("name", "")
-        if name == "ground_plane":
-            continue
-        model_pose = _parse_pose(model.findtext("pose"))
-        for link in model.findall("link"):
-            link_pose = _parse_pose(link.findtext("pose"))
-            for collision in link.findall("collision"):
-                collision_pose = _parse_pose(collision.findtext("pose"))
-                cx = model_pose[0] + link_pose[0] + collision_pose[0]
-                cy = model_pose[1] + link_pose[1] + collision_pose[1]
-                yaw = model_pose[5] + link_pose[5] + collision_pose[5]
-
-                box_size = collision.findtext("geometry/box/size")
-                cyl_radius = collision.findtext("geometry/cylinder/radius")
-                if box_size:
-                    sx, sy, _ = (float(v) for v in box_size.split())
-                    obstacles.append(("box", cx, cy, sx, sy, yaw))
-                elif cyl_radius:
-                    obstacles.append(("cylinder", cx, cy, float(cyl_radius)))
-    return obstacles
-
-
-def _point_in_rotated_box(px: float, py: float, cx: float, cy: float, sx: float, sy: float, yaw: float, margin: float):
-    dx = px - cx
-    dy = py - cy
-    c = math.cos(-yaw)
-    s = math.sin(-yaw)
-    lx = dx * c - dy * s
-    ly = dx * s + dy * c
-    return abs(lx) <= (sx * 0.5 + margin) and abs(ly) <= (sy * 0.5 + margin)
-
-
-def _point_is_free(px: float, py: float, obstacles, wall_margin: float, obstacle_margin: float):
-    if abs(px) > (5.0 - wall_margin) or abs(py) > (5.0 - wall_margin):
-        return False
-    for obstacle in obstacles:
-        if obstacle[0] == "box":
-            _, cx, cy, sx, sy, yaw = obstacle
-            if _point_in_rotated_box(px, py, cx, cy, sx, sy, yaw, obstacle_margin):
-                return False
-        else:
-            _, cx, cy, radius = obstacle
-            if math.hypot(px - cx, py - cy) <= (radius + obstacle_margin):
-                return False
-    return True
-
 
 def _build_robot_spawn_slots(total_robots: int, world_path: str):
-    obstacles = _load_world_obstacles(world_path)
-    candidate_x = [-3.25, -1.75, -0.25, 1.25, 2.75, 3.5]
-    candidate_y = [-3.25, -1.75, -0.25, 1.25, 2.75, 3.5]
-    min_robot_spacing = 1.25
-    wall_margin = 0.6
-    obstacle_margin = 0.55
+    del world_path
+    if total_robots == 1:
+        return [{"x": 0.0, "y": 0.0, "yaw": 0.0}]
 
-    candidates = []
-    for y in candidate_y:
-        for x in candidate_x:
-            if _point_is_free(x, y, obstacles, wall_margin, obstacle_margin):
-                # Prefer far-apart outer slots first so robots start dispersed.
-                candidates.append((x, y))
-
-    if not candidates:
-        raise RuntimeError(f"No safe spawn slots found in {world_path}.")
-
-    robots = []
-    # Greedy farthest-point sampling:
-    # 1) start with the outermost free slot
-    # 2) repeatedly add the slot with the largest distance to the current set
-    first_x, first_y = max(candidates, key=lambda p: abs(p[0]) + abs(p[1]))
-    robots.append({"x": first_x, "y": first_y, "yaw": 0.0})
-
-    remaining = [p for p in candidates if p != (first_x, first_y)]
-    while remaining and len(robots) < total_robots:
-        feasible = []
-        for x, y in remaining:
-            distances = [math.hypot(x - robot["x"], y - robot["y"]) for robot in robots]
-            min_dist = min(distances)
-            if min_dist >= min_robot_spacing:
-                feasible.append((min_dist, abs(x) + abs(y), x, y))
-        if not feasible:
-            break
-        # Prefer the point with the largest minimum distance to existing robots.
-        # Break ties toward outer slots.
-        _, _, x, y = max(feasible, key=lambda item: (item[0], item[1]))
-        robots.append({"x": x, "y": y, "yaw": 0.0})
-        remaining = [p for p in remaining if p != (x, y)]
-
-    if len(robots) < total_robots:
+    minimum_spacing = 0.8
+    radius = max(
+        0.75,
+        minimum_spacing / (2.0 * math.sin(math.pi / total_robots)),
+    )
+    if radius > 3.5:
         raise RuntimeError(
-            f"Only found {len(robots)} safe spawn slots in {world_path}, need {total_robots}."
+            f"Cannot place {total_robots} robots on the central ring with "
+            f"{minimum_spacing:.1f} m spacing inside the world."
         )
-    return robots
+
+    return [
+        {
+            "x": radius * math.cos(angle),
+            "y": radius * math.sin(angle),
+            "yaw": angle,
+        }
+        for angle in (
+            2.0 * math.pi * index / total_robots
+            for index in range(total_robots)
+        )
+    ]
 
 
 def _resolve_seed(value: str, name: str) -> int:
@@ -151,12 +68,6 @@ def generate_launch_description():
     leo_description = get_package_share_directory("leo_description")
     run_id = time.strftime("run_%Y%m%d_%H%M%S")
 
-    auto_start_supervisor = LaunchConfiguration("auto_start_supervisor")
-    auto_start_supervisor_arg = DeclareLaunchArgument(
-        "auto_start_supervisor",
-        default_value="true",
-        description="Enable robot_supervisor_3_movements on launch",
-    )
     random_seed_arg = DeclareLaunchArgument(
         "random_seed",
         default_value="auto",
@@ -188,7 +99,6 @@ def generate_launch_description():
                         "total_robots",
                         "random_seed",
                         
-                        "auto_start_supervisor",
                         "results_dir",
                         "metadata_yaml_path",
                     )
@@ -325,7 +235,6 @@ def generate_launch_description():
                 name="robot_supervisor",
                 namespace=ns,
                 parameters=[
-                    {"enabled": auto_start_supervisor},
                     {"motion_hold_duration": 1.0},
                     {"supervisor_yaml_path": LaunchConfiguration("metadata_yaml_path")},
                     {"random_seed": random_seed},
@@ -363,7 +272,6 @@ def generate_launch_description():
         return nodes
 
     return LaunchDescription([
-        auto_start_supervisor_arg,
         random_seed_arg,
         RegisterEventHandler(
             OnShutdown(
