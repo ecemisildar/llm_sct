@@ -11,6 +11,7 @@ import rclpy
 from rclpy.node import Node
 
 from tf2_msgs.msg import TFMessage
+from std_msgs.msg import Bool, Int32, String
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 from ament_index_python.packages import get_package_share_directory
 
@@ -81,6 +82,8 @@ class CoverageCounter(Node):
         self.coverage_csv_path = self.results_dir / "coverage_timeseries.csv"
         self.paths_csv_path = self.results_dir / "coverage_paths.csv"
         self.visited_cells_csv_path = self.results_dir / "coverage_visited_cells.csv"
+        self.task_result_path = self.results_dir / "task_result.csv"
+        self.task_progress_path = self.results_dir / "task_progress.csv"
         self.status_path = self.results_dir / "SAVE_STATUS.txt"
         self.error_path = self.results_dir / "SAVE_ERROR.txt"
         self.prompt_txt_path = self.results_dir / "prompt.txt"
@@ -88,6 +91,20 @@ class CoverageCounter(Node):
         self._saved_ok = False
         self._saving_now = False
         self._wall_start = time.time()
+        total_robots_raw = self.launch_arguments.get("total_robots", "").strip()
+        try:
+            self.total_robots = max(1, int(total_robots_raw))
+        except ValueError:
+            self.total_robots = 1
+        self.completed_robots = set()
+        self.robot_task_progress = {
+            robot_index: 0 for robot_index in range(self.total_robots)
+        }
+        self.robot_color_reached_times = {
+            robot_index: {"red": None, "green": None, "blue": None}
+            for robot_index in range(self.total_robots)
+        }
+        self.task_completion_duration = None
         # grid
         self.env_min = -5
         self.env_max = 5
@@ -119,6 +136,33 @@ class CoverageCounter(Node):
             self.pose_callback,
             pose_qos,
         )
+        self.task_complete_subscriptions = [
+            self.create_subscription(
+                Bool,
+                f"/robot_{robot_index}/task_complete",
+                lambda msg, index=robot_index: self._task_complete_callback(index, msg),
+                10,
+            )
+            for robot_index in range(self.total_robots)
+        ]
+        self.task_progress_subscriptions = [
+            self.create_subscription(
+                Int32,
+                f"/robot_{robot_index}/task_progress",
+                lambda msg, index=robot_index: self._task_progress_callback(index, msg),
+                10,
+            )
+            for robot_index in range(self.total_robots)
+        ]
+        self.task_progress_event_subscriptions = [
+            self.create_subscription(
+                String,
+                f"/robot_{robot_index}/task_progress_event",
+                lambda msg, index=robot_index: self._task_progress_event_callback(index, msg),
+                10,
+            )
+            for robot_index in range(self.total_robots)
+        ]
 
         self.pose_interval_sec = 0.2
         self._last_pose_time = self.get_clock().now()
@@ -141,6 +185,8 @@ class CoverageCounter(Node):
             )
         )
         self._save_run_metadata()
+        self._write_task_result()
+        self._write_task_progress()
 
     def pose_callback(self, msg: TFMessage):
         now = self.get_clock().now()
@@ -170,6 +216,37 @@ class CoverageCounter(Node):
                     self._append_visited_cell_row(name, idx, cx, cy)
 
     # timers
+    def _task_progress_callback(self, robot_index: int, msg: Int32):
+        progress = min(3, max(0, int(msg.data)))
+        self.robot_task_progress[robot_index] = max(
+            self.robot_task_progress[robot_index], progress
+        )
+        self._write_task_progress()
+        self._write_task_result()
+
+    def _task_progress_event_callback(self, robot_index: int, msg: String):
+        color = msg.data.strip().lower()
+        if color not in ("red", "green", "blue"):
+            return
+        reached_times = self.robot_color_reached_times[robot_index]
+        if reached_times[color] is None:
+            reached_times[color] = time.time() - self._wall_start
+        self._write_task_progress()
+
+    def _task_complete_callback(self, robot_index: int, msg: Bool):
+        if not msg.data or robot_index in self.completed_robots:
+            return
+        self.completed_robots.add(robot_index)
+        self.robot_task_progress[robot_index] = 3
+        self._write_status(f"robot_{robot_index} completed the patrolling task.\n")
+        if len(self.completed_robots) == self.total_robots:
+            self.task_completion_duration = time.time() - self._wall_start
+            self._write_status(
+                "Task success: true\n"
+                f"Task duration: {self.task_completion_duration:.3f}s\n"
+            )
+            self._write_task_result()
+
     def _on_metrics_timer(self):
         if self._saving_now:
             return
@@ -211,6 +288,13 @@ class CoverageCounter(Node):
 
             self._flush_buffers(force=True)
             self._write_timeseries_csvs()
+            self._write_task_result()
+            self._write_task_progress()
+            if self.task_completion_duration is None:
+                self._write_status(
+                    "Task success: false\n"
+                    f"Task duration: {time.time() - self._wall_start:.3f}s\n"
+                )
 
             self._saved_ok = True
             self._write_status("Saving OK\n")
@@ -224,6 +308,76 @@ class CoverageCounter(Node):
             w.writerow(["time_s", "coverage_pct"])
             for t, cov in self.coverage_history:
                 w.writerow([f"{t:.3f}", f"{cov:.3f}"])
+
+    def _write_task_result(self):
+        success = len(self.completed_robots) == self.total_robots
+        duration = (
+            self.task_completion_duration
+            if self.task_completion_duration is not None
+            else time.time() - self._wall_start
+        )
+        with self.task_result_path.open("w", newline="") as f:
+            writer = csv.writer(f)
+            completed_targets = sum(self.robot_task_progress.values())
+            total_targets = self.total_robots * 3
+            progress_pct = 100.0 * completed_targets / total_targets
+            writer.writerow(
+                [
+                    "success",
+                    "duration_s",
+                    "completed_robots",
+                    "total_robots",
+                    "completed_targets",
+                    "total_targets",
+                    "progress_pct",
+                ]
+            )
+            writer.writerow(
+                [
+                    str(success).lower(),
+                    f"{duration:.3f}",
+                    len(self.completed_robots),
+                    self.total_robots,
+                    completed_targets,
+                    total_targets,
+                    f"{progress_pct:.3f}",
+                ]
+            )
+
+    def _write_task_progress(self):
+        with self.task_progress_path.open("w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                [
+                    "robot",
+                    "completed_colors",
+                    "total_colors",
+                    "progress_pct",
+                    "complete",
+                    "red_reached_s",
+                    "green_reached_s",
+                    "blue_reached_s",
+                ]
+            )
+            for robot_index in range(self.total_robots):
+                completed = self.robot_task_progress[robot_index]
+                reached_times = self.robot_color_reached_times[robot_index]
+                writer.writerow(
+                    [
+                        f"robot_{robot_index}",
+                        completed,
+                        3,
+                        f"{100.0 * completed / 3.0:.3f}",
+                        str(completed == 3).lower(),
+                        self._format_optional_time(reached_times["red"]),
+                        self._format_optional_time(reached_times["green"]),
+                        self._format_optional_time(reached_times["blue"]),
+                    ]
+                )
+
+    @staticmethod
+    def _format_optional_time(value):
+        return "" if value is None else f"{value:.3f}"
 
     def _ensure_paths_csv_header(self):
         if not self.paths_csv_path.exists():

@@ -1,6 +1,7 @@
-"""Detect red, green, and blue regions and estimate their depth."""
+"""Detect centered colors and determine reach from world-space proximity."""
 
-from typing import Dict, Optional
+import math
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import rclpy
@@ -8,28 +9,35 @@ from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Image
 from std_msgs.msg import Bool, Float32, String
+from tf2_msgs.msg import TFMessage
 
 
 COLORS = ("red", "green", "blue")
 
 
 class ColorDetector(Node):
-    """Publish visibility, reached state, and distance for each target color."""
+    """Publish visibility, reached state, and distance for each color."""
 
     def __init__(self):
         super().__init__("color_detector")
 
         self.declare_parameter("rgb_topic", "depth_camera/image")
-        self.declare_parameter("depth_topic", "depth_camera/depth_image")
-        self.declare_parameter("reached_distance", 0.75)
-        self.declare_parameter("min_color_pixels", 150)
+        self.declare_parameter("reached_distance", 1.0)
+        self.declare_parameter("min_color_pixels", 10)
+        self.declare_parameter("visible_width_ratio", 0.75)
         self.declare_parameter("min_channel", 80)
         self.declare_parameter("channel_margin", 35)
-        self.declare_parameter("min_depth", 0.08)
-        self.declare_parameter("max_depth", 10.0)
+        self.declare_parameter("pose_topic", "/world/random_world/dynamic_pose/info")
+        self.declare_parameter("target_half_extent", 0.075)
+        self.declare_parameter("red_target_pose", [-3.0, -1.5, 0.37])
+        self.declare_parameter("green_target_pose", [-1.8, 2.6, 1.12])
+        self.declare_parameter("blue_target_pose", [2.4, -2.7, 2.31])
+        default_robot_name = self.get_namespace().strip("/").split("/")[-1]
+        self.declare_parameter("robot_name", default_robot_name)
 
-        self.latest_depth: Optional[np.ndarray] = None
-        self.last_color_event = {color: None for color in COLORS}
+        self.robot_xy: Optional[Tuple[float, float]] = None
+        self.robot_name = str(self.get_parameter("robot_name").value).strip("/")
+        self.task_completed = False
         self.visible_publishers = {
             color: self.create_publisher(Bool, f"{color}_visible", 10)
             for color in COLORS
@@ -46,6 +54,18 @@ class ColorDetector(Node):
         self.any_color_visible_publisher = self.create_publisher(
             Bool, "color_visible", 10
         )
+        self.create_subscription(
+            Bool,
+            f"/{self.robot_name}/task_complete",
+            self.task_complete_callback,
+            10,
+        )
+        self.create_subscription(
+            TFMessage,
+            str(self.get_parameter("pose_topic").value),
+            self.pose_callback,
+            10,
+        )
 
         sensor_qos = QoSProfile(
             depth=1,
@@ -53,24 +73,39 @@ class ColorDetector(Node):
             history=HistoryPolicy.KEEP_LAST,
         )
         rgb_topic = str(self.get_parameter("rgb_topic").value)
-        depth_topic = str(self.get_parameter("depth_topic").value)
-        self.create_subscription(Image, depth_topic, self.depth_callback, sensor_qos)
         self.create_subscription(Image, rgb_topic, self.rgb_callback, sensor_qos)
         self.get_logger().info(
-            f"Color detector listening on RGB '{rgb_topic}' and depth '{depth_topic}'"
+            f"Color detector listening on RGB '{rgb_topic}'; reached uses world poses"
         )
 
-    @staticmethod
-    def depth_from_message(message: Image) -> Optional[np.ndarray]:
-        if message.encoding != "32FC1":
-            return None
-        dtype = np.dtype(np.float32).newbyteorder(
-            ">" if message.is_bigendian else "<"
-        )
-        row_values = message.step // dtype.itemsize
-        count = row_values * message.height
-        image = np.frombuffer(message.data, dtype=dtype, count=count)
-        return image.reshape(message.height, row_values)[:, : message.width]
+    def pose_callback(self, message: TFMessage):
+        if self.task_completed:
+            return
+        for transform in message.transforms:
+            frame_name = transform.child_frame_id.strip("/")
+            if frame_name == self.robot_name:
+                self.robot_xy = (
+                    float(transform.transform.translation.x),
+                    float(transform.transform.translation.y),
+                )
+                return
+
+    def target_surface_distance(self, color: str) -> float:
+        """Return planar distance from the robot point to a rotated target box."""
+        if self.robot_xy is None:
+            return float("nan")
+        target = list(self.get_parameter(f"{color}_target_pose").value)
+        target_x, target_y, yaw = (float(value) for value in target)
+        dx = self.robot_xy[0] - target_x
+        dy = self.robot_xy[1] - target_y
+        cos_yaw = math.cos(yaw)
+        sin_yaw = math.sin(yaw)
+        local_x = cos_yaw * dx + sin_yaw * dy
+        local_y = -sin_yaw * dx + cos_yaw * dy
+        half_extent = float(self.get_parameter("target_half_extent").value)
+        outside_x = max(abs(local_x) - half_extent, 0.0)
+        outside_y = max(abs(local_y) - half_extent, 0.0)
+        return math.hypot(outside_x, outside_y)
 
     @staticmethod
     def rgb_from_message(message: Image) -> Optional[np.ndarray]:
@@ -91,16 +126,6 @@ class ColorDetector(Node):
             image = image[:, :, :3]
         return image
 
-    def depth_callback(self, message: Image):
-        depth = self.depth_from_message(message)
-        if depth is None:
-            self.get_logger().warning(
-                f"Unsupported depth encoding '{message.encoding}'",
-                throttle_duration_sec=2.0,
-            )
-            return
-        self.latest_depth = depth
-
     def color_masks(self, rgb: np.ndarray) -> Dict[str, np.ndarray]:
         values = rgb.astype(np.int16, copy=False)
         red, green, blue = values[:, :, 0], values[:, :, 1], values[:, :, 2]
@@ -108,41 +133,39 @@ class ColorDetector(Node):
         margin = int(self.get_parameter("channel_margin").value)
         return {
             "red": (red >= minimum) & (red >= green + margin) & (red >= blue + margin),
-            "green": (green >= minimum) & (green >= red + margin) & (green >= blue + margin),
-            "blue": (blue >= minimum) & (blue >= red + margin) & (blue >= green + margin),
+            "green": (green >= minimum)
+            & (green >= red + margin)
+            & (green >= blue + margin),
+            "blue": (blue >= minimum)
+            & (blue >= red + margin)
+            & (blue >= green + margin),
         }
 
-    def distance_for_mask(self, mask: np.ndarray) -> float:
-        depth = self.latest_depth
-        if depth is None or depth.shape != mask.shape:
-            return float("nan")
-        min_depth = float(self.get_parameter("min_depth").value)
-        max_depth = float(self.get_parameter("max_depth").value)
-        values = depth[mask]
-        valid = values[np.isfinite(values) & (values > min_depth) & (values < max_depth)]
-        if valid.size == 0:
-            return float("nan")
-        # A low percentile favors the front face while rejecting isolated noise.
-        return float(np.percentile(valid, 20.0))
+    def visible_region(self, mask: np.ndarray) -> np.ndarray:
+        ratio = float(self.get_parameter("visible_width_ratio").value)
+        width = max(1, int(round(mask.shape[1] * np.clip(ratio, 0.0, 1.0))))
+        left = (mask.shape[1] - width) // 2
+        return mask[:, left : left + width]
 
     def publish_color(self, color: str, visible: bool, distance: float):
+        if self.task_completed:
+            return
         reached_distance = float(self.get_parameter("reached_distance").value)
-        reached = visible and np.isfinite(distance) and distance <= reached_distance
+        reached = np.isfinite(distance) and distance <= reached_distance
         self.visible_publishers[color].publish(Bool(data=visible))
         self.reached_publishers[color].publish(Bool(data=bool(reached)))
         self.distance_publishers[color].publish(Float32(data=distance))
-        event = None
         if reached:
             event = f"EV_{color}_reached"
         elif visible:
             event = f"EV_{color}_visible"
         else:
             event = f"EV_{color}_not_visible"
-        if event != self.last_color_event[color]:
-            self.event_publisher.publish(String(data=event))
-            self.last_color_event[color] = event
+        self.event_publisher.publish(String(data=event))
 
     def rgb_callback(self, message: Image):
+        if self.task_completed:
+            return
         rgb = self.rgb_from_message(message)
         if rgb is None:
             self.get_logger().warning(
@@ -150,8 +173,17 @@ class ColorDetector(Node):
                 throttle_duration_sec=2.0,
             )
             return
+        self._process_rgb_frame(rgb)
+
+    def _process_rgb_frame(self, rgb: np.ndarray):
+        """Process color independently of the depth camera."""
+        if self.task_completed:
+            return
         min_pixels = int(self.get_parameter("min_color_pixels").value)
-        masks = self.color_masks(rgb)
+        masks = {
+            color: self.visible_region(mask)
+            for color, mask in self.color_masks(rgb).items()
+        }
         visible_by_color = {
             color: int(np.count_nonzero(mask)) >= min_pixels
             for color, mask in masks.items()
@@ -159,10 +191,16 @@ class ColorDetector(Node):
         self.any_color_visible_publisher.publish(
             Bool(data=any(visible_by_color.values()))
         )
-        for color, mask in masks.items():
+        for color in COLORS:
             visible = visible_by_color[color]
-            distance = self.distance_for_mask(mask) if visible else float("nan")
+            distance = self.target_surface_distance(color)
             self.publish_color(color, visible, distance)
+
+    def task_complete_callback(self, message: Bool):
+        if not message.data:
+            return
+        self.task_completed = True
+        self.get_logger().info("Task complete; color publications stopped.")
 
 
 def main(args=None):

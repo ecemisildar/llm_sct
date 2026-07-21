@@ -140,34 +140,6 @@ class SCT:
             if self.choice_mode == "first":
                 return True, enabled[0]
 
-            clockwise = self.EV.get("EV_rotate_clockwise")
-            counterclockwise = self.EV.get("EV_rotate_counterclockwise")
-            full_rotate = self.EV.get("EV_full_rotate")
-            directional_rotations = [
-                event
-                for event in (clockwise, counterclockwise)
-                if event is not None and event in enabled
-            ]
-            rotation_events = set(directional_rotations)
-            if full_rotate is not None:
-                rotation_events.add(full_rotate)
-
-            # Obstacle-avoidance rotation choice: directional turns receive
-            # 60% total probability and full rotation receives 40%. When both
-            # CW and CCW are enabled, they split the directional probability.
-            if (
-                full_rotate is not None
-                and full_rotate in enabled
-                and directional_rotations
-                and set(enabled).issubset(rotation_events)
-            ):
-                directional_weight = 0.60 / len(directional_rotations)
-                weights = [
-                    0.40 if event == full_rotate else directional_weight
-                    for event in enabled
-                ]
-                return True, self.rng.choices(enabled, weights=weights, k=1)[0]
-
             forward = self.EV.get("EV_move_forward")
             if forward in enabled and len(enabled) > 1:
                 # Prefer exploration motion and share the remaining probability

@@ -1,18 +1,20 @@
 import math
 import os
 import random
+import sys
 import time
 import xml.etree.ElementTree as ET
 
 import xacro
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_prefix, get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     ExecuteProcess,
     OpaqueFunction,
     RegisterEventHandler,
+    SetEnvironmentVariable,
     Shutdown,
     TimerAction,
 )
@@ -87,51 +89,32 @@ def _point_is_free(px: float, py: float, obstacles, wall_margin: float, obstacle
 
 
 def _build_robot_spawn_slots(total_robots: int, world_path: str):
-    obstacles = _load_world_obstacles(world_path)
-    candidate_x = [-3.25, -1.75, -0.25, 1.25, 2.75, 3.5]
-    candidate_y = [-3.25, -1.75, -0.25, 1.25, 2.75, 3.5]
-    min_robot_spacing = 1.25
-    wall_margin = 0.6
-    obstacle_margin = 0.55
+    del world_path
+    if total_robots == 1:
+        return [{"x": 0.0, "y": 0.0, "yaw": 0.0}]
 
-    candidates = []
-    for y in candidate_y:
-        for x in candidate_x:
-            if _point_is_free(x, y, obstacles, wall_margin, obstacle_margin):
-                # Prefer far-apart outer slots first so robots start dispersed.
-                candidates.append((x, y))
-
-    if not candidates:
-        raise RuntimeError(f"No safe spawn slots found in {world_path}.")
-
-    robots = []
-    # Greedy farthest-point sampling:
-    # 1) start with the outermost free slot
-    # 2) repeatedly add the slot with the largest distance to the current set
-    first_x, first_y = max(candidates, key=lambda p: abs(p[0]) + abs(p[1]))
-    robots.append({"x": first_x, "y": first_y, "yaw": 0.0})
-
-    remaining = [p for p in candidates if p != (first_x, first_y)]
-    while remaining and len(robots) < total_robots:
-        feasible = []
-        for x, y in remaining:
-            distances = [math.hypot(x - robot["x"], y - robot["y"]) for robot in robots]
-            min_dist = min(distances)
-            if min_dist >= min_robot_spacing:
-                feasible.append((min_dist, abs(x) + abs(y), x, y))
-        if not feasible:
-            break
-        # Prefer the point with the largest minimum distance to existing robots.
-        # Break ties toward outer slots.
-        _, _, x, y = max(feasible, key=lambda item: (item[0], item[1]))
-        robots.append({"x": x, "y": y, "yaw": 0.0})
-        remaining = [p for p in remaining if p != (x, y)]
-
-    if len(robots) < total_robots:
+    minimum_spacing = 0.8
+    radius = max(
+        0.75,
+        minimum_spacing / (2.0 * math.sin(math.pi / total_robots)),
+    )
+    if radius > 3.5:
         raise RuntimeError(
-            f"Only found {len(robots)} safe spawn slots in {world_path}, need {total_robots}."
+            f"Cannot place {total_robots} robots on the central ring with "
+            f"{minimum_spacing:.1f} m spacing inside the world."
         )
-    return robots
+
+    return [
+        {
+            "x": radius * math.cos(angle),
+            "y": radius * math.sin(angle),
+            "yaw": angle,
+        }
+        for angle in (
+            2.0 * math.pi * index / total_robots
+            for index in range(total_robots)
+        )
+    ]
 
 
 def _resolve_seed(value: str, name: str) -> int:
@@ -150,6 +133,17 @@ def generate_launch_description():
 
     leo_description = get_package_share_directory("leo_description")
     run_id = time.strftime("run_%Y%m%d_%H%M%S")
+    evaluation_python_path = os.path.join(
+        get_package_prefix("evaluation"),
+        "lib",
+        f"python{sys.version_info.major}.{sys.version_info.minor}",
+        "site-packages",
+    )
+    python_path = os.pathsep.join(
+        path
+        for path in (evaluation_python_path, os.environ.get("PYTHONPATH", ""))
+        if path
+    )
 
     auto_start_supervisor = LaunchConfiguration("auto_start_supervisor")
     auto_start_supervisor_arg = DeclareLaunchArgument(
@@ -233,12 +227,13 @@ def generate_launch_description():
                 f"/{ns}/depth_camera/image@sensor_msgs/msg/Image[ignition.msgs.Image",
                 f"/{ns}/depth_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image",
                 f"/{ns}/depth_camera/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo",
-                f"/world/random_world_rgb/model/{ns}/link/{ns}/base_footprint/sensor/contact_sensor/contact"
+                f"/world/random_world/model/{ns}/link/{ns}/base_footprint/sensor/contact_sensor/contact"
                 f"@ros_gz_interfaces/msg/Contacts[ignition.msgs.Contacts",
             ]
 
         bridge_args += [
             "/world/random_world/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
+            "/world/random_world/remove@ros_gz_interfaces/srv/DeleteEntity",
         ]
 
         bridge_node = Node(
@@ -357,8 +352,8 @@ def generate_launch_description():
                 parameters=[
                     {"use_sim_time": True},
                     {"rgb_topic": f"/{ns}/depth_camera/image"},
-                    {"depth_topic": f"/{ns}/depth_camera/depth_image"},
-                    {"reached_distance": 0.25},
+                    {"robot_name": ns},
+                    {"reached_distance": 1.0},
                 ],
                 output="screen",
             )
@@ -377,6 +372,7 @@ def generate_launch_description():
         return nodes
 
     return LaunchDescription([
+        SetEnvironmentVariable(name="PYTHONPATH", value=python_path),
         auto_start_supervisor_arg,
         random_seed_arg,
         RegisterEventHandler(

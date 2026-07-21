@@ -21,9 +21,10 @@
 
 import os
 import subprocess
+import sys
 import time
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_prefix, get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, Shutdown, TimerAction, SetEnvironmentVariable
@@ -60,6 +61,17 @@ def generate_launch_description():
     # Setup project paths
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
     pkg_project_gazebo = get_package_share_directory("leo_patrolling")
+    evaluation_python_path = os.path.join(
+        get_package_prefix("evaluation"),
+        "lib",
+        f"python{sys.version_info.major}.{sys.version_info.minor}",
+        "site-packages",
+    )
+    python_path = os.pathsep.join(
+        path
+        for path in (evaluation_python_path, os.environ.get("PYTHONPATH", ""))
+        if path
+    )
     existing_ign_path = os.environ.get("IGN_GAZEBO_RESOURCE_PATH", "")
     existing_gz_path = os.environ.get("GZ_SIM_RESOURCE_PATH", "")
     model_path = os.path.join(pkg_project_gazebo, "models")
@@ -177,6 +189,7 @@ def generate_launch_description():
                 name="IGN_GAZEBO_RESOURCE_PATH",
                 value=ign_resource_path,
             ),
+            SetEnvironmentVariable(name="PYTHONPATH", value=python_path),
             SetEnvironmentVariable(
                 name="GZ_SIM_RESOURCE_PATH",
                 value=gz_resource_path,

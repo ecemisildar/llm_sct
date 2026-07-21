@@ -103,7 +103,7 @@
       </link>
     </xacro:macro>
 
-    <xacro:arg name="chassis_color" default="1.0 0.0 0.0 1"/>
+    <xacro:arg name="chassis_color" default="1.0 1.0 0.0 1"/>
 
 
     <!-- LINKS -->
@@ -464,33 +464,25 @@
       </collision>
     </gazebo>
 
-    <gazebo reference="${link_prefix}realsense_link">
+    <!-- Fixed joints are lumped during URDF-to-SDF conversion, so attach the
+         sensors to the surviving base_footprint link at the camera pose. -->
+    <gazebo reference="${link_prefix}base_footprint">
       <sensor name="depth_camera" type="rgbd_camera">
-      <always_on>1</always_on>
+        <always_on>1</always_on>
         <update_rate>2</update_rate>
+        <pose>0.1 0 0.22783 0 -0.2 0</pose>
         <camera name="depth_camera">
-          <visibility_mask>4294967294</visibility_mask>
-          <horizontal_fov>1.51844</horizontal_fov> <!--87 degrees-->
+          <visibility_mask>268435455</visibility_mask>
+          <horizontal_fov>1.51844</horizontal_fov>
           <lens>
             <intrinsics>
-              <!-- fx = fy = width / ( 2 * tan (hfov / 2 ) ) -->
               <fx>554.25469</fx>
               <fy>554.25469</fy>
-              <!-- cx = ( width + 1 ) / 2 -->
               <cx>320.5</cx>
-              <!-- cy = ( height + 1 ) / 2 -->
               <cy>240.5</cy>
               <s>0</s>
             </intrinsics>
           </lens>
-          <distortion>
-            <k1>0.0</k1>
-            <k2>0.0</k2>
-            <k3>0.0</k3>
-            <p1>0.0</p1>
-            <p2>0.0</p2>
-            <center>0.5 0.5</center>
-          </distortion>
           <image>
             <width>640</width>
             <height>360</height>

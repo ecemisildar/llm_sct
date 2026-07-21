@@ -14,7 +14,6 @@ class ImageProcessor(Node):
         super().__init__("image_processor")
 
         self.declare_parameter("depth_topic", "depth_camera/depth_image")
-        self.declare_parameter("color_visible_topic", "color_visible")
         self.declare_parameter("obstacle_threshold", 0.70)
         self.declare_parameter("min_depth", 0.08)
         self.declare_parameter("max_depth", 10.0)
@@ -22,49 +21,47 @@ class ImageProcessor(Node):
         self.declare_parameter("crop_y1_frac", 0.80)
 
         depth_topic = str(self.get_parameter("depth_topic").value)
-        color_visible_topic = str(self.get_parameter("color_visible_topic").value)
-        self.color_visible = False
-        self.zone_publisher = self.create_publisher(
-            String, "detected_zones", 10
-        )
-        self.depth_subscription = self.create_subscription(
-            Image, depth_topic, self.depth_callback, 10
-        )
-        self.color_visible_subscription = self.create_subscription(
-            Bool, color_visible_topic, self.color_visible_callback, 10
-        )
-
-        self.get_logger().info(
-            f"Argmin zone detector listening on '{depth_topic}'"
+        robot_name = self.get_namespace().strip("/").split("/")[-1]
+        self.task_completed = False
+        self.zone_publisher = self.create_publisher(String, "detected_zones", 10)
+        self.create_subscription(Image, depth_topic, self.depth_callback, 10)
+        self.create_subscription(
+            Bool,
+            f"/{robot_name}/task_complete",
+            self.task_complete_callback,
+            10,
         )
 
-    def color_visible_callback(self, message: Bool):
-        self.color_visible = bool(message.data)
+        self.get_logger().info(f"Argmin zone detector listening on '{depth_topic}'")
 
     def publish_zone(self, zone: str):
+        if self.task_completed:
+            return
         self.zone_publisher.publish(String(data=zone))
+
+    def task_complete_callback(self, message: Bool):
+        if not message.data:
+            return
+        self.task_completed = True
+        self.get_logger().info("Task complete; obstacle publications stopped.")
 
     @staticmethod
     def image_to_depth(message: Image):
         """Return a metre-valued depth array for supported ROS encodings."""
-        if message.encoding == "32FC1":
-            dtype = np.dtype(np.float32)
-            scale = 1.0
-        else:
+        if message.encoding != "32FC1":
             return None
 
+        dtype = np.dtype(np.float32)
         dtype = dtype.newbyteorder(">" if message.is_bigendian else "<")
         row_values = message.step // dtype.itemsize
         required_values = row_values * message.height
         depth = np.frombuffer(message.data, dtype=dtype, count=required_values)
         depth = depth.reshape(message.height, row_values)[:, : message.width]
-        return depth.astype(np.float32, copy=False) * scale
+        return depth.astype(np.float32, copy=False)
 
     def depth_callback(self, message: Image):
-        if self.color_visible:
-            self.publish_zone("CLEAR")
+        if self.task_completed:
             return
-
         depth = self.image_to_depth(message)
         if depth is None:
             self.get_logger().warning(

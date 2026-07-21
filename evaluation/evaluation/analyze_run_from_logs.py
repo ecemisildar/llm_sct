@@ -198,8 +198,8 @@ def load_obstacle_rectangles(world_sdf: Path):
     return obstacles
 
 
-def load_colored_target_boxes(world_sdf: Path):
-    """Load the red, green, and blue visual boxes without treating them as obstacles."""
+def load_colored_target_circles(world_sdf: Path):
+    """Load the red, green, and blue floor circles from the world."""
     if not world_sdf.exists():
         return []
     try:
@@ -224,17 +224,16 @@ def load_colored_target_boxes(world_sdf: Path):
         for link in model.findall("link"):
             link_pose = parse_pose(link.findtext("pose"))
             for visual in link.findall("visual"):
-                size_text = visual.findtext("geometry/box/size")
-                if not size_text:
+                if visual.get("name") != "reach_circle":
+                    continue
+                radius_text = visual.findtext("geometry/cylinder/radius")
+                if not radius_text:
                     continue
                 visual_pose = parse_pose(visual.findtext("pose"))
-                sx, sy, _ = (float(v) for v in size_text.split())
                 targets.append((
                     model_pose[0] + link_pose[0] + visual_pose[0],
                     model_pose[1] + link_pose[1] + visual_pose[1],
-                    sx,
-                    sy,
-                    model_pose[5] + link_pose[5] + visual_pose[5],
+                    float(radius_text),
                     color,
                 ))
     return targets
@@ -375,7 +374,7 @@ def compute_blocked_cells(cells, obstacles, grid_size, occupancy_threshold):
     return blocked
 
 
-def plot_coverage_map(cells, visited, blocked, paths, target_boxes, out_png: Path):
+def plot_coverage_map(cells, visited, blocked, paths, target_circles, out_png: Path):
     fig, ax = plt.subplots(figsize=(8, 8))
     ax.set_xlabel("X (m)", fontsize=16)
     ax.set_ylabel("Y (m)", fontsize=16)
@@ -395,14 +394,14 @@ def plot_coverage_map(cells, visited, blocked, paths, target_boxes, out_png: Pat
         )
         ax.add_patch(rect)
 
-    for x, y, sx, sy, yaw, color in target_boxes:
-        ax.add_patch(plt.Polygon(
-            rect_corners(x, y, sx, sy, yaw),
-            closed=True,
+    for x, y, radius, color in target_circles:
+        ax.add_patch(plt.Circle(
+            (x, y),
+            radius,
             facecolor=color,
             edgecolor="black",
             linewidth=2.5,
-            alpha=0.95,
+            alpha=0.35,
             zorder=4,
         ))
 
@@ -541,13 +540,13 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
     cells = build_cells(ENV_MIN, ENV_MAX)
     world_sdf = world_sdf_for_run(run_dir)
     obstacles = load_obstacle_rectangles(world_sdf)
-    target_boxes = load_colored_target_boxes(world_sdf)
+    target_circles = load_colored_target_circles(world_sdf)
     blocked = compute_blocked_cells(
         cells, obstacles, GRID_SIZE, OBSTACLE_OCCUPANCY_THRESHOLD
     )
 
     map_out = run_dir / "coverage_map_offline.png"
-    plot_coverage_map(cells, visited, blocked, paths, target_boxes, map_out)
+    plot_coverage_map(cells, visited, blocked, paths, target_circles, map_out)
 
     cov_csv = run_dir / "coverage_timeseries.csv"
     if not cov_csv.exists():

@@ -4,7 +4,6 @@ import random
 import math
 import re
 import time
-from glob import glob
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, Tuple
@@ -14,10 +13,11 @@ import rclpy
 from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
-from std_msgs.msg import String
+from std_msgs.msg import Bool, Int32, String
 from std_srvs.srv import SetBool
 from nav_msgs.msg import Odometry
-from ros_gz_interfaces.msg import Contacts
+from ros_gz_interfaces.msg import Contacts, Entity
+from ros_gz_interfaces.srv import DeleteEntity
 
 from ament_index_python.packages import get_package_share_directory
 from leo_patrolling.sct import SCT
@@ -63,6 +63,16 @@ class RobotSupervisor(Node):
         # -------------------------------
         self.supervisor_period = float(self.declare_parameter("supervisor_period", 0.1).value)
         self.motion_hold_duration = float(self.declare_parameter("motion_hold_duration", 0.6).value)
+        self.completion_shutdown_delay = max(
+            0.1,
+            float(
+                self.declare_parameter("completion_shutdown_delay", 0.5).value
+            ),
+        )
+        self.completion_shutdown_timer = None
+        self.completion_delete_timeout_timer = None
+        self.completion_delete_requested = False
+        self.task_complete_sent = False
 
         # Full-rotate execution settings
         # Cap at 180 degrees max, even if overridden via parameters.
@@ -163,10 +173,11 @@ class RobotSupervisor(Node):
         self.contact_topic = str(
             self.declare_parameter(
                 "contact_topic",
-                f"/world/random_world_rgb/model/{self.ns}/link/{self.ns}/base_footprint/sensor/contact_sensor/contact",
+                f"/world/random_world/model/{self.ns}/link/{self.ns}/base_footprint/sensor/contact_sensor/contact",
             ).value
         )
         self.pending_color_events = set()
+        self.deferred_color_events = {}
         self.reached_colors = set()
         self.all_colors_reached = False
 
@@ -178,6 +189,7 @@ class RobotSupervisor(Node):
         self.current_mission = "patrolling"
         self.current_yaml_path = ""
         self._load_initial_sct()
+        
         self._last_printed_sup_states: Optional[Tuple[int, ...]] = None
 
         # -------------------------------
@@ -231,6 +243,16 @@ class RobotSupervisor(Node):
         # -------------------------------
         self.cmd_pub = self.create_publisher(Twist, "cmd_vel", 10)
         self.executed_event_pub = self.create_publisher(String, "executed_event", 10)
+        self.task_complete_pub = self.create_publisher(
+            Bool, f"/{self.ns}/task_complete", 10
+        )
+        self.task_progress_pub = self.create_publisher(Int32, "task_progress", 10)
+        self.task_progress_event_pub = self.create_publisher(
+            String, "task_progress_event", 10
+        )
+        self.delete_entity_client = self.create_client(
+            DeleteEntity, "/world/random_world/remove"
+        )
 
         self.sub_zone = self.create_subscription(String, "detected_zones", self.zone_callback, 10)
         self.create_subscription(
@@ -281,39 +303,6 @@ class RobotSupervisor(Node):
             "EV_full_rotate": ActionSpec(linear_x=0.0, angular_z=self.full_rotate_omega, is_full_rotate=True),
         }
 
-    def _canonical_mission_name(self, mission: str) -> str:
-        key = str(mission or "").strip().lower().replace("-", "_").replace(" ", "_")
-        if key != "patrolling":
-            key = "patrolling"
-        return key
-
-    def _mission_yaml_candidates(self, mission: str):
-        mission_key = self._canonical_mission_name(mission)
-        candidates = []
-        preferred = os.path.join(self.config_dir, f"{mission_key}_sup_gpt.yaml")
-        if os.path.exists(preferred):
-            candidates.append(preferred)
-        task_files = sorted(
-            glob(os.path.join(self.config_dir, f"{mission_key}_sup_gpt_*.yaml")),
-            key=os.path.getmtime,
-            reverse=True,
-        )
-        candidates.extend(task_files)
-        fallback = os.path.join(self.config_dir, "sup_gpt.yaml")
-        if os.path.exists(fallback):
-            candidates.append(fallback)
-        patrolling_fallback = os.path.join(self.config_dir, "sup_patrolling.yaml")
-        if os.path.exists(patrolling_fallback):
-            candidates.append(patrolling_fallback)
-
-        seen = set()
-        unique = []
-        for path in candidates:
-            if path not in seen:
-                unique.append(path)
-                seen.add(path)
-        return unique
-
     def _load_sct_from_yaml(self, config_path: str):
         self.sct = SCT(
             config_path,
@@ -344,14 +333,12 @@ class RobotSupervisor(Node):
                 f"Loaded initial mission '{self.current_mission}' from explicit YAML {os.path.basename(config_path)}"
             )
             return
-        paths = self._mission_yaml_candidates(self.current_mission)
-        if not paths:
+        config_path = os.path.join(self.config_dir, "sup_patrolling.yaml")
+        if not os.path.exists(config_path):
             self.get_logger().error(
-                f"No supervisor YAML found in {self.config_dir}. "
-                "Expected mission-specific files or sup_gpt.yaml."
+                f"Supervisor YAML not found: {config_path}"
             )
             raise SystemExit(1)
-        config_path = paths[0]
         self._load_sct_from_yaml(config_path)
         self.current_yaml_path = config_path
         self.get_logger().info(
@@ -361,32 +348,21 @@ class RobotSupervisor(Node):
     def _switch_mission(self, mission: str) -> Tuple[bool, str]:
         if self.explicit_yaml_path:
             return True, os.path.basename(self.current_yaml_path or self.explicit_yaml_path)
-        mission_key = self._canonical_mission_name(mission)
-        paths = self._mission_yaml_candidates(mission_key)
-        if not paths:
-            return False, f"No YAML found for mission '{mission_key}' in {self.config_dir}"
-        config_path = paths[0]
+        config_path = os.path.join(self.config_dir, "sup_patrolling.yaml")
+        if not os.path.exists(config_path):
+            return False, f"Supervisor YAML not found: {config_path}"
         try:
             self._load_sct_from_yaml(config_path)
         except Exception as exc:
             return False, f"Failed to load {os.path.basename(config_path)}: {exc}"
-        self.current_mission = mission_key
+        self.current_mission = "patrolling"
         self.current_yaml_path = config_path
         self._last_printed_sup_states = None
         self.get_logger().info(
-            f"Switched mission to '{mission_key}' using {os.path.basename(config_path)}"
+            f"Switched mission to 'patrolling' using {os.path.basename(config_path)}"
         )
         return True, os.path.basename(config_path)
 
-    def _print_current_state(self):
-        states = tuple(int(s) for s in self.sct.sup_current_state)
-        if states == self._last_printed_sup_states:
-            return
-        self._last_printed_sup_states = states
-        # print(
-        #     f"[robot_supervisor] mission={self.current_mission} current_state={states}",
-        #     flush=True,
-        # )
 
     def _set_enabled(self, enable: bool):
         self.enabled = bool(enable)
@@ -504,9 +480,20 @@ class RobotSupervisor(Node):
     # -------------------------------
     # Subscriptions
     # -------------------------------
+    def _motion_event_in_progress(self) -> bool:
+        """Return whether a selected motion event still owns the robot."""
+        now = time.time()
+        return (
+            now < self.contact_recovery_until
+            or self.full_rotate_active
+            or self.rotate_90_active
+            or now < self.turn_settle_until
+            or (self.active_event is not None and now < self.motion_until)
+        )
+
     def color_event_callback(self, msg):
         event = msg.data.strip()
-        if event in {
+        color_events = {
             "EV_red_not_visible",
             "EV_red_visible",
             "EV_red_reached",
@@ -516,8 +503,30 @@ class RobotSupervisor(Node):
             "EV_blue_not_visible",
             "EV_blue_visible",
             "EV_blue_reached",
-        }:
-            self.pending_color_events.add(event)
+        }
+        if event not in color_events:
+            return
+
+        color = event.split("_")[1]
+        if self._motion_event_in_progress():
+            # Retain only the newest observation for this color. It will not be
+            # presented to the SCT until the executing action has finished.
+            self.deferred_color_events[color] = event
+            return
+
+        self._accept_color_event(event)
+
+    def _accept_color_event(self, event: str):
+        """Queue a color event when no motion event is executing."""
+        color = event.split("_")[1]
+        self.pending_color_events.difference_update(
+            {
+                f"EV_{color}_not_visible",
+                f"EV_{color}_visible",
+                f"EV_{color}_reached",
+            }
+        )
+        self.pending_color_events.add(event)
 
         match = re.fullmatch(r"EV_(red|green|blue)_reached", event)
         if match is None or self.all_colors_reached:
@@ -535,19 +544,86 @@ class RobotSupervisor(Node):
             return
 
         self.reached_colors.add(color)
+        self.task_progress_pub.publish(Int32(data=len(self.reached_colors)))
+        self.task_progress_event_pub.publish(String(data=color))
         self.get_logger().info(
             f"Reached {color}; progress: "
             f"{len(self.reached_colors)}/{len(TARGET_COLOR_ORDER)} colors"
         )
 
-        if len(self.reached_colors) == len(TARGET_COLOR_ORDER):
+        if (
+            len(self.reached_colors) == len(TARGET_COLOR_ORDER)
+            and not self.task_complete_sent
+        ):
             self.all_colors_reached = True
+            self.task_complete_sent = True
+            self.task_complete_pub.publish(Bool(data=True))
             self._publish_stop()
             self.get_logger().info(
-                "Targets reached in red, green, blue order; stopping supervisor node."
+                "Targets reached in red, green, blue order; final events published."
             )
-            if rclpy.ok():
-                rclpy.shutdown()
+            self.completion_shutdown_timer = self.create_timer(
+                self.completion_shutdown_delay,
+                self._shutdown_after_completion,
+            )
+
+    def _shutdown_after_completion(self):
+        """Remove the completed robot, then shut down its supervisor."""
+        if self.completion_shutdown_timer is not None:
+            self.completion_shutdown_timer.cancel()
+        self._publish_stop()
+        if not self.delete_entity_client.service_is_ready():
+            self.get_logger().warning(
+                "Gazebo delete service is unavailable; shutting down without removal."
+            )
+            self._finish_completion_shutdown()
+            return
+
+        if self.completion_delete_requested:
+            return
+        self.completion_delete_requested = True
+        request = DeleteEntity.Request()
+        request.entity = Entity(name=self.ns, type=Entity.MODEL)
+        future = self.delete_entity_client.call_async(request)
+        future.add_done_callback(self._entity_delete_done)
+        self.completion_delete_timeout_timer = self.create_timer(
+            1.0, self._entity_delete_timeout
+        )
+
+    def _entity_delete_done(self, future):
+        if self.completion_delete_timeout_timer is not None:
+            self.completion_delete_timeout_timer.cancel()
+        try:
+            response = future.result()
+            if response.success:
+                self.get_logger().info(f"Removed completed model '{self.ns}'.")
+            else:
+                self.get_logger().warning(
+                    f"Gazebo did not remove completed model '{self.ns}'."
+                )
+        except Exception as exc:
+            self.get_logger().warning(f"Robot removal failed: {exc}")
+        self._finish_completion_shutdown()
+
+    def _entity_delete_timeout(self):
+        if self.completion_delete_timeout_timer is not None:
+            self.completion_delete_timeout_timer.cancel()
+        self.get_logger().warning("Timed out waiting for Gazebo robot removal.")
+        self._finish_completion_shutdown()
+
+    def _finish_completion_shutdown(self):
+        self.get_logger().info("Completion delivery finished; shutting down.")
+        if rclpy.ok():
+            rclpy.shutdown()
+
+    def _release_deferred_color_events(self):
+        """Release the latest observations after the current action finishes."""
+        if self._motion_event_in_progress() or not self.deferred_color_events:
+            return
+        events = list(self.deferred_color_events.values())
+        self.deferred_color_events.clear()
+        for event in events:
+            self._accept_color_event(event)
 
     def _consume_color_event(self, event: str) -> bool:
         if event not in self.pending_color_events:
@@ -1036,10 +1112,13 @@ class RobotSupervisor(Node):
 
         # Otherwise: pick next event from SCT
         self.active_event = None
+        self._release_deferred_color_events()
+        if self.all_colors_reached:
+            self._publish_stop()
+            return
         self.sct.input_buffer = []
         sct_input_snapshot = self._snapshot_sct_inputs(now)
         ce_exists, ce = self.sct.run_step()
-        self._print_current_state()
         if not ce_exists:
             # No controllable enabled -> stop
             self._log_sct_decision("none", False, sct_input_snapshot)
