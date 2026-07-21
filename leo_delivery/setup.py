@@ -27,7 +27,6 @@ setup(
     entry_points={
         'console_scripts': [
             'robot_supervisor = leo_delivery.robot_supervisor:main',
-            'color_detector = leo_delivery.color_detector:main',
         ],
     },
 )

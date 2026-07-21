@@ -13,6 +13,7 @@
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>leo_gz_bringup</exec_depend>
   <exec_depend>leo_description</exec_depend>
   <exec_depend>leo_image_processing</exec_depend>
   <exec_depend>nav_msgs</exec_depend>

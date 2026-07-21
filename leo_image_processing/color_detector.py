@@ -1,4 +1,4 @@
-"""Detect centered colors and determine reach from world-space proximity."""
+"""Shared color detection and world-space reach detection for Leo missions."""
 
 import math
 from typing import Dict, Optional, Tuple
