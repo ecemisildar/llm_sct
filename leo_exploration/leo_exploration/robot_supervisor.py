@@ -354,26 +354,6 @@ class RobotSupervisor(Node):
             f"Loaded initial mission '{self.current_mission}' from {os.path.basename(config_path)}"
         )
 
-    def _switch_mission(self, mission: str) -> Tuple[bool, str]:
-        if self.explicit_yaml_path:
-            return True, os.path.basename(self.current_yaml_path or self.explicit_yaml_path)
-        mission_key = self._canonical_mission_name(mission)
-        paths = self._mission_yaml_candidates(mission_key)
-        if not paths:
-            return False, f"No YAML found for mission '{mission_key}' in {self.config_dir}"
-        config_path = paths[0]
-        try:
-            self._load_sct_from_yaml(config_path)
-        except Exception as exc:
-            return False, f"Failed to load {os.path.basename(config_path)}: {exc}"
-        self.current_mission = mission_key
-        self.current_yaml_path = config_path
-        self._last_printed_sup_states = None
-        self.get_logger().info(
-            f"Switched mission to '{mission_key}' using {os.path.basename(config_path)}"
-        )
-        return True, os.path.basename(config_path)
-
     def _print_current_state(self):
         states = tuple(int(s) for s in self.sct.sup_current_state)
         if states == self._last_printed_sup_states:

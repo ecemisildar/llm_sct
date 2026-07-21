@@ -37,12 +37,7 @@ from launch_ros.actions import Node
 
 def _kill_gazebo_processes(*_args, **_kwargs):
     patterns = [
-        r"ruby .*gz sim",
-        r"^gz sim ",
         r"^ign gazebo ",
-        r"ign gazebo .*random_world_rgb\.sdf",
-        r"gzserver",
-        r"gzclient",
         r"parameter_bridge",
     ]
     for signal in ("-TERM", "-KILL"):
@@ -73,13 +68,9 @@ def generate_launch_description():
         if path
     )
     existing_ign_path = os.environ.get("IGN_GAZEBO_RESOURCE_PATH", "")
-    existing_gz_path = os.environ.get("GZ_SIM_RESOURCE_PATH", "")
     model_path = os.path.join(pkg_project_gazebo, "models")
     ign_resource_path = os.pathsep.join(
         [p for p in [pkg_project_gazebo, model_path, existing_ign_path] if p]
-    )
-    gz_resource_path = os.pathsep.join(
-        [p for p in [pkg_project_gazebo, model_path, existing_gz_path] if p]
     )
 
     sim_world = DeclareLaunchArgument(
@@ -190,10 +181,6 @@ def generate_launch_description():
                 value=ign_resource_path,
             ),
             SetEnvironmentVariable(name="PYTHONPATH", value=python_path),
-            SetEnvironmentVariable(
-                name="GZ_SIM_RESOURCE_PATH",
-                value=gz_resource_path,
-            ),
             sim_world,
             headless,
             auto_start,

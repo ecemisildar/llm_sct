@@ -335,25 +335,6 @@ class RobotSupervisor(Node):
             f"Loaded initial mission '{self.current_mission}' from {os.path.basename(config_path)}"
         )
 
-    def _switch_mission(self, mission: str) -> Tuple[bool, str]:
-        if self.explicit_yaml_path:
-            return True, os.path.basename(self.current_yaml_path or self.explicit_yaml_path)
-        config_path = os.path.join(self.config_dir, "sup_patrolling.yaml")
-        if not os.path.exists(config_path):
-            return False, f"Supervisor YAML not found: {config_path}"
-        try:
-            self._load_sct_from_yaml(config_path)
-        except Exception as exc:
-            return False, f"Failed to load {os.path.basename(config_path)}: {exc}"
-        self.current_mission = "patrolling"
-        self.current_yaml_path = config_path
-        self._last_printed_sup_states = None
-        self.get_logger().info(
-            f"Switched mission to 'patrolling' using {os.path.basename(config_path)}"
-        )
-        return True, os.path.basename(config_path)
-
-
     def _publish_cmd(self, twist: Twist):
         self.executed_event_pub.publish(String(data=self._current_command_event_label()))
         self.cmd_pub.publish(twist)

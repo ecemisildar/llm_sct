@@ -37,13 +37,9 @@ def generate_launch_description():
     pkg_project_gazebo = get_package_share_directory("leo_gz_bringup")
     pkg_swarm_basics = get_package_share_directory("swarm_basics")
     existing_ign_path = os.environ.get("IGN_GAZEBO_RESOURCE_PATH", "")
-    existing_gz_path = os.environ.get("GZ_SIM_RESOURCE_PATH", "")
     swarm_models = os.path.join(pkg_swarm_basics, "models")
     ign_resource_path = os.pathsep.join(
         [p for p in [pkg_swarm_basics, swarm_models, existing_ign_path] if p]
-    )
-    gz_resource_path = os.pathsep.join(
-        [p for p in [pkg_swarm_basics, swarm_models, existing_gz_path] if p]
     )
     pkg_project_worlds = get_package_share_directory("leo_gz_worlds")
 
@@ -95,10 +91,6 @@ def generate_launch_description():
             SetEnvironmentVariable(
                 name="IGN_GAZEBO_RESOURCE_PATH",
                 value=ign_resource_path,
-            ),
-            SetEnvironmentVariable(
-                name="GZ_SIM_RESOURCE_PATH",
-                value=gz_resource_path,
             ),
             sim_world,
             robot_ns,
