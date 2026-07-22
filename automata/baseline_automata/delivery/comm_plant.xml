@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="0.0" type="FSA" id="Untitled">
+<data>
+	<state id="0" name="comm_blue" initial ="False" marked="True" x="388" y="729" />
+	<state id="1" name="comm_green" initial ="False" marked="True" x="1049" y="764" />
+	<state id="2" name="comm_red" initial ="False" marked="True" x="956" y="365" />
+	<state id="3" name="comm_idle" initial ="True" marked="True" x="404" y="366" />
+	<event id="0" name="pub_going_green" controllable="True" observable="True"/>
+	<event id="1" name="received_going_red" controllable="False" observable="True"/>
+	<event id="2" name="received_going_green" controllable="False" observable="True"/>
+	<event id="3" name="pub_going_blue" controllable="True" observable="True"/>
+	<event id="4" name="received_going_blue" controllable="False" observable="True"/>
+	<event id="5" name="pub_going_red" controllable="True" observable="True"/>
+	<transition source="0" target="0" event="1"/>
+	<transition source="0" target="0" event="4"/>
+	<transition source="0" target="0" event="2"/>
+	<transition source="1" target="1" event="1"/>
+	<transition source="1" target="1" event="2"/>
+	<transition source="1" target="1" event="4"/>
+	<transition source="2" target="2" event="2"/>
+	<transition source="2" target="2" event="4"/>
+	<transition source="2" target="2" event="1"/>
+	<transition source="3" target="3" event="2"/>
+	<transition source="3" target="1" event="0"/>
+	<transition source="3" target="3" event="1"/>
+	<transition source="3" target="3" event="4"/>
+	<transition source="3" target="2" event="5"/>
+	<transition source="3" target="0" event="3"/>
+</data>
+</model>

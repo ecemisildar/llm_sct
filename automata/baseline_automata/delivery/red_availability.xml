@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="0.0" type="FSA" id="Untitled">
+<data>
+	<state id="0" name="red_free" initial ="True" marked="True" x="450" y="399" />
+	<state id="1" name="red_claimed" initial ="False" marked="True" x="776" y="392" />
+	<event id="0" name="received_going_red" controllable="False" observable="True"/>
+	<event id="1" name="skip_red" controllable="True" observable="True"/>
+	<event id="2" name="pub_going_red" controllable="True" observable="True"/>
+	<transition source="0" target="1" event="2"/>
+	<transition source="0" target="1" event="0"/>
+	<transition source="1" target="1" event="1"/>
+	<transition source="1" target="1" event="0"/>
+</data>
+</model>
