@@ -1,0 +1,79 @@
+{
+  "automata": [
+    {
+      "type": "plant",
+      "name": "color_visibility",
+      "states": [
+        "initial",
+        "red_visible",
+        "green_visible",
+        "blue_visible"
+      ],
+      "initial_state": "initial",
+      "marked_states": [
+        "initial",
+        "red_visible",
+        "green_visible",
+        "blue_visible"
+      ],
+      "transitions": [
+        "(\"initial\", \"red_visible\", \"red_visible\")",
+        "(\"red_visible\", \"green_visible\", \"green_visible\")",
+        "(\"green_visible\", \"blue_visible\", \"blue_visible\")",
+        "(\"red_visible\", \"red_not_visible\", \"initial\")",
+        "(\"green_visible\", \"green_not_visible\", \"initial\")",
+        "(\"blue_visible\", \"blue_not_visible\", \"initial\")"
+      ]
+    },
+    {
+      "type": "plant",
+      "name": "target_reach",
+      "states": [
+        "waiting",
+        "red_reached",
+        "green_reached",
+        "blue_reached"
+      ],
+      "initial_state": "waiting",
+      "marked_states": [
+        "waiting",
+        "red_reached",
+        "green_reached",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"waiting\", \"red_reached\", \"red_reached\")",
+        "(\"red_reached\", \"green_reached\", \"green_reached\")",
+        "(\"green_reached\", \"blue_reached\", \"blue_reached\")",
+        "(\"red_reached\", \"red_visible\", \"waiting\")",
+        "(\"green_reached\", \"green_visible\", \"waiting\")",
+        "(\"blue_reached\", \"blue_visible\", \"waiting\")"
+      ]
+    },
+    {
+      "type": "specification",
+      "name": "patrol_sequence_specification",
+      "states": [
+        "start",
+        "red",
+        "green",
+        "blue"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "start",
+        "red",
+        "green",
+        "blue"
+      ],
+      "transitions": [
+        "(\"start\", \"red_visible\", \"red\")",
+        "(\"red\", \"red_reached\", \"green\")",
+        "(\"green\", \"green_visible\", \"start\")",
+        "(\"green\", \"green_reached\", \"blue\")",
+        "(\"blue\", \"blue_visible\", \"start\")",
+        "(\"blue\", \"blue_reached\", \"start\")"
+      ]
+    }
+  ]
+}

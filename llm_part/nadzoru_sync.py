@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import sys
+import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -41,12 +42,21 @@ def _normalise_names(values: Iterable[str]) -> set[str]:
     return {Path(value).stem.casefold() for value in values}
 
 
-def discover_xml(input_dirs: Sequence[Path]) -> list[Path]:
+def discover_xml(
+    input_dirs: Sequence[Path], input_files: Sequence[Path] = ()
+) -> list[Path]:
     files: list[Path] = []
     for directory in input_dirs:
         if not directory.is_dir():
             raise FileNotFoundError(f"Input directory does not exist: {directory}")
         files.extend(path for path in directory.glob("*.xml") if path.is_file())
+
+    for path in input_files:
+        if not path.is_file():
+            raise FileNotFoundError(f"Input XML file does not exist: {path}")
+        if path.suffix.casefold() != ".xml":
+            raise ValueError(f"Input file is not XML: {path}")
+        files.append(path)
 
     files.sort(key=lambda path: (path.name.casefold(), str(path.parent)))
     if not files:
@@ -101,6 +111,40 @@ def classify_xml(
     return plants, specifications
 
 
+def xml_event_names(path: Path) -> set[str]:
+    try:
+        data = ET.parse(path).getroot().find("data")
+    except ET.ParseError as error:
+        raise ValueError(f"Invalid XML in {path}: {error}") from error
+    if data is None:
+        raise ValueError(f"XML automaton has no <data> element: {path}")
+    names = {event.get("name") for event in data.findall("event")}
+    if None in names:
+        raise ValueError(f"XML automaton contains an event without a name: {path}")
+    return names  # type: ignore[return-value]
+
+
+def validate_specification_event_coverage(
+    plants: Sequence[Path], specifications: Sequence[Path]
+) -> None:
+    plant_events: set[str] = set()
+    for path in plants:
+        plant_events.update(xml_event_names(path))
+    missing_by_specification: dict[str, list[str]] = {}
+    for path in specifications:
+        missing = xml_event_names(path) - plant_events
+        if missing:
+            missing_by_specification[path.stem] = sorted(missing)
+    if missing_by_specification:
+        details = "; ".join(
+            f"{name}: {events}" for name, events in missing_by_specification.items()
+        )
+        raise ValueError(
+            "Specifications use events that are absent from all plant automata. "
+            f"Generate or provide plants containing these events: {details}"
+        )
+
+
 def import_automaton(nadzoru_root: Path | None):
     if nadzoru_root is not None:
         root = nadzoru_root.expanduser().resolve()
@@ -135,8 +179,12 @@ def synchronize(automaton_type, automata: Sequence[object]):
 
 def run(args: argparse.Namespace) -> tuple[Path, Path, Path]:
     input_dirs = [Path(path).expanduser().resolve() for path in args.input_dir]
-    files = discover_xml(input_dirs)
+    input_files = [
+        Path(path).expanduser().resolve() for path in getattr(args, "input_file", [])
+    ]
+    files = discover_xml(input_dirs, input_files)
     plants, specifications = classify_xml(files, args.plant, args.spec)
+    validate_specification_event_coverage(plants, specifications)
     Automaton = import_automaton(
         Path(args.nadzoru_root) if args.nadzoru_root is not None else None
     )
@@ -176,6 +224,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Directory containing XML inputs (repeatable; defaults to the baseline "
         "obstacle_avoidance and llm_generated_automata folders)",
+    )
+    parser.add_argument(
+        "--input-file",
+        action="append",
+        default=[],
+        help="Individual XML input (repeatable; useful for one pipeline run)",
     )
     parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     parser.add_argument(

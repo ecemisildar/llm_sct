@@ -1,0 +1,126 @@
+You are an expert in Supervisory Control Theory (SCT) and deterministic finite-state automata.
+
+CONTROL OBJECTIVE
+Replace this paragraph with the physical behavior, mission, coordination, or safety requirements that the generated plant and specification automata must model or enforce.
+
+TASK
+Generate as many deterministic plant automata and control-specification automata as are useful for the control objective above. Separate independent physical, sensor, communication, and availability behavior into plant automata. Separate independent safety, sequencing, coordination, and mission restrictions into control specifications. Do not combine unrelated behavior into one unnecessarily large automaton. The output will be parsed automatically and synchronized with existing Nadzoru automata. Return only one valid JSON object containing an automata array. Do not include Markdown, code fences, commentary, explanations, or text outside the JSON object.
+
+CONTROLLABLE EVENTS
+These events are commands that the supervisor may enable or disable:
+
+- full_rotate: command the robot to perform a complete rotation in place.
+- move_backward: command the robot to move backward.
+- move_forward: command the robot to move forward.
+- pub_going_blue: publish that the robot intends to travel toward the blue target.
+- pub_going_green: publish that the robot intends to travel toward the green target.
+- pub_going_red: publish that the robot intends to travel toward the red target.
+- rotate_clockwise: command the robot to rotate clockwise.
+- rotate_counterclockwise: command the robot to rotate counterclockwise.
+- skip_blue: decide to skip the blue target and continue with another target or behavior.
+- skip_green: decide to skip the green target and continue with another target or behavior.
+- skip_red: decide to skip the red target and continue with another target or behavior.
+
+UNCONTROLLABLE EVENTS
+These events are observations or external occurrences that the supervisor cannot disable:
+
+- blue_not_visible: the blue target is currently not visible.
+- blue_reached: the robot has reached the blue target.
+- blue_visible: the blue target is currently visible.
+- green_not_visible: the green target is currently not visible.
+- green_reached: the robot has reached the green target.
+- green_visible: the green target is currently visible.
+- obstacle_front: an obstacle is detected in front of the robot.
+- obstacle_left: an obstacle is detected on the left side of the robot.
+- obstacle_right: an obstacle is detected on the right side of the robot.
+- path_clear: the obstacle sensor reports that the path is clear.
+- received_going_blue: another robot's intention to travel toward the blue target was received.
+- received_going_green: another robot's intention to travel toward the green target was received.
+- received_going_red: another robot's intention to travel toward the red target was received.
+- red_not_visible: the red target is currently not visible.
+- red_reached: the robot has reached the red target.
+- red_visible: the red target is currently visible.
+
+TASK-RELEVANCE FILTER
+
+Before designing any automata, determine the smallest event subset required by the CONTROL OBJECTIVE. The event lists above are only the allowed vocabulary; their presence in this prompt is not a request to use them.
+
+- If the task concerns only exploration, navigation, or obstacle avoidance, use only relevant motion events (such as move_forward, move_backward, full_rotate, rotate_clockwise, and rotate_counterclockwise) and obstacle events (obstacle_front, obstacle_left, obstacle_right, and path_clear). Do not use color, target-reached, publication, reception, or skip events.
+- Use blue, green, or red visibility/reached events only when the task explicitly concerns colored targets, target approach, patrolling by color, or delivery to colored locations.
+- Use pub_going_* and received_going_* events only when the task explicitly requires communication or coordination between robots.
+- Use skip_* events only when the task explicitly allows or requires skipping colored targets.
+- Do not generate plants or specifications for behavior unrelated to the CONTROL OBJECTIVE.
+
+MANDATORY SCT RULES
+
+1. Do NOT introduce any new controllable or uncontrollable events. Use ONLY the event names listed above, with exactly the same spelling and case.
+2. Do NOT invent sensor events beyond the uncontrollable list. Events such as battery_low, target_lost, timeout, failure, or emergency_stop are forbidden because they are not in the baseline alphabet.
+3. The provided event lists define the allowed global alphabet. An automaton does NOT have to use every event. Give each plant or specification only the minimal subset relevant to the component or rule it models. Using an event merely because it appears in the allowed list is incorrect.
+4. The automaton must be deterministic. For every (state, event) pair, define exactly one next state. Never repeat a (state, event) pair, even when the repeated transition has the same target.
+5. Every transition label must be exactly one event from the lists above.
+6. For every specification, identify its local uncontrollable-event alphabet from the uncontrollable events used anywhere in that specification. Every state in that specification must have exactly one outgoing transition for each event in that local uncontrollable alphabet.
+7. If a locally included uncontrollable event does not affect a specification state, add a self-loop for that event. Do not add unrelated uncontrollable events merely for completeness.
+8. A state may enable zero, one, or multiple controllable events. Include every controllable action that is semantically valid in that state; the SCT runtime may select among multiple enabled controllable actions.
+9. Determinism still applies when multiple controllable events are enabled: each distinct (state, controllable event) pair must have exactly one target state. Do not repeat the same event from the same state.
+10. Do not add controllable self-loops merely to make the automaton appear complete. Add a controllable transition only when that command is semantically valid in the source state.
+11. Every state listed in states must be reachable from initial_state. Do not create unused or unreachable states.
+12. Use short, descriptive, unique state names containing only letters, numbers, and underscores.
+13. Provide exactly one initial state, and ensure initial_state appears in states.
+14. Every name in marked_states must appear in states. Prefer marking all states unless the control objective defines a meaningful incomplete or blocking condition.
+15. Design a nonblocking specification whenever the control objective permits it: every reachable state should be marked or should have a path to a marked state.
+16. Every automaton must have a type field whose value is exactly plant or specification.
+17. Every name must be short and contain only letters, numbers, and underscores. Specification names must end with _specification. Plant names must not contain spec or specification.
+18. Generate at least one plant or specification, but generate as many separate automata as the control objective genuinely requires. Every generated automaton must have a unique name.
+19. Every event used by a generated specification must belong to at least one plant automaton participating in the system. The existing obstacle-avoidance plants already provide full_rotate, move_forward, obstacle_front, obstacle_left, obstacle_right, path_clear, rotate_clockwise, and rotate_counterclockwise. If a specification uses any other event, generate at least one plant containing that event. Across the existing and generated plants, the plant-event union must cover the complete event alphabet of every generated specification.
+
+TRANSITION FORMAT
+
+The transitions field must be a JSON array of strings. Every string must use exactly this character format, including parentheses, double quotes, comma placement, and one space after each comma:
+
+("state", "event", "next")
+
+In the JSON encoding, the double quotes inside each transition string must be escaped. For example:
+
+"(\"waiting\", \"green_visible\", \"green_detected\")"
+
+Do not represent transitions as objects, dictionaries, maps, nested arrays, tuples, or lists of objects.
+
+REQUIRED JSON STRUCTURE
+
+Return exactly one JSON object with one top-level field named automata. Its value must be a non-empty array. Each array element must contain exactly these six fields: type, name, states, initial_state, marked_states, and transitions.
+
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "example_specification",
+      "states": ["waiting"],
+      "initial_state": "waiting",
+      "marked_states": ["waiting"],
+      "transitions": [
+        "(\"waiting\", \"green_not_visible\", \"waiting\")",
+        "(\"waiting\", \"green_visible\", \"waiting\")",
+        "(\"waiting\", \"move_forward\", \"waiting\")"
+      ]
+    }
+  ]
+}
+
+Before returning the JSON, silently verify all of the following:
+
+- The response is valid JSON.
+- The response has exactly one top-level field named automata.
+- automata is a non-empty array and every entry has exactly the six required fields.
+- Every type is exactly plant or specification, and every automaton name is unique.
+- Every transitions field is an array containing only strings in the exact required format.
+- Every transition event belongs to one of the provided event lists.
+- Every used event is directly relevant to the CONTROL OBJECTIVE; no unrelated color, communication, target, or skip behavior is included.
+- No (state, event) pair occurs more than once.
+- Every specification state has every uncontrollable event in that specification's local alphabet exactly once.
+- Every enabled controllable event is semantically valid in its source state.
+- Every specification event is present in at least one existing or generated plant.
+- All transition sources and targets appear in states.
+- initial_state and every marked state appear in states.
+- Every state is reachable from initial_state.
+
+Return only the JSON object.

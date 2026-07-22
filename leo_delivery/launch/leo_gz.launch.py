@@ -112,6 +112,7 @@ def generate_launch_description():
             "src",
             "llm_sct",
             "results",
+            "baseline",
             "results_delivery",
         ),
         description="Directory to write run artifacts",

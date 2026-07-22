@@ -15,7 +15,12 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_PROMPT_PATH = SCRIPT_DIR / "input_prompt.txt"
 DEFAULT_API_KEY_PATH = SCRIPT_DIR / "api_key.txt"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "llm_outputs"
-DEFAULT_MODEL = "gpt-5.6-sol"
+DEFAULT_MODEL = "gpt-4o"
+CONTROL_OBJECTIVE_PLACEHOLDER = (
+    "Replace this paragraph with the physical behavior, mission, coordination, "
+    "or safety requirements that the generated plant and specification automata "
+    "must model or enforce."
+)
 
 
 def read_required_text(path: Path, description: str) -> str:
@@ -40,11 +45,14 @@ def request_json(prompt: str, api_key: str, model: str) -> object:
         ) from error
 
     client = OpenAI(api_key=api_key)
-    response = client.responses.create(
-        model=model,
-        input=prompt,
-        text={"format": {"type": "json_object"}},
-    )
+    try:
+        response = client.responses.create(
+            model=model,
+            input=prompt,
+            text={"format": {"type": "json_object"}},
+        )
+    except Exception as error:
+        raise RuntimeError(f"OpenAI request failed: {error}") from error
     if not response.output_text:
         raise RuntimeError("The API returned no text output")
     try:
@@ -67,6 +75,31 @@ def save_json(payload: object, output_path: Path) -> None:
         )
     except OSError as error:
         raise RuntimeError(f"Could not save JSON to {output_path}: {error}") from error
+
+
+def combine_prompt(base_prompt: str, task: str) -> str:
+    task = task.strip()
+    if not task:
+        raise ValueError("The control task is empty")
+    if CONTROL_OBJECTIVE_PLACEHOLDER in base_prompt:
+        return base_prompt.replace(CONTROL_OBJECTIVE_PLACEHOLDER, task, 1)
+    return f"CONTROL OBJECTIVE\n{task}\n\n{base_prompt}"
+
+
+def generate_json(
+    task: str,
+    prompt_path: Path = DEFAULT_PROMPT_PATH,
+    api_key_path: Path = DEFAULT_API_KEY_PATH,
+    model: str = DEFAULT_MODEL,
+    output_path: Path | None = None,
+) -> tuple[object, Path]:
+    base_prompt = read_required_text(prompt_path, "Prompt")
+    api_key = read_required_text(api_key_path, "API key")
+    prompt = combine_prompt(base_prompt, task)
+    payload = request_json(prompt, api_key, model)
+    destination = output_path or default_output_path(DEFAULT_OUTPUT_DIR)
+    save_json(payload, destination)
+    return payload, destination
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -92,6 +125,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--output",
         help="Output JSON path (default: llm_outputs/llm_output_<timestamp>.json)",
     )
+    task_group = parser.add_mutually_exclusive_group()
+    task_group.add_argument("--task", help="Control task to insert into the base prompt")
+    task_group.add_argument("--task-file", help="Text file containing the control task")
     return parser
 
 
@@ -106,10 +142,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     try:
-        prompt = read_required_text(prompt_path, "Prompt")
-        api_key = read_required_text(api_key_path, "API key")
-        payload = request_json(prompt, api_key, args.model)
-        save_json(payload, output_path)
+        if args.task_file:
+            task = read_required_text(
+                Path(args.task_file).expanduser().resolve(), "Task"
+            )
+        elif args.task:
+            task = args.task
+        else:
+            raise ValueError("Provide a control task with --task or --task-file")
+        _, output_path = generate_json(
+            task=task,
+            prompt_path=prompt_path,
+            api_key_path=api_key_path,
+            model=args.model,
+            output_path=output_path,
+        )
     except (RuntimeError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1

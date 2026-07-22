@@ -36,27 +36,23 @@ def string_list(value: Any, field: str) -> list[str]:
 
 
 def parse_transition(value: Any) -> tuple[str, str, str]:
-    if isinstance(value, dict):
-        source = value.get("source", value.get("from", value.get("src")))
-        event = value.get("event")
-        target = value.get("target", value.get("to", value.get("dst")))
-        if source is None or event is None or target is None:
-            raise ValueError(f"Transition dictionary lacks source/event/target: {value}")
-        return str(source), str(event), str(target)
-
-    if isinstance(value, (list, tuple)) and len(value) == 3:
-        return tuple(str(item) for item in value)  # type: ignore[return-value]
-
-    if isinstance(value, str):
-        match = re.fullmatch(
-            r"\s*\(?\s*['\"]?([^,'\"()]+)['\"]?\s*,\s*"
-            r"['\"]?([^,'\"()]+)['\"]?\s*,\s*"
-            r"['\"]?([^,'\"()]+)['\"]?\s*\)?\s*",
-            value,
+    if not isinstance(value, str):
+        raise ValueError(
+            "Every transition must be a JSON string formatted as "
+            "'(\"state\", \"event\", \"next\")'; "
+            f"received {type(value).__name__}: {value!r}"
         )
-        if match:
-            return tuple(part.strip() for part in match.groups())  # type: ignore[return-value]
-    raise ValueError(f"Invalid transition; expected [source, event, target]: {value!r}")
+    match = re.fullmatch(
+        r'\(\s*"([^"\r\n]+)"\s*,\s*"([^"\r\n]+)"\s*,\s*'
+        r'"([^"\r\n]+)"\s*\)',
+        value,
+    )
+    if not match:
+        raise ValueError(
+            "Transition must be a quoted tuple such as "
+            f"'(\"state\", \"event\", \"next\")': {value!r}"
+        )
+    return match.group(1), match.group(2), match.group(3)
 
 
 def automaton_name(payload: dict[str, Any], fallback: str) -> str:
@@ -67,7 +63,19 @@ def automaton_name(payload: dict[str, Any], fallback: str) -> str:
         or payload.get("id")
         or fallback
     )
-    return str(value).strip() or fallback
+    name = str(value).strip() or fallback
+    automaton_type = str(payload.get("type", "specification")).casefold()
+    if automaton_type in {"spec", "specification", "control_specification"}:
+        if not name.casefold().endswith("_specification"):
+            name += "_specification"
+    elif automaton_type == "plant":
+        if "spec" in name.casefold():
+            raise ValueError(f"Plant name must not contain 'spec': {name!r}")
+    else:
+        raise ValueError(
+            f"Unknown automaton type {automaton_type!r}; expected 'plant' or 'specification'"
+        )
+    return name
 
 
 def safe_filename(name: str) -> str:
@@ -112,6 +120,71 @@ def baseline_event_map(baseline_dir: Path) -> dict[str, bool]:
     return event_map
 
 
+def validate_sct_rules(
+    states: Sequence[str],
+    transitions: Sequence[tuple[str, str, str]],
+    baseline_events: dict[str, bool],
+    require_uncontrollable_totality: bool,
+) -> None:
+    """Enforce the SCT constraints stated in ``input_prompt.txt``."""
+    allowed_events = set(baseline_events)
+    used_events = {event for _, event, _ in transitions}
+    unknown_events = used_events - allowed_events
+    if unknown_events:
+        raise ValueError(
+            "Transitions introduce events that are absent from the baseline automata: "
+            f"{sorted(unknown_events)}"
+        )
+
+    transition_map: dict[tuple[str, str], str] = {}
+    outgoing_events: dict[str, set[str]] = {state: set() for state in states}
+    for source, event, target in transitions:
+        key = (source, event)
+        if key in transition_map:
+            previous = transition_map[key]
+            raise ValueError(
+                "Nondeterministic or duplicate transition for "
+                f"(state={source!r}, event={event!r}): targets {previous!r} and {target!r}"
+            )
+        transition_map[key] = target
+        outgoing_events[source].add(event)
+
+    if require_uncontrollable_totality:
+        uncontrollable_events = {
+            event
+            for event in used_events
+            if not baseline_events[event]
+        }
+        for state in states:
+            missing = uncontrollable_events - outgoing_events[state]
+            if missing:
+                raise ValueError(
+                    f"Specification state {state!r} is missing outgoing transitions for "
+                    f"uncontrollable events: {sorted(missing)}"
+                )
+
+
+def complete_specification_uncontrollable_events(
+    states: Sequence[str],
+    transitions: Sequence[tuple[str, str, str]],
+    baseline_events: dict[str, bool],
+) -> list[tuple[str, str, str]]:
+    """Add self-loops for missing events in the specification's local UCE alphabet."""
+    completed = list(transitions)
+    local_uncontrollable = {
+        event
+        for _, event, _ in transitions
+        if event in baseline_events and not baseline_events[event]
+    }
+    existing = {(source, event) for source, event, _ in transitions}
+    for state in states:
+        for event in sorted(local_uncontrollable):
+            if (state, event) not in existing:
+                completed.append((state, event, state))
+    return completed
+
+
+
 def build_xml(
     payload: dict[str, Any], fallback_name: str, baseline_events: dict[str, bool]
 ) -> tuple[str, bytes]:
@@ -138,6 +211,21 @@ def build_xml(
     for source, _, target in transitions:
         state_names.extend((source, target))
     state_names = ordered_unique(state_names)
+    automaton_type = str(payload.get("type", "specification")).casefold()
+    if automaton_type not in {"plant", "spec", "specification", "control_specification"}:
+        raise ValueError(
+            f"Unknown automaton type {automaton_type!r}; expected 'plant' or 'specification'"
+        )
+    if automaton_type != "plant":
+        transitions = complete_specification_uncontrollable_events(
+            state_names, transitions, baseline_events
+        )
+    validate_sct_rules(
+        state_names,
+        transitions,
+        baseline_events,
+        require_uncontrollable_totality=automaton_type != "plant",
+    )
 
     initial = string_list(
         payload.get("initial_states", payload.get("initial_state")), "initial_state"
@@ -205,17 +293,22 @@ def build_xml(
         **{name: True for name in controllable},
         **{name: False for name in uncontrollable},
     }
+    undeclared_baseline_events = set(explicit_event_properties) - set(baseline_events)
+    if undeclared_baseline_events:
+        raise ValueError(
+            "Event lists introduce events that are absent from the baseline automata: "
+            f"{sorted(undeclared_baseline_events)}"
+        )
     for event, explicit_value in explicit_event_properties.items():
         if event in baseline_events and baseline_events[event] != explicit_value:
             raise ValueError(
                 f"Event '{event}' conflicts with its baseline controllability "
                 f"({baseline_events[event]})"
             )
-    unknown_events = set(event_names) - set(baseline_events) - set(explicit_event_properties)
+    unknown_events = set(event_names) - set(baseline_events)
     if unknown_events:
         raise ValueError(
-            "Events are absent from the baseline automata and must be explicitly listed "
-            "under controllable_events or uncontrollable_events: "
+            "Events are absent from the baseline automata: "
             f"{sorted(unknown_events)}"
         )
 

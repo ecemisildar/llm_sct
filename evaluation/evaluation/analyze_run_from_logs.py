@@ -15,8 +15,8 @@ import xml.etree.ElementTree as ET
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIRS = [
-    PACKAGE_ROOT / "results" / "results_exploration",
-    PACKAGE_ROOT / "results" / "results_patrolling",
+    PACKAGE_ROOT / "results" / "baseline",
+    PACKAGE_ROOT / "results" / "llm",
 ]
 WORLD_SDF = PACKAGE_ROOT / "worlds" / "random_world_rgb.sdf"
 
