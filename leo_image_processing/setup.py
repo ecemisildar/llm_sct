@@ -5,7 +5,7 @@ package_name = 'leo_image_processing'
 setup(
     name=package_name,
     version='0.0.0',
-    py_modules=['leo_image_processing', 'color_detector'],
+    py_modules=['leo_image_processing', 'color_detector', 'stuck_recovery'],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'image_processor = leo_image_processing:main',
             'color_detector = color_detector:main',
+            'stuck_recovery = stuck_recovery:main',
         ],
     },
 )

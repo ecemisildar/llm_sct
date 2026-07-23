@@ -1,6 +1,7 @@
 """Shared color detection and world-space reach detection for Leo missions."""
 
 import math
+import time
 from typing import Dict, Optional, Tuple
 
 import numpy as np
@@ -23,10 +24,12 @@ class ColorDetector(Node):
 
         self.declare_parameter("rgb_topic", "depth_camera/image")
         self.declare_parameter("reached_distance", 1.0)
-        self.declare_parameter("min_color_pixels", 10)
+        self.declare_parameter("min_color_pixels", 4)
         self.declare_parameter("visible_width_ratio", 0.75)
         self.declare_parameter("min_channel", 80)
         self.declare_parameter("channel_margin", 35)
+        self.declare_parameter("heartbeat_period_s", 5.0)
+        self.declare_parameter("stale_frame_threshold_s", 2.0)
         self.declare_parameter("pose_topic", "/world/random_world/dynamic_pose/info")
         self.declare_parameter("target_half_extent", 0.075)
         self.declare_parameter("red_target_pose", [-3.0, -1.5, 0.37])
@@ -38,6 +41,10 @@ class ColorDetector(Node):
         self.robot_xy: Optional[Tuple[float, float]] = None
         self.robot_name = str(self.get_parameter("robot_name").value).strip("/")
         self.task_completed = False
+        self.rgb_frame_count = 0
+        self.last_rgb_frame_at: Optional[float] = None
+        self.last_heartbeat_at = time.monotonic()
+        self.last_heartbeat_frame_count = 0
         self.visible_publishers = {
             color: self.create_publisher(Bool, f"{color}_visible", 10)
             for color in COLORS
@@ -69,11 +76,17 @@ class ColorDetector(Node):
 
         sensor_qos = QoSProfile(
             depth=1,
-            reliability=ReliabilityPolicy.BEST_EFFORT,
+            reliability=ReliabilityPolicy.RELIABLE,
             history=HistoryPolicy.KEEP_LAST,
         )
         rgb_topic = str(self.get_parameter("rgb_topic").value)
         self.create_subscription(Image, rgb_topic, self.rgb_callback, sensor_qos)
+        heartbeat_period = max(
+            0.1, float(self.get_parameter("heartbeat_period_s").value)
+        )
+        self.heartbeat_timer = self.create_timer(
+            heartbeat_period, self.rgb_heartbeat_callback
+        )
         self.get_logger().info(
             f"Color detector listening on RGB '{rgb_topic}'; reached uses world poses"
         )
@@ -166,6 +179,8 @@ class ColorDetector(Node):
     def rgb_callback(self, message: Image):
         if self.task_completed:
             return
+        self.rgb_frame_count += 1
+        self.last_rgb_frame_at = time.monotonic()
         rgb = self.rgb_from_message(message)
         if rgb is None:
             self.get_logger().warning(
@@ -174,6 +189,37 @@ class ColorDetector(Node):
             )
             return
         self._process_rgb_frame(rgb)
+
+    def rgb_heartbeat_callback(self):
+        """Report whether RGB callbacks are still being received."""
+        if self.task_completed:
+            return
+
+        now = time.monotonic()
+        interval = max(now - self.last_heartbeat_at, 1e-6)
+        frames = self.rgb_frame_count - self.last_heartbeat_frame_count
+        rate_hz = frames / interval
+        age_s = (
+            float("inf")
+            if self.last_rgb_frame_at is None
+            else max(0.0, now - self.last_rgb_frame_at)
+        )
+        message = (
+            "RGB HEARTBEAT "
+            f"frames_total={self.rgb_frame_count} "
+            f"recent_rate_hz={rate_hz:.3f} "
+            f"last_frame_age_s={age_s:.3f}"
+        )
+        stale_threshold = float(
+            self.get_parameter("stale_frame_threshold_s").value
+        )
+        if age_s > stale_threshold:
+            self.get_logger().warning(message + " status=STALE")
+        else:
+            self.get_logger().info(message + " status=OK")
+
+        self.last_heartbeat_at = now
+        self.last_heartbeat_frame_count = self.rgb_frame_count
 
     def _process_rgb_frame(self, rgb: np.ndarray):
         """Process color independently of the depth camera."""

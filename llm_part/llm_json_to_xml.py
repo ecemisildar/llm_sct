@@ -16,6 +16,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_JSON_DIR = SCRIPT_DIR / "llm_outputs"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR.parent / "automata" / "llm_generated_automata"
 DEFAULT_BASELINE_DIR = SCRIPT_DIR.parent / "automata" / "baseline_automata"
+FORBIDDEN_GENERATED_EVENTS = {"full_rotate"}
 
 
 def newest_json(directory: Path = DEFAULT_JSON_DIR) -> Path:
@@ -129,6 +130,12 @@ def validate_sct_rules(
     """Enforce the SCT constraints stated in ``input_prompt.txt``."""
     allowed_events = set(baseline_events)
     used_events = {event for _, event, _ in transitions}
+    forbidden_events = used_events & FORBIDDEN_GENERATED_EVENTS
+    if forbidden_events:
+        raise ValueError(
+            "Generated specifications use reserved events that the LLM may not "
+            f"select or constrain: {sorted(forbidden_events)}"
+        )
     unknown_events = used_events - allowed_events
     if unknown_events:
         raise ValueError(
@@ -212,19 +219,19 @@ def build_xml(
         state_names.extend((source, target))
     state_names = ordered_unique(state_names)
     automaton_type = str(payload.get("type", "specification")).casefold()
-    if automaton_type not in {"plant", "spec", "specification", "control_specification"}:
+    if automaton_type not in {"spec", "specification", "control_specification"}:
         raise ValueError(
-            f"Unknown automaton type {automaton_type!r}; expected 'plant' or 'specification'"
+            f"Generated automata must be specifications; got type {automaton_type!r}. "
+            "The pipeline supplies fixed, tested plant automata."
         )
-    if automaton_type != "plant":
-        transitions = complete_specification_uncontrollable_events(
-            state_names, transitions, baseline_events
-        )
+    transitions = complete_specification_uncontrollable_events(
+        state_names, transitions, baseline_events
+    )
     validate_sct_rules(
         state_names,
         transitions,
         baseline_events,
-        require_uncontrollable_totality=automaton_type != "plant",
+        require_uncontrollable_totality=True,
     )
 
     initial = string_list(

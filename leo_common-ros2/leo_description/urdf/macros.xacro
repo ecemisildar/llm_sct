@@ -476,16 +476,16 @@
           <horizontal_fov>1.51844</horizontal_fov>
           <lens>
             <intrinsics>
-              <fx>554.25469</fx>
-              <fy>554.25469</fy>
-              <cx>320.5</cx>
-              <cy>240.5</cy>
+              <fx>277.127345</fx>
+              <fy>277.127345</fy>
+              <cx>160.25</cx>
+              <cy>120.25</cy>
               <s>0</s>
             </intrinsics>
           </lens>
           <image>
-            <width>640</width>
-            <height>360</height>
+            <width>320</width>
+            <height>180</height>
             <format>R8G8B8</format>
           </image>
           <clip>

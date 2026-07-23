@@ -1,0 +1,350 @@
+{
+  "existing_obstacle_avoidance_automata": [
+    {
+      "name": "collision_avoidance",
+      "type": "specification",
+      "states": [
+        "S_CLEAR",
+        "S_FRONT",
+        "S_LEFT",
+        "S_RIGHT"
+      ],
+      "initial_state": "S_CLEAR",
+      "marked_states": [
+        "S_CLEAR",
+        "S_FRONT",
+        "S_LEFT",
+        "S_RIGHT"
+      ],
+      "events": [
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        },
+        {
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "full_rotate",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        },
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "S_CLEAR",
+          "event": "move_forward",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "rotate_clockwise",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "rotate_clockwise",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "full_rotate",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "rotate_counterclockwise",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "rotate_clockwise",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "full_rotate",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "full_rotate",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "rotate_counterclockwise",
+          "target": "S_RIGHT"
+        }
+      ]
+    },
+    {
+      "name": "motion_plant",
+      "type": "plant",
+      "states": [
+        "ready"
+      ],
+      "initial_state": "ready",
+      "marked_states": [
+        "ready"
+      ],
+      "events": [
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        },
+        {
+          "name": "full_rotate",
+          "controllable": true
+        },
+        {
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "ready",
+          "event": "rotate_counterclockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_clockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "move_forward",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "full_rotate",
+          "target": "ready"
+        }
+      ]
+    },
+    {
+      "name": "obstacle_sensor",
+      "type": "plant",
+      "states": [
+        "RIGHT",
+        "FRONT",
+        "CLEAR",
+        "LEFT"
+      ],
+      "initial_state": "CLEAR",
+      "marked_states": [
+        "RIGHT",
+        "FRONT",
+        "CLEAR",
+        "LEFT"
+      ],
+      "events": [
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "RIGHT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "FRONT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "LEFT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        }
+      ]
+    }
+  ]
+}

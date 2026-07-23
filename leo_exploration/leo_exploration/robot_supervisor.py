@@ -215,7 +215,8 @@ class RobotSupervisor(Node):
         self.sct_decision_log_path: Optional[Path] = None
         self.sct_summary_log_path: Optional[Path] = None
         self.sct_event_counts: Dict[str, int] = {}
-        
+        self.supervisor_started_at = time.time()
+
         self._init_sct_decision_log()
 
 
@@ -269,12 +270,12 @@ class RobotSupervisor(Node):
             "EV_rotate_clockwise": ActionSpec(
                 linear_x=0.0,
                 angular_z=-self.rotate_90_omega,
-                is_full_rotate=False  # we handle separately
+                hold_s=self.supervisor_period,
             ),
             "EV_rotate_counterclockwise": ActionSpec(
                 linear_x=0.0,
                 angular_z=self.rotate_90_omega,
-                is_full_rotate=False
+                hold_s=self.supervisor_period,
             ),
             # full_rotate is executed as an atomic rotation using odom; target is full_rotate_target_rad (≤ π here).
             "EV_full_rotate": ActionSpec(linear_x=0.0, angular_z=self.full_rotate_omega, is_full_rotate=True),
@@ -390,6 +391,7 @@ class RobotSupervisor(Node):
         with self.sct_decision_log_path.open("w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([
+                "elapsed_s",
                 "robot",
                 "selected_event",
                 "uncontrollable_events",
@@ -405,6 +407,7 @@ class RobotSupervisor(Node):
         effective_zones = self._effective_obstacle_zones()
         depth_obstacles = {"LEFT", "RIGHT", "CORNER"}
         return {
+            "elapsed_s": now - self.supervisor_started_at,
             "raw_zone": self.obstacle_zones[0],
             "effective_zone": "|".join(effective_zones),
             "front_distance_m": self.front_obstacle_distance_m,
@@ -434,6 +437,7 @@ class RobotSupervisor(Node):
         with self.sct_decision_log_path.open("a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([
+                f"{snapshot['elapsed_s']:.3f}",
                 self.ns,
                 selected_event,
                 "|".join(uncontrollable_events) or "none",
@@ -799,18 +803,6 @@ class RobotSupervisor(Node):
             self._publish_stop()
             return
     
-
-        if ev_name in ("EV_rotate_clockwise", "EV_rotate_counterclockwise"):
-            now = time.time()
-            if (now - self.last_rotate_90_completed_at) < self.rotate_90_retrigger_block_s:
-                self.get_logger().info("rotate_90 blocked by recent completion; stopping this tick")
-                self.active_event = None
-                self.motion_until = 0.0
-                self._publish_stop()
-                return
-            self.active_event = ev_name
-            self._start_rotate_90(spec.angular_z)
-            return
 
         if spec.is_full_rotate:
             now = time.time()

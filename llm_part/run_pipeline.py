@@ -36,14 +36,71 @@ class PipelineResult:
     payload: object
 
 
+def select_profile(
+    task: str, mission: str = "auto", exploration_mode: str = "auto"
+) -> tuple[str, list[Path], list[Path]]:
+    """Return mission name, fixed plants, and fixed specifications."""
+    text = task.casefold()
+    if mission == "auto":
+        if "delivery" in text or "deliver" in text:
+            mission = "delivery"
+        elif "explor" in text:
+            mission = "exploration"
+        else:
+            mission = "patrolling"
+
+    baseline = nadzoru_sync.AUTOMATA_DIR / "baseline_automata"
+    if mission == "exploration":
+        if exploration_mode == "auto":
+            without_backward = "without backward" in text or "no backward" in text
+            exploration_mode = (
+                "with_backward" if "backward" in text and not without_backward
+                else "without_backward"
+            )
+        variant = baseline / "exploration" / f"exploration_{exploration_mode}"
+        return mission, [variant / "G2.xml"], []
+    if mission == "delivery":
+        directory = baseline / "delivery"
+        plants = [
+            directory / name
+            for name in (
+                "obstacle_sensor.xml",
+                "color_sensor.xml",
+                "motion_plant.xml",
+                "comm_plant.xml",
+                "red_availability.xml",
+                "green_availability.xml",
+                "blue_availability.xml",
+            )
+        ]
+        return mission, plants, [directory / "collision_avoidance.xml"]
+
+    directory = baseline / "patrolling"
+    plants = [
+        directory / "obstacle_sensor.xml",
+        directory / "color_sensor.xml",
+        directory / "motion_plant.xml",
+    ]
+    return mission, plants, [directory / "collision_avoidance.xml"]
+
+
 def run_pipeline(
     task: str,
     model: str = DEFAULT_MODEL,
     prompt_path: Path = DEFAULT_PROMPT_PATH,
     api_key_path: Path = DEFAULT_API_KEY_PATH,
     status: StatusCallback | None = None,
+    mission: str = "auto",
+    exploration_mode: str = "auto",
 ) -> PipelineResult:
     report = status or (lambda _message: None)
+    selected_mission, fixed_plants, fixed_specs = select_profile(
+        task, mission, exploration_mode
+    )
+    report(
+        f"Selected {selected_mission} fixed automata: "
+        + ", ".join(path.stem for path in [*fixed_plants, *fixed_specs])
+    )
 
     report("Requesting JSON automata from OpenAI…")
     payload, json_path = generate_json(
@@ -51,6 +108,8 @@ def run_pipeline(
         prompt_path=prompt_path,
         api_key_path=api_key_path,
         model=model,
+        context_files=[*fixed_plants, *fixed_specs],
+        context_mission=selected_mission,
     )
 
     report("Converting generated JSON to Nadzoru XML…")
@@ -64,12 +123,16 @@ def run_pipeline(
 
     report("Synchronizing plants and specifications with Nadzoru…")
     sync_args = nadzoru_sync.build_parser().parse_args([])
-    # Use baseline obstacle avoidance plus only this request's generated XMLs.
-    # Old generated files remain available on disk but cannot affect this run.
-    sync_args.input_dir = [
-        str(nadzoru_sync.AUTOMATA_DIR / "baseline_automata" / "obstacle_avoidance")
+    # G uses the three tested patrolling plants. K adds the tested collision
+    # specification and only this request's generated specifications. Old LLM
+    # XML files remain on disk but cannot affect this run.
+    sync_args.input_dir = []
+    sync_args.input_file = [
+        *(str(path) for path in [*fixed_plants, *fixed_specs]),
+        *(str(path) for path in generated_xml),
     ]
-    sync_args.input_file = [str(path) for path in generated_xml]
+    sync_args.plant = [path.stem for path in fixed_plants]
+    sync_args.spec = [path.stem for path in fixed_specs]
     g_xml, k_xml, s_xml = nadzoru_sync.run(sync_args)
 
     report("Encoding the synthesized supervisor as runtime YAML…")
@@ -96,6 +159,14 @@ def build_parser() -> argparse.ArgumentParser:
     task_group.add_argument("--task", help="Control task for the LLM")
     task_group.add_argument("--task-file", help="Text file containing the control task")
     parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument(
+        "--mission", choices=("auto", "exploration", "patrolling", "delivery"),
+        default="auto",
+    )
+    parser.add_argument(
+        "--exploration-mode",
+        choices=("auto", "with_backward", "without_backward"), default="auto",
+    )
     parser.add_argument("--prompt-file", default=str(DEFAULT_PROMPT_PATH))
     parser.add_argument("--api-key-file", default=str(DEFAULT_API_KEY_PATH))
     return parser
@@ -114,6 +185,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             model=args.model,
             prompt_path=Path(args.prompt_file).expanduser().resolve(),
             api_key_path=Path(args.api_key_file).expanduser().resolve(),
+            mission=args.mission,
+            exploration_mode=args.exploration_mode,
             status=print,
         )
     except Exception as error:

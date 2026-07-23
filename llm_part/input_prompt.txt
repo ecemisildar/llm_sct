@@ -1,15 +1,43 @@
 You are an expert in Supervisory Control Theory (SCT) and deterministic finite-state automata.
 
 CONTROL OBJECTIVE
-Replace this paragraph with the physical behavior, mission, coordination, or safety requirements that the generated plant and specification automata must model or enforce.
+Replace this paragraph with the mission, coordination, sequencing, or safety requirements that the generated control specifications must enforce.
 
 TASK
-Generate as many deterministic plant automata and control-specification automata as are useful for the control objective above. Separate independent physical, sensor, communication, and availability behavior into plant automata. Separate independent safety, sequencing, coordination, and mission restrictions into control specifications. Do not combine unrelated behavior into one unnecessarily large automaton. The output will be parsed automatically and synchronized with existing Nadzoru automata. Return only one valid JSON object containing an automata array. Do not include Markdown, code fences, commentary, explanations, or text outside the JSON object.
+Generate only deterministic control-specification automata for the control objective above. The pipeline supplies the mission-appropriate fixed plant automata and any fixed safety specifications; their exact JSON descriptions and synthesis roles appear at the end of this request. Never generate a plant. Separate independent sequencing, coordination, safety, and mission restrictions into specifications when useful. The output will be parsed automatically and synchronized with the fixed Nadzoru automata. Return only one valid JSON object containing an automata array. Do not include Markdown, code fences, commentary, explanations, or text outside the JSON object.
+
+The request also includes the selected fixed automata as JSON. Read `fixed_synthesis_roles`: `G_plants` lists exactly the plants used to build G, while `K_fixed_specifications` lists fixed specifications added to K. Never regenerate or replace them. Use them as the authoritative description of possible events and compatible actions. For navigation, exploration, patrolling, or delivery, explicitly include relevant controllable movement events in a generated mission specification when the mission must constrain or select movement; do not produce a sensor-only mission model.
+
+IMPORTANT SYNCHRONIZATION SEMANTICS: an event omitted from a specification's alphabet is private to the other synchronized automata and is therefore NOT disabled by that specification. If a mission must prevent an action in a state, include that event somewhere in the same specification's alphabet and omit its transition from the states where it must be disabled. Merely omitting an action from the entire specification does not constrain it.
+
+For a mission that searches for and approaches targets, model both phases explicitly for each target:
+
+- In a search state, enable a directional rotation action (`rotate_clockwise` or `rotate_counterclockwise`) so the robot can acquire the requested target. Do not enable move_forward blindly unless the objective calls for roaming search.
+- On the requested target's *_visible event, enter its approach state.
+- In the approach state, enable move_forward so the runtime physically drives toward the visible target.
+- On the requested target's *_not_visible event, return to its search state so the robot reacquires it.
+- On the requested target's *_reached event, advance to the next target's search state.
+- Include all controllable motion events that must be disabled or selected by this mission in the mission specification alphabet. Enable only the actions appropriate to each phase.
+- Do not add publication, reception, or skip events unless the control objective explicitly requests multi-robot communication, coordination, or skipping. Sequentially visiting targets alone does not require pub_going_*, received_going_*, or skip_* events.
+
+TARGET REACHED EVENT PRIORITY
+
+The runtime publishes exactly one color event per camera update. If a target is within its reached distance, it publishes `<color>_reached` instead of `<color>_visible`. Therefore, `<color>_reached` may occur without a preceding `<color>_visible` event.
+
+For every requested target phase, both its search state and its approach state must explicitly accept the corresponding reached event and advance to the same next mission phase. For a red, then green, then blue sequence, the required transitions are:
+
+- `search_red + red_reached -> search_green`
+- `approach_red + red_reached -> search_green`
+- `search_green + green_reached -> search_blue`
+- `approach_green + green_reached -> search_blue`
+- `search_blue + blue_reached -> done`
+- `approach_blue + blue_reached -> done`
+
+Never use a self-loop for the currently requested target's reached event. Reached events for targets that are not currently requested may be self-loops when they genuinely do not change the mission phase.
 
 CONTROLLABLE EVENTS
 These events are commands that the supervisor may enable or disable:
 
-- full_rotate: command the robot to perform a complete rotation in place.
 - move_backward: command the robot to move backward.
 - move_forward: command the robot to move forward.
 - pub_going_blue: publish that the robot intends to travel toward the blue target.
@@ -45,21 +73,23 @@ TASK-RELEVANCE FILTER
 
 Before designing any automata, determine the smallest event subset required by the CONTROL OBJECTIVE. The event lists above are only the allowed vocabulary; their presence in this prompt is not a request to use them.
 
-- If the task concerns only exploration, navigation, or obstacle avoidance, use only relevant motion events (such as move_forward, move_backward, full_rotate, rotate_clockwise, and rotate_counterclockwise) and obstacle events (obstacle_front, obstacle_left, obstacle_right, and path_clear). Do not use color, target-reached, publication, reception, or skip events.
+- If the task concerns only exploration, navigation, or obstacle avoidance, use only relevant motion events (such as move_forward, move_backward, rotate_clockwise, and rotate_counterclockwise) and obstacle events (obstacle_front, obstacle_left, obstacle_right, and path_clear). Do not use color, target-reached, publication, reception, or skip events.
 - Use blue, green, or red visibility/reached events only when the task explicitly concerns colored targets, target approach, patrolling by color, or delivery to colored locations.
 - Use pub_going_* and received_going_* events only when the task explicitly requires communication or coordination between robots.
 - Use skip_* events only when the task explicitly allows or requires skipping colored targets.
-- Do not generate plants or specifications for behavior unrelated to the CONTROL OBJECTIVE.
+- Do not generate specifications for behavior unrelated to the CONTROL OBJECTIVE.
 
 MANDATORY SCT RULES
 
 1. Do NOT introduce any new controllable or uncontrollable events. Use ONLY the event names listed above, with exactly the same spelling and case.
+1a. `full_rotate` is reserved for the fixed baseline automata and is forbidden in every LLM-generated specification. It may appear in the fixed-automata JSON context, but never include it in output transitions.
 2. Do NOT invent sensor events beyond the uncontrollable list. Events such as battery_low, target_lost, timeout, failure, or emergency_stop are forbidden because they are not in the baseline alphabet.
 3. The provided event lists define the allowed global alphabet. An automaton does NOT have to use every event. Give each plant or specification only the minimal subset relevant to the component or rule it models. Using an event merely because it appears in the allowed list is incorrect.
 4. The automaton must be deterministic. For every (state, event) pair, define exactly one next state. Never repeat a (state, event) pair, even when the repeated transition has the same target.
 5. Every transition label must be exactly one event from the lists above.
-6. For every specification, identify its local uncontrollable-event alphabet from the uncontrollable events used anywhere in that specification. Every state in that specification must have exactly one outgoing transition for each event in that local uncontrollable alphabet.
-7. If a locally included uncontrollable event does not affect a specification state, add a self-loop for that event. Do not add unrelated uncontrollable events merely for completeness.
+6. For every specification, explicitly write each uncontrollable transition that changes the specification state. The converter automatically adds missing transitions as self-loops for every uncontrollable event used elsewhere in that specification, so do not write inert uncontrollable self-loops yourself.
+7. Do not add unrelated uncontrollable events merely for completeness. An uncontrollable event belongs to a specification's local alphabet only when at least one explicit transition for that event is relevant to the control objective.
+7a. Automatic self-loop completion is only for cases where an uncontrollable event genuinely does not change the mission phase. Never omit a required state-changing mission-progress transition. Write events such as the currently requested target's `*_reached` transition explicitly from every applicable state, including direct reached transitions from search states.
 8. A state may enable zero, one, or multiple controllable events. Include every controllable action that is semantically valid in that state; the SCT runtime may select among multiple enabled controllable actions.
 9. Determinism still applies when multiple controllable events are enabled: each distinct (state, controllable event) pair must have exactly one target state. Do not repeat the same event from the same state.
 10. Do not add controllable self-loops merely to make the automaton appear complete. Add a controllable transition only when that command is semantically valid in the source state.
@@ -68,10 +98,10 @@ MANDATORY SCT RULES
 13. Provide exactly one initial state, and ensure initial_state appears in states.
 14. Every name in marked_states must appear in states. Prefer marking all states unless the control objective defines a meaningful incomplete or blocking condition.
 15. Design a nonblocking specification whenever the control objective permits it: every reachable state should be marked or should have a path to a marked state.
-16. Every automaton must have a type field whose value is exactly plant or specification.
-17. Every name must be short and contain only letters, numbers, and underscores. Specification names must end with _specification. Plant names must not contain spec or specification.
-18. Generate at least one plant or specification, but generate as many separate automata as the control objective genuinely requires. Every generated automaton must have a unique name.
-19. Every event used by a generated specification must belong to at least one plant automaton participating in the system. The existing obstacle-avoidance plants already provide full_rotate, move_forward, obstacle_front, obstacle_left, obstacle_right, path_clear, rotate_clockwise, and rotate_counterclockwise. If a specification uses any other event, generate at least one plant containing that event. Across the existing and generated plants, the plant-event union must cover the complete event alphabet of every generated specification.
+16. Every automaton must have a type field whose value is exactly specification. Plant output is forbidden.
+17. Every name must be short and contain only letters, numbers, and underscores. Every name must end with _specification.
+18. Generate at least one specification, but generate as many separate specifications as the control objective genuinely requires. Every generated specification must have a unique name.
+19. Every event used by a generated specification must belong to the supplied fixed plants. Never generate a plant to introduce or redefine an event.
 
 TRANSITION FORMAT
 
@@ -94,13 +124,13 @@ Return exactly one JSON object with one top-level field named automata. Its valu
     {
       "type": "specification",
       "name": "example_specification",
-      "states": ["waiting"],
+      "states": ["waiting", "green_detected"],
       "initial_state": "waiting",
-      "marked_states": ["waiting"],
+      "marked_states": ["waiting", "green_detected"],
       "transitions": [
-        "(\"waiting\", \"green_not_visible\", \"waiting\")",
-        "(\"waiting\", \"green_visible\", \"waiting\")",
-        "(\"waiting\", \"move_forward\", \"waiting\")"
+        "(\"waiting\", \"green_visible\", \"green_detected\")",
+        "(\"waiting\", \"move_forward\", \"waiting\")",
+        "(\"green_detected\", \"move_forward\", \"green_detected\")"
       ]
     }
   ]
@@ -111,14 +141,15 @@ Before returning the JSON, silently verify all of the following:
 - The response is valid JSON.
 - The response has exactly one top-level field named automata.
 - automata is a non-empty array and every entry has exactly the six required fields.
-- Every type is exactly plant or specification, and every automaton name is unique.
+- Every type is exactly specification, every name ends with _specification, and every automaton name is unique.
 - Every transitions field is an array containing only strings in the exact required format.
 - Every transition event belongs to one of the provided event lists.
 - Every used event is directly relevant to the CONTROL OBJECTIVE; no unrelated color, communication, target, or skip behavior is included.
 - No (state, event) pair occurs more than once.
-- Every specification state has every uncontrollable event in that specification's local alphabet exactly once.
+- Every uncontrollable transition that changes state is explicit; inert uncontrollable self-loops are omitted because the converter adds them.
+- Every required mission-progress transition, especially the current target's `*_reached` transition, is explicit from every applicable state.
 - Every enabled controllable event is semantically valid in its source state.
-- Every specification event is present in at least one existing or generated plant.
+- Every specification event is present in at least one supplied fixed plant.
 - All transition sources and targets appear in states.
 - initial_state and every marked state appear in states.
 - Every state is reachable from initial_state.

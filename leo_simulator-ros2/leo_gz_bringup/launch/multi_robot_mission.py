@@ -168,7 +168,6 @@ def generate_multi_robot_launch(
                 f"/{ns}/odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry",
                 f"/{ns}/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
                 f"/{ns}/joint_states@sensor_msgs/msg/JointState[ignition.msgs.Model",
-                f"/{ns}/depth_camera/image@sensor_msgs/msg/Image[ignition.msgs.Image",
                 f"/{ns}/depth_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image",
                 f"/{ns}/depth_camera/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo",
                 f"/world/random_world/model/{ns}/link/{ns}/base_footprint/sensor/contact_sensor/contact"
@@ -271,6 +270,7 @@ def generate_multi_robot_launch(
                     {"results_dir": LaunchConfiguration("results_dir")},
                     {"total_robots": LaunchConfiguration("total_robots")},
                 ],
+                remappings=[("cmd_vel", "cmd_vel_supervisor")],
                 output="screen",
             )
 
@@ -285,6 +285,34 @@ def generate_multi_robot_launch(
                     {"obstacle_threshold": 0.70},
                 ],
                 output="screen"
+            )
+
+            rgb_image_bridge = Node(
+                package="ros_gz_image",
+                executable="image_bridge",
+                name=f"{ns}_rgb_image_bridge",
+                arguments=[f"/{ns}/depth_camera/image"],
+                output="screen",
+            )
+
+            stuck_recovery_node = Node(
+                package="leo_image_processing",
+                executable="stuck_recovery",
+                name="stuck_recovery",
+                namespace=ns,
+                parameters=[
+                    {"enabled": True},
+                    {"timeout_s": 5.0},
+                    {"displacement_m": 0.10},
+                    {"escape_turn_rad": 2.356194490192345},
+                    {"escape_angular_z": 1.0},
+                    {"reverse_linear_x": -0.20},
+                    {"reverse_duration_s": 0.8},
+                    {"forward_linear_x": 0.20},
+                    {"forward_duration_s": 0.8},
+                    {"cooldown_s": 3.0},
+                ],
+                output="screen",
             )
 
             delayed_nodes = [image_processor_node]
@@ -309,11 +337,13 @@ def generate_multi_robot_launch(
                 state_pub,
                 spawn_node,
                 spawn_offset_tf,
+                rgb_image_bridge,
                 RegisterEventHandler(
                     OnProcessExit(
                         target_action=spawn_node,
                         on_exit=[
                             behavior_node,
+                            stuck_recovery_node,
                             TimerAction(
                                 period=2.0,
                                 actions=delayed_nodes,
