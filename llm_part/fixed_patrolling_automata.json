@@ -251,6 +251,30 @@
         {
           "name": "rotate_clockwise",
           "controllable": true
+        },
+        {
+          "name": "task_search_red",
+          "controllable": true
+        },
+        {
+          "name": "task_search_green",
+          "controllable": true
+        },
+        {
+          "name": "task_search_blue",
+          "controllable": true
+        },
+        {
+          "name": "task_approach_red",
+          "controllable": true
+        },
+        {
+          "name": "task_approach_green",
+          "controllable": true
+        },
+        {
+          "name": "task_approach_blue",
+          "controllable": true
         }
       ],
       "transitions": [
@@ -272,6 +296,36 @@
         {
           "source": "ready",
           "event": "full_rotate",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_search_red",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_search_green",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_search_blue",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_approach_red",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_approach_green",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_approach_blue",
           "target": "ready"
         }
       ]
@@ -454,5 +508,30 @@
         }
       ]
     }
-  ]
+  ],
+  "llm_allowed_events": {
+    "controllable": [
+      "task_approach_blue",
+      "task_approach_green",
+      "task_approach_red",
+      "task_search_blue",
+      "task_search_green",
+      "task_search_red"
+    ],
+    "uncontrollable": [
+      "blue_not_visible",
+      "blue_reached",
+      "blue_visible",
+      "green_not_visible",
+      "green_reached",
+      "green_visible",
+      "obstacle_front",
+      "obstacle_left",
+      "obstacle_right",
+      "path_clear",
+      "red_not_visible",
+      "red_reached",
+      "red_visible"
+    ]
+  }
 }

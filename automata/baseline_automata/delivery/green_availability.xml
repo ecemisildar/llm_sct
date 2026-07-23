@@ -6,9 +6,13 @@
 	<event id="0" name="pub_going_green" controllable="True" observable="True"/>
 	<event id="1" name="received_going_green" controllable="False" observable="True"/>
 	<event id="2" name="skip_green" controllable="True" observable="True"/>
+	<event id="3" name="task_skip_green" controllable="True" observable="True"/>
+	<event id="4" name="task_pub_going_green" controllable="True" observable="True"/>
 	<transition source="0" target="1" event="0"/>
 	<transition source="0" target="1" event="1"/>
 	<transition source="1" target="1" event="2"/>
 	<transition source="1" target="1" event="1"/>
+	<transition source="0" target="1" event="4"/>
+	<transition source="1" target="1" event="3"/>
 </data>
 </model>

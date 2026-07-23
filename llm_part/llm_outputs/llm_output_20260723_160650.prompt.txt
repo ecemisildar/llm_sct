@@ -1,0 +1,1 @@
+Robots should sweep the environment to cover it effectively and not always pass from the same positions

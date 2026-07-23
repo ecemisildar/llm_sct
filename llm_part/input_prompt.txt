@@ -6,19 +6,19 @@ Replace this paragraph with the mission, coordination, sequencing, or safety req
 TASK
 Generate only deterministic control-specification automata for the control objective above. The pipeline supplies the mission-appropriate fixed plant automata and any fixed safety specifications; their exact JSON descriptions and synthesis roles appear at the end of this request. Never generate a plant. Separate independent sequencing, coordination, safety, and mission restrictions into specifications when useful. The output will be parsed automatically and synchronized with the fixed Nadzoru automata. Return only one valid JSON object containing an automata array. Do not include Markdown, code fences, commentary, explanations, or text outside the JSON object.
 
-The request also includes the selected fixed automata as JSON. Read `fixed_synthesis_roles`: `G_plants` lists exactly the plants used to build G, while `K_fixed_specifications` lists fixed specifications added to K. Never regenerate or replace them. Use them as the authoritative description of possible events and compatible actions. For navigation, exploration, patrolling, or delivery, explicitly include relevant controllable movement events in a generated mission specification when the mission must constrain or select movement; do not produce a sensor-only mission model.
+The request also includes the selected fixed automata as JSON. Read `fixed_synthesis_roles`: `G_plants` lists exactly the plants used to build G, while `K_fixed_specifications` lists fixed specifications added to K. Never regenerate or replace them. The fixed automata contain protected low-level motion events used exclusively by hardcoded safety logic. Never use or constrain those low-level events in generated specifications. Express mission choices only with the `task_*` controllable events listed below.
 
 IMPORTANT SYNCHRONIZATION SEMANTICS: an event omitted from a specification's alphabet is private to the other synchronized automata and is therefore NOT disabled by that specification. If a mission must prevent an action in a state, include that event somewhere in the same specification's alphabet and omit its transition from the states where it must be disabled. Merely omitting an action from the entire specification does not constrain it.
 
 For a mission that searches for and approaches targets, model both phases explicitly for each target:
 
-- In a search state, enable a directional rotation action (`rotate_clockwise` or `rotate_counterclockwise`) so the robot can acquire the requested target. Do not enable move_forward blindly unless the objective calls for roaming search.
+- In a search state, enable the corresponding `task_search_<color>` event so the runtime can safely acquire the requested target.
 - On the requested target's *_visible event, enter its approach state.
-- In the approach state, enable move_forward so the runtime physically drives toward the visible target.
+- In the approach state, enable the corresponding `task_approach_<color>` event so the runtime can safely drive toward the visible target.
 - On the requested target's *_not_visible event, return to its search state so the robot reacquires it.
 - On the requested target's *_reached event, advance to the next target's search state.
-- Include all controllable motion events that must be disabled or selected by this mission in the mission specification alphabet. Enable only the actions appropriate to each phase.
-- Do not add publication, reception, or skip events unless the control objective explicitly requests multi-robot communication, coordination, or skipping. Sequentially visiting targets alone does not require pub_going_*, received_going_*, or skip_* events.
+- Include only the appropriate `task_*` controllable events for each mission phase.
+- Do not add protected publication, reception, or skip events. Sequential target visits use only task search/approach requests and color observations.
 
 TARGET REACHED EVENT PRIORITY
 
@@ -35,54 +35,32 @@ For every requested target phase, both its search state and its approach state m
 
 Never use a self-loop for the currently requested target's reached event. Reached events for targets that are not currently requested may be self-loops when they genuinely do not change the mission phase.
 
-CONTROLLABLE EVENTS
-These events are commands that the supervisor may enable or disable:
+TASK-SPECIFIC EVENTS
+An authoritative mission-specific event list is appended to this prompt at
+runtime. Use only events from that list. Do not use events merely because they
+appear in the fixed-automata JSON context.
 
-- move_backward: command the robot to move backward.
-- move_forward: command the robot to move forward.
-- pub_going_blue: publish that the robot intends to travel toward the blue target.
-- pub_going_green: publish that the robot intends to travel toward the green target.
-- pub_going_red: publish that the robot intends to travel toward the red target.
-- rotate_clockwise: command the robot to rotate clockwise.
-- rotate_counterclockwise: command the robot to rotate counterclockwise.
-- skip_blue: decide to skip the blue target and continue with another target or behavior.
-- skip_green: decide to skip the green target and continue with another target or behavior.
-- skip_red: decide to skip the red target and continue with another target or behavior.
-
-UNCONTROLLABLE EVENTS
-These events are observations or external occurrences that the supervisor cannot disable:
-
-- blue_not_visible: the blue target is currently not visible.
-- blue_reached: the robot has reached the blue target.
-- blue_visible: the blue target is currently visible.
-- green_not_visible: the green target is currently not visible.
-- green_reached: the robot has reached the green target.
-- green_visible: the green target is currently visible.
-- obstacle_front: an obstacle is detected in front of the robot.
-- obstacle_left: an obstacle is detected on the left side of the robot.
-- obstacle_right: an obstacle is detected on the right side of the robot.
-- path_clear: the obstacle sensor reports that the path is clear.
-- received_going_blue: another robot's intention to travel toward the blue target was received.
-- received_going_green: another robot's intention to travel toward the green target was received.
-- received_going_red: another robot's intention to travel toward the red target was received.
-- red_not_visible: the red target is currently not visible.
-- red_reached: the robot has reached the red target.
-- red_visible: the red target is currently visible.
+PROTECTED LOW-LEVEL EVENTS
+The fixed automata may show `move_forward`, `move_backward`, `rotate_clockwise`,
+`rotate_counterclockwise`, `full_rotate`, communication, or skip events. These
+are reserved for hardcoded controllers. Never include any of them in an
+LLM-generated transition.
 
 TASK-RELEVANCE FILTER
 
-Before designing any automata, determine the smallest event subset required by the CONTROL OBJECTIVE. The event lists above are only the allowed vocabulary; their presence in this prompt is not a request to use them.
+Before designing any automata, determine the smallest subset of the appended
+task-specific event list required by the CONTROL OBJECTIVE.
 
-- If the task concerns only exploration, navigation, or obstacle avoidance, use only relevant motion events (such as move_forward, move_backward, rotate_clockwise, and rotate_counterclockwise) and obstacle events (obstacle_front, obstacle_left, obstacle_right, and path_clear). Do not use color, target-reached, publication, reception, or skip events.
+- If the task concerns only exploration or navigation, use `task_move_forward` and only relevant obstacle observations. Do not use color, target-reached, communication, or skip events.
 - Use blue, green, or red visibility/reached events only when the task explicitly concerns colored targets, target approach, patrolling by color, or delivery to colored locations.
-- Use pub_going_* and received_going_* events only when the task explicitly requires communication or coordination between robots.
-- Use skip_* events only when the task explicitly allows or requires skipping colored targets.
+- Use `task_pub_going_*` for explicit communication objectives and
+  `task_skip_*` only when the objective permits skipping.
 - Do not generate specifications for behavior unrelated to the CONTROL OBJECTIVE.
 
 MANDATORY SCT RULES
 
 1. Do NOT introduce any new controllable or uncontrollable events. Use ONLY the event names listed above, with exactly the same spelling and case.
-1a. `full_rotate` is reserved for the fixed baseline automata and is forbidden in every LLM-generated specification. It may appear in the fixed-automata JSON context, but never include it in output transitions.
+1a. Every generated controllable transition must use one of the listed `task_*` events. All low-level controllable events shown in fixed-automata context are forbidden.
 2. Do NOT invent sensor events beyond the uncontrollable list. Events such as battery_low, target_lost, timeout, failure, or emergency_stop are forbidden because they are not in the baseline alphabet.
 3. The provided event lists define the allowed global alphabet. An automaton does NOT have to use every event. Give each plant or specification only the minimal subset relevant to the component or rule it models. Using an event merely because it appears in the allowed list is incorrect.
 4. The automaton must be deterministic. For every (state, event) pair, define exactly one next state. Never repeat a (state, event) pair, even when the repeated transition has the same target.
@@ -92,7 +70,7 @@ MANDATORY SCT RULES
 7a. Automatic self-loop completion is only for cases where an uncontrollable event genuinely does not change the mission phase. Never omit a required state-changing mission-progress transition. Write events such as the currently requested target's `*_reached` transition explicitly from every applicable state, including direct reached transitions from search states.
 8. A state may enable zero, one, or multiple controllable events. Include every controllable action that is semantically valid in that state; the SCT runtime may select among multiple enabled controllable actions.
 9. Determinism still applies when multiple controllable events are enabled: each distinct (state, controllable event) pair must have exactly one target state. Do not repeat the same event from the same state.
-10. Do not add controllable self-loops merely to make the automaton appear complete. Add a controllable transition only when that command is semantically valid in the source state.
+10. Do not add controllable self-loops merely to make the automaton appear complete. Add a `task_*` transition only when that request is semantically valid in the source state.
 11. Every state listed in states must be reachable from initial_state. Do not create unused or unreachable states.
 12. Use short, descriptive, unique state names containing only letters, numbers, and underscores.
 13. Provide exactly one initial state, and ensure initial_state appears in states.
@@ -129,8 +107,8 @@ Return exactly one JSON object with one top-level field named automata. Its valu
       "marked_states": ["waiting", "green_detected"],
       "transitions": [
         "(\"waiting\", \"green_visible\", \"green_detected\")",
-        "(\"waiting\", \"move_forward\", \"waiting\")",
-        "(\"green_detected\", \"move_forward\", \"green_detected\")"
+        "(\"waiting\", \"task_search_green\", \"waiting\")",
+        "(\"green_detected\", \"task_approach_green\", \"green_detected\")"
       ]
     }
   ]

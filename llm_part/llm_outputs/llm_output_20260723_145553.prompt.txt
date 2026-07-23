@@ -1,0 +1,1 @@
+robots should cover the environment with going to different directions

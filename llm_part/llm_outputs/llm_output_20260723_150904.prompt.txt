@@ -1,0 +1,1 @@
+Robots should cover the environment using bug algorithm.

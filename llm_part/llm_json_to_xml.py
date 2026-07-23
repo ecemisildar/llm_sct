@@ -16,7 +16,24 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_JSON_DIR = SCRIPT_DIR / "llm_outputs"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR.parent / "automata" / "llm_generated_automata"
 DEFAULT_BASELINE_DIR = SCRIPT_DIR.parent / "automata" / "baseline_automata"
-FORBIDDEN_GENERATED_EVENTS = {"full_rotate"}
+ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
+    "task_move_forward",
+    "task_search_red",
+    "task_search_green",
+    "task_search_blue",
+    "task_approach_red",
+    "task_approach_green",
+    "task_approach_blue",
+    "task_move_backward",
+    "task_rotate_clockwise",
+    "task_rotate_counterclockwise",
+    "task_pub_going_red",
+    "task_pub_going_green",
+    "task_pub_going_blue",
+    "task_skip_red",
+    "task_skip_green",
+    "task_skip_blue",
+}
 
 
 def newest_json(directory: Path = DEFAULT_JSON_DIR) -> Path:
@@ -126,15 +143,30 @@ def validate_sct_rules(
     transitions: Sequence[tuple[str, str, str]],
     baseline_events: dict[str, bool],
     require_uncontrollable_totality: bool,
+    allowed_generated_events: set[str] | None = None,
 ) -> None:
     """Enforce the SCT constraints stated in ``input_prompt.txt``."""
     allowed_events = set(baseline_events)
     used_events = {event for _, event, _ in transitions}
-    forbidden_events = used_events & FORBIDDEN_GENERATED_EVENTS
+    if allowed_generated_events is not None:
+        outside_task = used_events - allowed_generated_events
+        if outside_task:
+            raise ValueError(
+                "Generated specifications use events outside the task-specific "
+                f"event list: {sorted(outside_task)}"
+            )
+    forbidden_events = {
+        event
+        for event in used_events
+        if event in baseline_events
+        and baseline_events[event]
+        and event not in ALLOWED_GENERATED_CONTROLLABLE_EVENTS
+    }
     if forbidden_events:
         raise ValueError(
-            "Generated specifications use reserved events that the LLM may not "
-            f"select or constrain: {sorted(forbidden_events)}"
+            "Generated specifications use protected low-level controllable events. "
+            "Use only task_* controllable events; forbidden events: "
+            f"{sorted(forbidden_events)}"
         )
     unknown_events = used_events - allowed_events
     if unknown_events:
@@ -193,7 +225,10 @@ def complete_specification_uncontrollable_events(
 
 
 def build_xml(
-    payload: dict[str, Any], fallback_name: str, baseline_events: dict[str, bool]
+    payload: dict[str, Any],
+    fallback_name: str,
+    baseline_events: dict[str, bool],
+    allowed_generated_events: set[str] | None = None,
 ) -> tuple[str, bytes]:
     raw_transitions = payload.get("transitions")
     if not isinstance(raw_transitions, list) or not raw_transitions:
@@ -232,6 +267,7 @@ def build_xml(
         transitions,
         baseline_events,
         require_uncontrollable_totality=True,
+        allowed_generated_events=allowed_generated_events,
     )
 
     initial = string_list(
@@ -378,7 +414,12 @@ def extract_automata(document: Any) -> list[dict[str, Any]]:
     return values
 
 
-def convert(json_path: Path, output_dir: Path, baseline_dir: Path) -> list[Path]:
+def convert(
+    json_path: Path,
+    output_dir: Path,
+    baseline_dir: Path,
+    allowed_generated_events: set[str] | None = None,
+) -> list[Path]:
     try:
         document = json.loads(json_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
@@ -390,7 +431,12 @@ def convert(json_path: Path, output_dir: Path, baseline_dir: Path) -> list[Path]
     used_names: set[str] = set()
     for index, payload in enumerate(extract_automata(document), start=1):
         item_fallback = fallback if index == 1 else f"{fallback}_{index}"
-        name, xml = build_xml(payload, item_fallback, baseline_events)
+        name, xml = build_xml(
+            payload,
+            item_fallback,
+            baseline_events,
+            allowed_generated_events=allowed_generated_events,
+        )
         filename = f"{name}.xml"
         if filename.casefold() in used_names:
             raise ValueError(f"Duplicate output automaton name: {filename}")

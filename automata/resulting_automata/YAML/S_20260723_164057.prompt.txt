@@ -1,0 +1,2 @@
+Whenever obstacle_front occurs, enable only task_move_forward.
+Never request a rotation near obstacles.Robots should draw a big spiral to explore the environment.

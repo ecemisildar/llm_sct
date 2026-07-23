@@ -1,0 +1,22 @@
+Node started
+run_id: run_20260723_173650
+results_dir: /home/ecem/sct_ws/src/llm_sct/results/llm/results_patrolling/S_20260723_173147/robots_3/run_20260723_173650
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/automata/resulting_automata/YAML/S_20260723_173147.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /home/ecem/sct_ws/install/leo_patrolling/share/leo_patrolling/worlds/random_world_rgb.sdf
+  headless: false
+  auto_start: true
+  run_duration: 300.0
+  total_robots: 3
+  random_seed: auto
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/results/llm/results_patrolling
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/automata/resulting_automata/YAML/S_20260723_173147.yaml
+robot_1 completed the patrolling task.
+robot_0 completed the patrolling task.
+KeyboardInterrupt received. Saving + shutdown.
+Saving started...
+Task success: false
+Task duration: 189.981s
+Saving OK

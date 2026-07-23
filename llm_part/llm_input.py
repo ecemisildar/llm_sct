@@ -20,6 +20,95 @@ DEFAULT_OBSTACLE_DIR = (
     SCRIPT_DIR.parent / "automata" / "baseline_automata" / "patrolling"
 )
 DEFAULT_OBSTACLE_CONTEXT_PATH = SCRIPT_DIR / "fixed_patrolling_automata.json"
+
+OBSTACLE_EVENTS = {
+    "obstacle_front": False,
+    "obstacle_left": False,
+    "obstacle_right": False,
+    "path_clear": False,
+}
+COLOR_EVENTS = {
+    f"{color}_{suffix}": False
+    for color in ("red", "green", "blue")
+    for suffix in ("visible", "not_visible", "reached")
+}
+
+
+def allowed_events_for_profile(
+    mission: str,
+    exploration_mode: str = "without_backward",
+    task: str = "",
+) -> dict[str, bool]:
+    """Return the exact event alphabet exposed to the LLM for a mission."""
+    if mission == "exploration":
+        if exploration_mode == "auto":
+            text = task.casefold()
+            without_backward = (
+                "without backward" in text or "no backward" in text
+            )
+            exploration_mode = (
+                "with_backward"
+                if "backward" in text and not without_backward
+                else "without_backward"
+            )
+        controllable = {
+            "task_move_forward",
+            "task_rotate_clockwise",
+            "task_rotate_counterclockwise",
+        }
+        if exploration_mode == "with_backward":
+            controllable.add("task_move_backward")
+        uncontrollable = OBSTACLE_EVENTS
+    elif mission == "delivery":
+        controllable = {
+            f"task_{phase}_{color}"
+            for phase in ("search", "approach")
+            for color in ("red", "green", "blue")
+        }
+        controllable.update(
+            f"task_{action}_{color}"
+            for action in ("pub_going", "skip")
+            for color in ("red", "green", "blue")
+        )
+        uncontrollable = {
+            **OBSTACLE_EVENTS,
+            **COLOR_EVENTS,
+            **{
+                f"received_going_{color}": False
+                for color in ("red", "green", "blue")
+            },
+        }
+    else:
+        controllable = {
+            f"task_{phase}_{color}"
+            for phase in ("search", "approach")
+            for color in ("red", "green", "blue")
+        }
+        uncontrollable = {**OBSTACLE_EVENTS, **COLOR_EVENTS}
+    return {
+        **{event: True for event in sorted(controllable)},
+        **uncontrollable,
+    }
+
+
+def add_allowed_event_list(
+    prompt: str, allowed_events: dict[str, bool]
+) -> str:
+    controllable = sorted(
+        event for event, is_controllable in allowed_events.items()
+        if is_controllable
+    )
+    uncontrollable = sorted(
+        event for event, is_controllable in allowed_events.items()
+        if not is_controllable
+    )
+    return (
+        f"{prompt}\n\nAUTHORITATIVE TASK-SPECIFIC EVENT LIST\n"
+        "Use only events in this list. Events visible in fixed-automata JSON but "
+        "absent here are forbidden in generated output.\n"
+        f"Controllable task events: {json.dumps(controllable)}\n"
+        f"Uncontrollable observation events: {json.dumps(uncontrollable)}"
+    )
 FIXED_PATROLLING_AUTOMATA = {
     "obstacle_sensor",
     "color_sensor",
@@ -88,6 +177,19 @@ def save_json(payload: object, output_path: Path) -> None:
         raise RuntimeError(f"Could not save JSON to {output_path}: {error}") from error
 
 
+def save_task_prompt(task: str, output_path: Path) -> Path:
+    """Save the exact user task beside its corresponding LLM JSON output."""
+    prompt_path = output_path.with_suffix(".prompt.txt")
+    try:
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text(task.rstrip() + "\n", encoding="utf-8")
+    except OSError as error:
+        raise RuntimeError(
+            f"Could not save task prompt to {prompt_path}: {error}"
+        ) from error
+    return prompt_path
+
+
 def combine_prompt(base_prompt: str, task: str) -> str:
     task = task.strip()
     if not task:
@@ -147,7 +249,12 @@ def automata_files_as_json(
             }
             for transition in data.findall("transition")
         ]
-        role = "specification" if "collision_avoidance" in xml_path.stem else "plant"
+        stem = xml_path.stem.casefold()
+        role = (
+            "specification"
+            if "collision_avoidance" in stem or stem.startswith("e")
+            else "plant"
+        )
         automata.append(
             {
                 "name": xml_path.stem,
@@ -205,6 +312,7 @@ def generate_json(
     obstacle_context_path: Path = DEFAULT_OBSTACLE_CONTEXT_PATH,
     context_files: Sequence[Path] | None = None,
     context_mission: str = "patrolling",
+    allowed_events: dict[str, bool] | None = None,
 ) -> tuple[object, Path]:
     base_prompt = read_required_text(prompt_path, "Prompt")
     api_key = read_required_text(api_key_path, "API key")
@@ -213,10 +321,25 @@ def generate_json(
         if context_files is not None
         else obstacle_avoidance_as_json(obstacle_dir)
     )
+    allowed_events = allowed_events or allowed_events_for_profile(
+        context_mission, task=task
+    )
+    context["llm_allowed_events"] = {
+        "controllable": sorted(
+            event for event, controllable in allowed_events.items()
+            if controllable
+        ),
+        "uncontrollable": sorted(
+            event for event, controllable in allowed_events.items()
+            if not controllable
+        ),
+    }
     save_json(context, obstacle_context_path)
     prompt = add_existing_automata_context(combine_prompt(base_prompt, task), context)
-    payload = request_json(prompt, api_key, model)
+    prompt = add_allowed_event_list(prompt, allowed_events)
     destination = output_path or default_output_path(DEFAULT_OUTPUT_DIR)
+    save_task_prompt(task, destination)
+    payload = request_json(prompt, api_key, model)
     save_json(payload, destination)
     return payload, destination
 

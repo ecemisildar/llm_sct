@@ -25,7 +25,7 @@ class ColorDetector(Node):
         self.declare_parameter("rgb_topic", "depth_camera/image")
         self.declare_parameter("reached_distance", 1.0)
         self.declare_parameter("min_color_pixels", 4)
-        self.declare_parameter("visible_width_ratio", 0.75)
+        self.declare_parameter("visible_width_ratio", 0.50)
         self.declare_parameter("min_channel", 80)
         self.declare_parameter("channel_margin", 35)
         self.declare_parameter("heartbeat_period_s", 5.0)

@@ -172,7 +172,7 @@
           </material>
           
         </visual>
-        <visual name="reach_circle">
+        <!-- <visual name="reach_circle">
           <pose>0 0 0.005 0 0 0</pose>
           <visibility_flags>4</visibility_flags>
           <geometry><cylinder><radius>1.075</radius><length>0.01</length></cylinder></geometry>
@@ -182,7 +182,7 @@
             <diffuse>1.0 0.0 0.0 1.0</diffuse>
             <emissive>1.0 0.0 0.0 1.0</emissive>
           </material>
-        </visual>
+        </visual> -->
       </link>
       <static>true</static>
     </model>
@@ -203,7 +203,7 @@
           </material>
           
         </visual>
-        <visual name="reach_circle">
+        <!-- <visual name="reach_circle">
           <pose>0 0 0.005 0 0 0</pose>
           <visibility_flags>4</visibility_flags>
           <geometry><cylinder><radius>1.075</radius><length>0.01</length></cylinder></geometry>
@@ -213,7 +213,7 @@
             <diffuse>0.0 1.0 0.0 1.0</diffuse>
             <emissive>0.0 1.0 0.0 1.0</emissive>
           </material>
-        </visual>
+        </visual> -->
       </link>
       <static>true</static>
     </model>
@@ -234,7 +234,7 @@
           </material>
           
         </visual>
-        <visual name="reach_circle">
+        <!-- <visual name="reach_circle">
           <pose>0 0 0.005 0 0 0</pose>
           <visibility_flags>4</visibility_flags>
           <geometry><cylinder><radius>1.075</radius><length>0.01</length></cylinder></geometry>
@@ -244,7 +244,7 @@
             <diffuse>0.0 0.0 1.0 1.0</diffuse>
             <emissive>0.0 0.0 1.0 1.0</emissive>
           </material>
-        </visual>
+        </visual> -->
       </link>
       <static>true</static>
     </model>

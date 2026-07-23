@@ -1,0 +1,1 @@
+robots should explore the environment like sweeping

@@ -454,11 +454,19 @@ class CoverageCounter(Node):
             f.write(text)
 
     def _save_run_metadata(self):
-        if self.prompt_file_path is not None and self.prompt_file_path.exists():
-            prompt_contents = self.prompt_file_path.read_text(encoding="utf-8")
+        prompt_source = self.prompt_file_path
+        if prompt_source is None and self.metadata_yaml_path is not None:
+            sibling_prompt = self.metadata_yaml_path.with_suffix(".prompt.txt")
+            if sibling_prompt.exists():
+                prompt_source = sibling_prompt
+
+        if prompt_source is not None and prompt_source.exists():
+            prompt_contents = prompt_source.read_text(encoding="utf-8")
         else:
-            if self.prompt_file_path is not None and not self.prompt_file_path.exists():
-                self._write_status(f"WARNING: Prompt file not found: {self.prompt_file_path}\n")
+            if prompt_source is not None and not prompt_source.exists():
+                self._write_status(
+                    f"WARNING: Prompt file not found: {prompt_source}\n"
+                )
             prompt_contents = self.prompt_text
         self.prompt_txt_path.write_text(prompt_contents, encoding="utf-8")
         if self.metadata_yaml_path is None:

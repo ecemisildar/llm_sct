@@ -1,0 +1,1 @@
+Robots should explore the environment using bug algorithm.

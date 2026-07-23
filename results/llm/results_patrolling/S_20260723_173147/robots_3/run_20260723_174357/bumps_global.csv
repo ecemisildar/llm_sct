@@ -1,0 +1,3 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+27,"('robot_1', 'box4::link::collision')",left,,EV_full_rotate,
+28,"('robot_1', 'box4::link::collision')",back,,EV_rotate_clockwise,

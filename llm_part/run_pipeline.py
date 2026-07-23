@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,7 @@ from llm_input import (
     DEFAULT_API_KEY_PATH,
     DEFAULT_MODEL,
     DEFAULT_PROMPT_PATH,
+    allowed_events_for_profile,
     generate_json,
     read_required_text,
 )
@@ -44,7 +46,20 @@ def select_profile(
     if mission == "auto":
         if "delivery" in text or "deliver" in text:
             mission = "delivery"
-        elif "explor" in text:
+        elif any(
+            keyword in text
+            for keyword in (
+                "explor",
+                "sweep",
+                "coverage",
+                "cover ",
+                "covering",
+                "spiral",
+                "roam",
+                "mapping",
+                "map the environment",
+            )
+        ):
             mission = "exploration"
         else:
             mission = "patrolling"
@@ -58,7 +73,11 @@ def select_profile(
                 else "without_backward"
             )
         variant = baseline / "exploration" / f"exploration_{exploration_mode}"
-        return mission, [variant / "G2.xml"], []
+        return (
+            mission,
+            [variant / "G1.xml", variant / "G2.xml"],
+            [variant / "E1.xml"],
+        )
     if mission == "delivery":
         directory = baseline / "delivery"
         plants = [
@@ -73,7 +92,11 @@ def select_profile(
                 "blue_availability.xml",
             )
         ]
-        return mission, plants, [directory / "collision_avoidance.xml"]
+        return (
+            mission,
+            plants,
+            [directory / "collision_avoidance.xml"],
+        )
 
     directory = baseline / "patrolling"
     plants = [
@@ -81,7 +104,11 @@ def select_profile(
         directory / "color_sensor.xml",
         directory / "motion_plant.xml",
     ]
-    return mission, plants, [directory / "collision_avoidance.xml"]
+    return (
+        mission,
+        plants,
+        [directory / "collision_avoidance.xml"],
+    )
 
 
 def run_pipeline(
@@ -101,6 +128,9 @@ def run_pipeline(
         f"Selected {selected_mission} fixed automata: "
         + ", ".join(path.stem for path in [*fixed_plants, *fixed_specs])
     )
+    allowed_events = allowed_events_for_profile(
+        selected_mission, exploration_mode, task
+    )
 
     report("Requesting JSON automata from OpenAI…")
     payload, json_path = generate_json(
@@ -110,6 +140,7 @@ def run_pipeline(
         model=model,
         context_files=[*fixed_plants, *fixed_specs],
         context_mission=selected_mission,
+        allowed_events=allowed_events,
     )
 
     report("Converting generated JSON to Nadzoru XML…")
@@ -118,6 +149,7 @@ def run_pipeline(
             json_path,
             llm_json_to_xml.DEFAULT_OUTPUT_DIR,
             llm_json_to_xml.DEFAULT_BASELINE_DIR,
+            allowed_generated_events=set(allowed_events),
         )
     )
 
@@ -138,6 +170,11 @@ def run_pipeline(
     report("Encoding the synthesized supervisor as runtime YAML…")
     yaml_path = supervisor_xml_to_yaml.DEFAULT_YAML_DIR / s_xml.with_suffix(".yaml").name
     supervisor_xml_to_yaml.convert(s_xml, yaml_path)
+    source_prompt_path = json_path.with_suffix(".prompt.txt")
+    yaml_prompt_path = yaml_path.with_suffix(".prompt.txt")
+    if source_prompt_path.is_file():
+        shutil.copy2(source_prompt_path, yaml_prompt_path)
+        report(f"Saved matching UI prompt: {yaml_prompt_path}")
     report(f"Pipeline complete: {yaml_path}")
 
     return PipelineResult(

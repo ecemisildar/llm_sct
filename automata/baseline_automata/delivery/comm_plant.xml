@@ -11,6 +11,9 @@
 	<event id="3" name="pub_going_blue" controllable="True" observable="True"/>
 	<event id="4" name="received_going_blue" controllable="False" observable="True"/>
 	<event id="5" name="pub_going_red" controllable="True" observable="True"/>
+	<event id="6" name="task_pub_going_green" controllable="True" observable="True"/>
+	<event id="7" name="task_pub_going_blue" controllable="True" observable="True"/>
+	<event id="8" name="task_pub_going_red" controllable="True" observable="True"/>
 	<transition source="0" target="0" event="1"/>
 	<transition source="0" target="0" event="4"/>
 	<transition source="0" target="0" event="2"/>
@@ -26,5 +29,8 @@
 	<transition source="3" target="3" event="4"/>
 	<transition source="3" target="2" event="5"/>
 	<transition source="3" target="0" event="3"/>
+	<transition source="3" target="1" event="6"/>
+	<transition source="3" target="0" event="7"/>
+	<transition source="3" target="2" event="8"/>
 </data>
 </model>

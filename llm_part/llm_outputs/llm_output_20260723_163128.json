@@ -1,0 +1,31 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "spiral_exploration_specification",
+      "states": [
+        "start",
+        "move_forward",
+        "turn",
+        "expand"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "start",
+        "move_forward",
+        "turn",
+        "expand"
+      ],
+      "transitions": [
+        "(\"start\", \"task_move_forward\", \"move_forward\")",
+        "(\"move_forward\", \"obstacle_front\", \"turn\")",
+        "(\"move_forward\", \"task_move_forward\", \"move_forward\")",
+        "(\"turn\", \"task_rotate_clockwise\", \"expand\")",
+        "(\"expand\", \"path_clear\", \"move_forward\")",
+        "(\"expand\", \"obstacle_left\", \"turn\")",
+        "(\"expand\", \"obstacle_right\", \"turn\")",
+        "(\"expand\", \"obstacle_front\", \"turn\")"
+      ]
+    }
+  ]
+}

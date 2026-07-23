@@ -1,0 +1,1 @@
+Robot should sweep the environment to cover maximum amount of it

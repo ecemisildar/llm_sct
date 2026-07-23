@@ -1,0 +1,43 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "bug_coordination_specification",
+      "states": [
+        "bug_clear",
+        "bug_front",
+        "bug_right",
+        "bug_left"
+      ],
+      "initial_state": "bug_clear",
+      "marked_states": [
+        "bug_clear",
+        "bug_front",
+        "bug_right",
+        "bug_left"
+      ],
+      "transitions": [
+        "(\"bug_clear\", \"obstacle_front\", \"bug_front\")",
+        "(\"bug_clear\", \"obstacle_right\", \"bug_right\")",
+        "(\"bug_clear\", \"obstacle_left\", \"bug_left\")",
+        "(\"bug_clear\", \"path_clear\", \"bug_clear\")",
+        "(\"bug_clear\", \"task_move_forward\", \"bug_clear\")",
+        "(\"bug_front\", \"path_clear\", \"bug_clear\")",
+        "(\"bug_front\", \"obstacle_right\", \"bug_right\")",
+        "(\"bug_front\", \"obstacle_left\", \"bug_left\")",
+        "(\"bug_front\", \"obstacle_front\", \"bug_front\")",
+        "(\"bug_front\", \"task_rotate_counterclockwise\", \"bug_front\")",
+        "(\"bug_right\", \"path_clear\", \"bug_clear\")",
+        "(\"bug_right\", \"obstacle_front\", \"bug_front\")",
+        "(\"bug_right\", \"obstacle_left\", \"bug_left\")",
+        "(\"bug_right\", \"obstacle_right\", \"bug_right\")",
+        "(\"bug_right\", \"task_rotate_counterclockwise\", \"bug_right\")",
+        "(\"bug_left\", \"path_clear\", \"bug_clear\")",
+        "(\"bug_left\", \"obstacle_front\", \"bug_front\")",
+        "(\"bug_left\", \"obstacle_right\", \"bug_right\")",
+        "(\"bug_left\", \"obstacle_left\", \"bug_left\")",
+        "(\"bug_left\", \"task_rotate_clockwise\", \"bug_left\")"
+      ]
+    }
+  ]
+}
