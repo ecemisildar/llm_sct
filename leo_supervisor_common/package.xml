@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>leo_supervisor_common</name>
+  <version>0.0.0</version>
+  <description>Shared utilities for LEO task supervisors</description>
+  <maintainer email="ecem@todo.todo">ecem</maintainer>
+  <license>TODO: License declaration</license>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

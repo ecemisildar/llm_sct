@@ -1,5 +1,4 @@
 import os
-import csv
 import random
 import math
 import re
@@ -19,6 +18,7 @@ from ros_gz_interfaces.msg import Contacts
 
 from ament_index_python.packages import get_package_share_directory
 from leo_exploration.sct import SCT
+from leo_supervisor_common.decision_logger import SctDecisionLogger
 
 
 @dataclass
@@ -70,9 +70,6 @@ class RobotSupervisor(Node):
         self.full_rotate_retrigger_block_s = float(
             self.declare_parameter("full_rotate_retrigger_block_s", 0.6).value
         )
-        self.rotate_90_retrigger_block_s = float(
-            self.declare_parameter("rotate_90_retrigger_block_s", 0.6).value
-        )
         self.post_turn_settle_s = float(
             self.declare_parameter("post_turn_settle_s", 0.3).value
         )
@@ -87,22 +84,10 @@ class RobotSupervisor(Node):
             self.declare_parameter("recovery_back_hold_s", 0.35).value
         )
 
-        # Directional turn settings (45 degrees by default)
-        self.rotate_90_target_rad = min(
-            math.pi,
-            float(self.declare_parameter("rotate_90_target_rad", math.pi / 4.0).value),
-        )
-        self.rotate_90_omega = float(
+        # Angular speed for one-tick directional turns.
+        self.short_rotation_omega = float(
             self.declare_parameter("rotate_90_omega", 1.0).value
         )
-        self.rotate_90_timeout_s = float(
-            self.declare_parameter("rotate_90_timeout_s", 2.2).value
-        )
-
-        self.rotate_90_active = False
-        self.rotate_90_accum = 0.0
-        self.rotate_90_started_at = 0.0
-        self.rotate_90_prev_yaw = 0.0
 
 
         # Zone update throttle. Keep low for fast reaction to depth obstacles.
@@ -206,18 +191,25 @@ class RobotSupervisor(Node):
         self.full_rotate_using_timed_fallback = False
         self.full_rotate_stall_count = 0
         self.last_full_rotate_completed_at = 0.0
-        self.last_rotate_90_completed_at = 0.0
         self.turn_settle_until = 0.0
         self.contact_recovery_until = 0.0
         self.last_contact_recovery_started_at = 0.0
         self.contact_recovery_source = ""
         self.contact_recovery_turn_sign = 1.0 if self.robot_index % 2 == 0 else -1.0
-        self.sct_decision_log_path: Optional[Path] = None
-        self.sct_summary_log_path: Optional[Path] = None
-        self.sct_event_counts: Dict[str, int] = {}
         self.supervisor_started_at = time.time()
-
-        self._init_sct_decision_log()
+        self.decision_logger = SctDecisionLogger(
+            enabled=self.sct_decision_log_enabled,
+            robot=self.ns,
+            results_dir=self.results_dir,
+            yaml_path=self.explicit_yaml_path,
+            total_robots=self.total_robots,
+            run_id=self.run_id,
+            snapshot_columns=(
+                "front_distance_m",
+                "left_distance_m",
+                "right_distance_m",
+            ),
+        )
 
 
         # -------------------------------
@@ -265,16 +257,16 @@ class RobotSupervisor(Node):
         # -------------------------------
         # Only place you encode motion parameters. No “logic” needs event names elsewhere.
         self.action_table: Dict[str, ActionSpec] = {
-            "EV_move_forward": ActionSpec(linear_x=0.12, angular_z=0.0),
+            "EV_move_forward": ActionSpec(linear_x=0.3, angular_z=0.0),
             "EV_move_backward": ActionSpec(linear_x=-0.2, angular_z=0.0, hold_s=self.recovery_back_hold_s),
             "EV_rotate_clockwise": ActionSpec(
                 linear_x=0.0,
-                angular_z=-self.rotate_90_omega,
+                angular_z=-self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             ),
             "EV_rotate_counterclockwise": ActionSpec(
                 linear_x=0.0,
-                angular_z=self.rotate_90_omega,
+                angular_z=self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             ),
             # full_rotate is executed as an atomic rotation using odom; target is full_rotate_target_rad (≤ π here).
@@ -369,40 +361,6 @@ class RobotSupervisor(Node):
         self.executed_event_pub.publish(String(data=self._current_command_event_label()))
         self.cmd_pub.publish(twist)
 
-    def _run_log_dir(self) -> Path:
-        if self.results_dir:
-            base_dir = Path(self.results_dir)
-            yaml_group = Path(self.explicit_yaml_path).stem if self.explicit_yaml_path else "unknown_yaml"
-            group_dir = base_dir / yaml_group / f"robots_{self.total_robots}"
-            return group_dir / self.run_id if self.run_id else group_dir
-        return Path.cwd()
-
-    def _init_sct_decision_log(self):
-        if not self.sct_decision_log_enabled:
-            return
-
-        log_dir = self._run_log_dir()
-        log_dir.mkdir(parents=True, exist_ok=True)
-        self.sct_decision_log_path = log_dir / f"selected_events_{self.ns}.csv"
-        self.sct_summary_log_path = log_dir / f"event_percentages_{self.ns}.csv"
-        if self.sct_decision_log_path.exists():
-            return
-
-        with self.sct_decision_log_path.open("w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                "elapsed_s",
-                "robot",
-                "selected_event",
-                "uncontrollable_events",
-                "raw_zone",
-                "front_distance_m",
-                "left_distance_m",
-                "right_distance_m",
-            ])
-
-
-
     def _snapshot_sct_inputs(self, now: float):
         effective_zones = self._effective_obstacle_zones()
         depth_obstacles = {"LEFT", "RIGHT", "CORNER"}
@@ -424,44 +382,16 @@ class RobotSupervisor(Node):
         }
 
     def _log_sct_decision(self, selected_event: str, ce_exists: bool, snapshot):
-        if not self.sct_decision_log_enabled or self.sct_decision_log_path is None:
-            return
-
         uncontrollable_events = [
             self.ev_name_by_id.get(int(event), f"unknown:{int(event)}")
             for event in self.sct.last_uncontrollable_events
         ]
-        if ce_exists:
-            self.sct_event_counts[selected_event] = self.sct_event_counts.get(selected_event, 0) + 1
-
-        with self.sct_decision_log_path.open("a", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                f"{snapshot['elapsed_s']:.3f}",
-                self.ns,
-                selected_event,
-                "|".join(uncontrollable_events) or "none",
-                snapshot["raw_zone"],
-                f"{snapshot['front_distance_m']:.6f}" if math.isfinite(snapshot["front_distance_m"]) else "inf",
-                f"{snapshot['left_distance_m']:.6f}" if math.isfinite(snapshot["left_distance_m"]) else "inf",
-                f"{snapshot['right_distance_m']:.6f}" if math.isfinite(snapshot["right_distance_m"]) else "inf",
-            ])
-
-    def _write_sct_event_summary(self):
-        if not self.sct_decision_log_enabled or self.sct_summary_log_path is None:
-            return
-
-        total = sum(self.sct_event_counts.values())
-        with self.sct_summary_log_path.open("w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["robot", "selected_event", "count", "percentage"])
-            for event, count in sorted(self.sct_event_counts.items()):
-                percentage = (100.0 * count / total) if total else 0.0
-                writer.writerow([self.ns, event, count, f"{percentage:.3f}"])
-            writer.writerow([self.ns, "TOTAL", total, "100.000" if total else "0.000"])
+        self.decision_logger.log(
+            selected_event, ce_exists, uncontrollable_events, snapshot
+        )
 
     def destroy_node(self):
-        self._write_sct_event_summary()
+        self.decision_logger.write_summary()
         super().destroy_node()
 
     def _current_command_event_label(self) -> str:
@@ -469,8 +399,6 @@ class RobotSupervisor(Node):
             return "CONTACT_RECOVERY"
         if self.full_rotate_active:
             return self.active_event or "FULL_ROTATE"
-        if self.rotate_90_active:
-            return self.active_event or "ROTATE_90"
         return self.active_event or "none"
 
     # -------------------------------
@@ -564,7 +492,6 @@ class RobotSupervisor(Node):
             self.contact_recovery_turn_sign = -1.0
         self.contact_recovery_source = self._contact_summary(msg)
         self.full_rotate_active = False
-        self.rotate_90_active = False
         self.active_event = None
         self.motion_until = 0.0
         self.get_logger().info(
@@ -664,20 +591,6 @@ class RobotSupervisor(Node):
         self.active_twist = twist
         self._publish_cmd(self.active_twist)
 
-    def _cancel_all_motion(self):
-        self.active_event = None
-        self.motion_until = 0.0
-        self.active_twist = Twist()
-        self.full_rotate_active = False
-        self.full_rotate_accum = 0.0
-        self.full_rotate_started_at = 0.0
-        self.rotate_90_active = False
-        self.rotate_90_accum = 0.0
-        self.rotate_90_started_at = 0.0
-        self.rotate_90_prev_yaw = 0.0
-        self.contact_recovery_until = 0.0
-        self.turn_settle_until = 0.0
-
     def _enter_post_turn_settle(self, now: float):
         # Give sensing callbacks a short window to catch up before asking SCT
         # for another controllable event. This prevents turn retriggers when the
@@ -760,40 +673,6 @@ class RobotSupervisor(Node):
             )
         return done
 
-    def _start_rotate_90(self, omega: float):
-        self.rotate_90_active = True
-        self.rotate_90_started_at = time.time()
-        self.rotate_90_accum = 0.0
-
-        if self.have_odom:
-            self.rotate_90_prev_yaw = self.yaw
-        else:
-            dur = abs(self.rotate_90_target_rad / max(1e-6, abs(omega)))
-            self.motion_until = time.time() + min(dur, self.rotate_90_timeout_s)
-
-        twist = Twist()
-        twist.linear.x = 0.0
-        twist.angular.z = omega
-        self.active_twist = twist
-        self._publish_cmd(self.active_twist)
-
-    def _update_rotate_90(self) -> bool:
-        now = time.time()
-
-        if (now - self.rotate_90_started_at) > self.rotate_90_timeout_s:
-            return True
-
-        if not self.have_odom:
-            return now >= self.motion_until
-
-        dy = _wrap_to_pi(self.yaw - self.rotate_90_prev_yaw)
-        self.rotate_90_accum += abs(dy)
-        self.rotate_90_prev_yaw = self.yaw
-
-        return self.rotate_90_accum >= self.rotate_90_target_rad
-    
-    
-
     def publish_twist_for_event(self, ev_name: str):
         spec = self.action_table.get(ev_name)
 
@@ -862,15 +741,6 @@ class RobotSupervisor(Node):
                 self.get_logger().info(
                     "FULL ROTATE stopped; supervisor will select next event next tick"
                 )
-            return
-
-        # If doing a 90-degree rotate
-        if self.rotate_90_active:
-            self._publish_cmd(self.active_twist)
-            if self._update_rotate_90():
-                self.rotate_90_active = False
-                self.last_rotate_90_completed_at = now
-                self._enter_post_turn_settle(now)
             return
 
         if now < self.turn_settle_until:

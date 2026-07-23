@@ -1,5 +1,4 @@
 import os
-import csv
 import random
 import math
 import re
@@ -15,11 +14,11 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool, Int32, String
 from nav_msgs.msg import Odometry
-from ros_gz_interfaces.msg import Contacts, Entity
-from ros_gz_interfaces.srv import DeleteEntity
+from ros_gz_interfaces.msg import Contacts
 
 from ament_index_python.packages import get_package_share_directory
 from leo_delivery.sct import SCT
+from leo_supervisor_common.decision_logger import SctDecisionLogger
 
 
 TARGET_COLORS = ("red", "green", "blue")
@@ -62,15 +61,6 @@ class RobotSupervisor(Node):
         # -------------------------------
         self.supervisor_period = float(self.declare_parameter("supervisor_period", 0.1).value)
         self.motion_hold_duration = float(self.declare_parameter("motion_hold_duration", 0.6).value)
-        self.completion_shutdown_delay = max(
-            0.1,
-            float(
-                self.declare_parameter("completion_shutdown_delay", 0.5).value
-            ),
-        )
-        self.completion_shutdown_timer = None
-        self.completion_delete_timeout_timer = None
-        self.completion_delete_requested = False
         self.task_complete_sent = False
 
         # Full-rotate execution settings
@@ -83,9 +73,6 @@ class RobotSupervisor(Node):
         self.full_rotate_timeout_s = float(self.declare_parameter("full_rotate_timeout_s", 3.5).value)
         self.full_rotate_retrigger_block_s = float(
             self.declare_parameter("full_rotate_retrigger_block_s", 0.6).value
-        )
-        self.rotate_90_retrigger_block_s = float(
-            self.declare_parameter("rotate_90_retrigger_block_s", 0.6).value
         )
         self.post_turn_settle_s = float(
             self.declare_parameter("post_turn_settle_s", 0.3).value
@@ -101,22 +88,10 @@ class RobotSupervisor(Node):
             self.declare_parameter("recovery_back_hold_s", 0.35).value
         )
 
-        # Directional turn settings (45 degrees by default)
-        self.rotate_90_target_rad = min(
-            math.pi,
-            float(self.declare_parameter("rotate_90_target_rad", math.pi / 4.0).value),
-        )
-        self.rotate_90_omega = float(
+        # Angular speed for one-tick directional turns.
+        self.short_rotation_omega = float(
             self.declare_parameter("rotate_90_omega", 1.0).value
         )
-        self.rotate_90_timeout_s = float(
-            self.declare_parameter("rotate_90_timeout_s", 2.2).value
-        )
-
-        self.rotate_90_active = False
-        self.rotate_90_accum = 0.0
-        self.rotate_90_started_at = 0.0
-        self.rotate_90_prev_yaw = 0.0
 
 
         # Zone update throttle. Keep low for fast reaction to depth obstacles.
@@ -222,18 +197,20 @@ class RobotSupervisor(Node):
         self.full_rotate_using_timed_fallback = False
         self.full_rotate_stall_count = 0
         self.last_full_rotate_completed_at = 0.0
-        self.last_rotate_90_completed_at = 0.0
         self.turn_settle_until = 0.0
         self.contact_recovery_until = 0.0
         self.last_contact_recovery_started_at = 0.0
         self.contact_recovery_source = ""
         self.contact_recovery_turn_sign = 1.0 if self.robot_index % 2 == 0 else -1.0
-        self.sct_decision_log_path: Optional[Path] = None
-        self.sct_summary_log_path: Optional[Path] = None
-        self.sct_event_counts: Dict[str, int] = {}
         self.supervisor_started_at = time.time()
-
-        self._init_sct_decision_log()
+        self.decision_logger = SctDecisionLogger(
+            enabled=self.sct_decision_log_enabled,
+            robot=self.ns,
+            results_dir=self.results_dir,
+            yaml_path=self.explicit_yaml_path,
+            total_robots=self.total_robots,
+            run_id=self.run_id,
+        )
 
 
         # -------------------------------
@@ -251,10 +228,6 @@ class RobotSupervisor(Node):
         self.task_progress_event_pub = self.create_publisher(
             String, "task_progress_event", 10
         )
-        self.delete_entity_client = self.create_client(
-            DeleteEntity, "/world/random_world/remove"
-        )
-
         self.sub_zone = self.create_subscription(String, "detected_zones", self.zone_callback, 10)
         self.create_subscription(
             String,
@@ -292,12 +265,12 @@ class RobotSupervisor(Node):
             "EV_move_backward": ActionSpec(linear_x=-0.2, angular_z=0.0, hold_s=self.recovery_back_hold_s),
             "EV_rotate_clockwise": ActionSpec(
                 linear_x=0.0,
-                angular_z=-self.rotate_90_omega,
+                angular_z=-self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             ),
             "EV_rotate_counterclockwise": ActionSpec(
                 linear_x=0.0,
-                angular_z=self.rotate_90_omega,
+                angular_z=self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             ),
             # full_rotate is executed as an atomic rotation using odom; target is full_rotate_target_rad (≤ π here).
@@ -362,36 +335,6 @@ class RobotSupervisor(Node):
         self.executed_event_pub.publish(String(data=self._current_command_event_label()))
         self.cmd_pub.publish(twist)
 
-    def _run_log_dir(self) -> Path:
-        if self.results_dir:
-            base_dir = Path(self.results_dir)
-            yaml_group = Path(self.explicit_yaml_path).stem if self.explicit_yaml_path else "unknown_yaml"
-            group_dir = base_dir / yaml_group / f"robots_{self.total_robots}"
-            return group_dir / self.run_id if self.run_id else group_dir
-        return Path.cwd()
-
-    def _init_sct_decision_log(self):
-        if not self.sct_decision_log_enabled:
-            return
-
-        log_dir = self._run_log_dir()
-        log_dir.mkdir(parents=True, exist_ok=True)
-        self.sct_decision_log_path = log_dir / f"selected_events_{self.ns}.csv"
-        self.sct_summary_log_path = log_dir / f"event_percentages_{self.ns}.csv"
-
-        if not self.sct_decision_log_path.exists():
-            with self.sct_decision_log_path.open("w", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow([
-                    "elapsed_s",
-                    "robot",
-                    "selected_event",
-                    "uncontrollable_events",
-                    "raw_zone",
-                ])
-
-
-
     def _snapshot_sct_inputs(self, now: float):
         effective_zones = self._effective_obstacle_zones()
         depth_obstacles = {"LEFT", "RIGHT", "CORNER"}
@@ -423,37 +366,12 @@ class RobotSupervisor(Node):
             else:
                 self.get_logger().info(f"Triggered uncontrollable event: {event}")
 
-        if not self.sct_decision_log_enabled or self.sct_decision_log_path is None:
-            return
-
-        if ce_exists:
-            self.sct_event_counts[selected_event] = self.sct_event_counts.get(selected_event, 0) + 1
-
-        with self.sct_decision_log_path.open("a", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                f"{snapshot['elapsed_s']:.3f}",
-                self.ns,
-                selected_event,
-                "|".join(uncontrollable_events) or "none",
-                snapshot["raw_zone"],
-            ])
-
-    def _write_sct_event_summary(self):
-        if not self.sct_decision_log_enabled or self.sct_summary_log_path is None:
-            return
-
-        total = sum(self.sct_event_counts.values())
-        with self.sct_summary_log_path.open("w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["robot", "selected_event", "count", "percentage"])
-            for event, count in sorted(self.sct_event_counts.items()):
-                percentage = (100.0 * count / total) if total else 0.0
-                writer.writerow([self.ns, event, count, f"{percentage:.3f}"])
-            writer.writerow([self.ns, "TOTAL", total, "100.000" if total else "0.000"])
+        self.decision_logger.log(
+            selected_event, ce_exists, uncontrollable_events, snapshot
+        )
 
     def destroy_node(self):
-        self._write_sct_event_summary()
+        self.decision_logger.write_summary()
         super().destroy_node()
 
     def _current_command_event_label(self) -> str:
@@ -461,8 +379,6 @@ class RobotSupervisor(Node):
             return "CONTACT_RECOVERY"
         if self.full_rotate_active:
             return self.active_event or "FULL_ROTATE"
-        if self.rotate_90_active:
-            return self.active_event or "ROTATE_90"
         return self.active_event or "none"
 
     # -------------------------------
@@ -474,7 +390,6 @@ class RobotSupervisor(Node):
         return (
             now < self.contact_recovery_until
             or self.full_rotate_active
-            or self.rotate_90_active
             or now < self.turn_settle_until
             or (self.active_event is not None and now < self.motion_until)
         )
@@ -577,55 +492,6 @@ class RobotSupervisor(Node):
             self.get_logger().info(
                 f"Delivery goal {color} reached; waiting for all robots."
             )
-
-    def _shutdown_after_completion(self):
-        """Remove the completed robot, then shut down its supervisor."""
-        if self.completion_shutdown_timer is not None:
-            self.completion_shutdown_timer.cancel()
-        self._publish_stop()
-        if not self.delete_entity_client.service_is_ready():
-            self.get_logger().warning(
-                "Gazebo delete service is unavailable; shutting down without removal."
-            )
-            self._finish_completion_shutdown()
-            return
-
-        if self.completion_delete_requested:
-            return
-        self.completion_delete_requested = True
-        request = DeleteEntity.Request()
-        request.entity = Entity(name=self.ns, type=Entity.MODEL)
-        future = self.delete_entity_client.call_async(request)
-        future.add_done_callback(self._entity_delete_done)
-        self.completion_delete_timeout_timer = self.create_timer(
-            1.0, self._entity_delete_timeout
-        )
-
-    def _entity_delete_done(self, future):
-        if self.completion_delete_timeout_timer is not None:
-            self.completion_delete_timeout_timer.cancel()
-        try:
-            response = future.result()
-            if response.success:
-                self.get_logger().info(f"Removed completed model '{self.ns}'.")
-            else:
-                self.get_logger().warning(
-                    f"Gazebo did not remove completed model '{self.ns}'."
-                )
-        except Exception as exc:
-            self.get_logger().warning(f"Robot removal failed: {exc}")
-        self._finish_completion_shutdown()
-
-    def _entity_delete_timeout(self):
-        if self.completion_delete_timeout_timer is not None:
-            self.completion_delete_timeout_timer.cancel()
-        self.get_logger().warning("Timed out waiting for Gazebo robot removal.")
-        self._finish_completion_shutdown()
-
-    def _finish_completion_shutdown(self):
-        self.get_logger().info("Completion delivery finished; shutting down.")
-        if rclpy.ok():
-            rclpy.shutdown()
 
     def _release_deferred_color_events(self):
         """Release the latest observations after the current action finishes."""
@@ -744,7 +610,6 @@ class RobotSupervisor(Node):
             self.contact_recovery_turn_sign = -1.0
         self.contact_recovery_source = self._contact_summary(msg)
         self.full_rotate_active = False
-        self.rotate_90_active = False
         self.active_event = None
         self.motion_until = 0.0
         self.get_logger().info(
@@ -863,10 +728,6 @@ class RobotSupervisor(Node):
         self.full_rotate_active = False
         self.full_rotate_accum = 0.0
         self.full_rotate_started_at = 0.0
-        self.rotate_90_active = False
-        self.rotate_90_accum = 0.0
-        self.rotate_90_started_at = 0.0
-        self.rotate_90_prev_yaw = 0.0
         self.contact_recovery_until = 0.0
         self.turn_settle_until = 0.0
 
@@ -952,40 +813,6 @@ class RobotSupervisor(Node):
             )
         return done
 
-    def _start_rotate_90(self, omega: float):
-        self.rotate_90_active = True
-        self.rotate_90_started_at = time.time()
-        self.rotate_90_accum = 0.0
-
-        if self.have_odom:
-            self.rotate_90_prev_yaw = self.yaw
-        else:
-            dur = abs(self.rotate_90_target_rad / max(1e-6, abs(omega)))
-            self.motion_until = time.time() + min(dur, self.rotate_90_timeout_s)
-
-        twist = Twist()
-        twist.linear.x = 0.0
-        twist.angular.z = omega
-        self.active_twist = twist
-        self._publish_cmd(self.active_twist)
-
-    def _update_rotate_90(self) -> bool:
-        now = time.time()
-
-        if (now - self.rotate_90_started_at) > self.rotate_90_timeout_s:
-            return True
-
-        if not self.have_odom:
-            return now >= self.motion_until
-
-        dy = _wrap_to_pi(self.yaw - self.rotate_90_prev_yaw)
-        self.rotate_90_accum += abs(dy)
-        self.rotate_90_prev_yaw = self.yaw
-
-        return self.rotate_90_accum >= self.rotate_90_target_rad
-    
-    
-
     def publish_twist_for_event(self, ev_name: str):
         spec = self.action_table.get(ev_name)
 
@@ -1054,15 +881,6 @@ class RobotSupervisor(Node):
                 # self.get_logger().info(
                 #     "FULL ROTATE stopped; supervisor will select next event next tick"
                 # )
-            return
-
-        # If doing a 90-degree rotate
-        if self.rotate_90_active:
-            self._publish_cmd(self.active_twist)
-            if self._update_rotate_90():
-                self.rotate_90_active = False
-                self.last_rotate_90_completed_at = now
-                self._enter_post_turn_settle(now)
             return
 
         if now < self.turn_settle_until:

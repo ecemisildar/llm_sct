@@ -16,6 +16,7 @@
   <exec_depend>leo_gz_bringup</exec_depend>
   <exec_depend>leo_description</exec_depend>
   <exec_depend>leo_image_processing</exec_depend>
+  <exec_depend>leo_supervisor_common</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
