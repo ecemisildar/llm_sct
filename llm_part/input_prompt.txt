@@ -74,8 +74,16 @@ MANDATORY SCT RULES
 11. Every state listed in states must be reachable from initial_state. Do not create unused or unreachable states.
 12. Use short, descriptive, unique state names containing only letters, numbers, and underscores.
 13. Provide exactly one initial state, and ensure initial_state appears in states.
-14. Every name in marked_states must appear in states. Prefer marking all states unless the control objective defines a meaningful incomplete or blocking condition.
-15. Design a nonblocking specification whenever the control objective permits it: every reachable state should be marked or should have a path to a marked state.
+14. Decide explicitly which states are marked from the control objective. Mark a
+state only when it represents an acceptable completed condition, stable
+checkpoint, or legitimately repeatable mission condition. Leave transient
+states with an outstanding obligation unmarked. Do not mark all states by
+default, and never omit marked_states; use an empty array only when the control
+objective truly has no acceptable marked condition. Every name in marked_states
+must appear in states.
+15. Design a nonblocking specification whenever the control objective permits
+it: every reachable state should be marked or have a path to a marked state.
+Before returning, verify this property using the marked_states you selected.
 16. Every automaton must have a type field whose value is exactly specification. Plant output is forbidden.
 17. Every name must be short and contain only letters, numbers, and underscores. Every name must end with _specification.
 18. Generate at least one specification, but generate as many separate specifications as the control objective genuinely requires. Every generated specification must have a unique name.
@@ -104,7 +112,7 @@ Return exactly one JSON object with one top-level field named automata. Its valu
       "name": "example_specification",
       "states": ["waiting", "green_detected"],
       "initial_state": "waiting",
-      "marked_states": ["waiting", "green_detected"],
+      "marked_states": ["green_detected"],
       "transitions": [
         "(\"waiting\", \"green_visible\", \"green_detected\")",
         "(\"waiting\", \"task_search_green\", \"waiting\")",
@@ -130,6 +138,10 @@ Before returning the JSON, silently verify all of the following:
 - Every specification event is present in at least one supplied fixed plant.
 - All transition sources and targets appear in states.
 - initial_state and every marked state appear in states.
+- marked_states is an explicit semantic decision for each automaton rather than
+  an automatic list of all states.
+- Every reachable unmarked state has a path to a marked state whenever the
+  control objective permits a nonblocking specification.
 - Every state is reachable from initial_state.
 
 Return only the JSON object.

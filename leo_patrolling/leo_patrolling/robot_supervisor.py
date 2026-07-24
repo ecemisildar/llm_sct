@@ -7,12 +7,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
-from geometry_msgs import msg
 import rclpy
 from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool, Int32, String
+from std_msgs.msg import Bool, Float32, Int32, String
 from nav_msgs.msg import Odometry
 from ros_gz_interfaces.msg import Contacts, Entity
 from ros_gz_interfaces.srv import DeleteEntity
@@ -22,7 +21,7 @@ from leo_patrolling.sct import SCT
 from leo_supervisor_common.decision_logger import SctDecisionLogger
 
 
-TARGET_COLOR_ORDER = ("red", "green", "blue")
+DEFAULT_TARGET_COLOR_ORDER = ("red", "green", "blue")
 
 
 @dataclass
@@ -69,8 +68,6 @@ class RobotSupervisor(Node):
             ),
         )
         self.completion_shutdown_timer = None
-        self.completion_delete_timeout_timer = None
-        self.completion_delete_requested = False
         self.task_complete_sent = False
 
         # Full-rotate execution settings
@@ -160,8 +157,42 @@ class RobotSupervisor(Node):
         )
         self.pending_color_events = set()
         self.deferred_color_events = {}
+        configured_color_order = str(
+            self.declare_parameter(
+                "target_color_order", ",".join(DEFAULT_TARGET_COLOR_ORDER)
+            ).value
+        )
+        parsed_color_order = tuple(
+            color.strip().casefold()
+            for color in configured_color_order.split(",")
+            if color.strip()
+        )
+        if (
+            len(parsed_color_order) != len(DEFAULT_TARGET_COLOR_ORDER)
+            or set(parsed_color_order) != set(DEFAULT_TARGET_COLOR_ORDER)
+        ):
+            self.get_logger().warning(
+                f"Invalid target_color_order '{configured_color_order}'; "
+                "using red,green,blue."
+            )
+            parsed_color_order = DEFAULT_TARGET_COLOR_ORDER
+        self.target_color_order = parsed_color_order
+        self.target_colors = frozenset(parsed_color_order)
+        self.color_horizontal_offsets = {
+            color: float("nan") for color in DEFAULT_TARGET_COLOR_ORDER
+        }
+        self.approach_steering_gain = float(
+            self.declare_parameter("approach_steering_gain", 1.2).value
+        )
+        self.approach_linear_x = float(
+            self.declare_parameter("approach_linear_x", 0.20).value
+        )
         self.reached_colors = set()
+        self.reached_color_sequence = []
         self.all_colors_reached = False
+        self.get_logger().info(
+            "Required color order: " + " -> ".join(self.target_color_order)
+        )
 
         # -------------------------------
         # Load SCT YAML
@@ -237,7 +268,6 @@ class RobotSupervisor(Node):
         self.delete_entity_client = self.create_client(
             DeleteEntity, "/world/random_world/remove"
         )
-
         self.sub_zone = self.create_subscription(String, "detected_zones", self.zone_callback, 10)
         self.create_subscription(
             String,
@@ -245,6 +275,17 @@ class RobotSupervisor(Node):
             self.color_event_callback,
             10,
         )
+        self.color_offset_subscriptions = [
+            self.create_subscription(
+                Float32,
+                f"{color}_horizontal_offset",
+                lambda message, color=color: self.color_offset_callback(
+                    color, message
+                ),
+                10,
+            )
+            for color in DEFAULT_TARGET_COLOR_ORDER
+        ]
         self.sub_odom = self.create_subscription(Odometry, "odom", self.odom_callback, 10)
         self.sub_contact = self.create_subscription(
             Contacts,
@@ -409,6 +450,9 @@ class RobotSupervisor(Node):
 
         self._accept_color_event(event)
 
+    def color_offset_callback(self, color: str, message: Float32):
+        self.color_horizontal_offsets[color] = float(message.data)
+
     def _accept_color_event(self, event: str):
         """Queue a color event when no motion event is executing."""
         color = event.split("_")[1]
@@ -429,23 +473,25 @@ class RobotSupervisor(Node):
         if color in self.reached_colors:
             return
 
-        expected_color = TARGET_COLOR_ORDER[len(self.reached_colors)]
+        expected_color = self.target_color_order[len(self.reached_colors)]
         if color != expected_color:
             self.get_logger().warning(
-                f"Reached {color} out of order; waiting for {expected_color}."
+                f"Reached {color} out of order; next required color is "
+                f"{expected_color}. This reach does not count."
             )
             return
 
         self.reached_colors.add(color)
+        self.reached_color_sequence.append(color)
         self.task_progress_pub.publish(Int32(data=len(self.reached_colors)))
         self.task_progress_event_pub.publish(String(data=color))
         self.get_logger().info(
             f"Reached {color}; progress: "
-            f"{len(self.reached_colors)}/{len(TARGET_COLOR_ORDER)} colors"
+            f"{len(self.reached_colors)}/{len(self.target_colors)} colors"
         )
 
         if (
-            len(self.reached_colors) == len(TARGET_COLOR_ORDER)
+            self.reached_colors == self.target_colors
             and not self.task_complete_sent
         ):
             self.all_colors_reached = True
@@ -453,61 +499,49 @@ class RobotSupervisor(Node):
             self.task_complete_pub.publish(Bool(data=True))
             self._publish_stop()
             self.get_logger().info(
-                "Targets reached in red, green, blue order; final events published."
+                "All color targets reached in order "
+                f"{', '.join(self.reached_color_sequence)}; "
+                "final events published."
             )
             self.completion_shutdown_timer = self.create_timer(
                 self.completion_shutdown_delay,
-                self._shutdown_after_completion,
+                self._hold_after_completion,
             )
 
-    def _shutdown_after_completion(self):
-        """Remove the completed robot, then shut down its supervisor."""
+    def _hold_after_completion(self):
+        """Delete a completed robot model from Gazebo."""
         if self.completion_shutdown_timer is not None:
             self.completion_shutdown_timer.cancel()
         self._publish_stop()
         if not self.delete_entity_client.service_is_ready():
             self.get_logger().warning(
-                "Gazebo delete service is unavailable; shutting down without removal."
+                "Gazebo remove service is unavailable; completed robot will "
+                "remain stopped in place."
             )
-            self._finish_completion_shutdown()
             return
 
-        if self.completion_delete_requested:
-            return
-        self.completion_delete_requested = True
         request = DeleteEntity.Request()
         request.entity = Entity(name=self.ns, type=Entity.MODEL)
         future = self.delete_entity_client.call_async(request)
-        future.add_done_callback(self._entity_delete_done)
-        self.completion_delete_timeout_timer = self.create_timer(
-            1.0, self._entity_delete_timeout
-        )
+        future.add_done_callback(self._deletion_done)
 
-    def _entity_delete_done(self, future):
-        if self.completion_delete_timeout_timer is not None:
-            self.completion_delete_timeout_timer.cancel()
+    def _deletion_done(self, future):
         try:
             response = future.result()
             if response.success:
-                self.get_logger().info(f"Removed completed model '{self.ns}'.")
+                self.get_logger().info(
+                    "Deleted completed robot from Gazebo; waiting "
+                    "for the remaining robots."
+                )
             else:
                 self.get_logger().warning(
-                    f"Gazebo did not remove completed model '{self.ns}'."
+                    "Gazebo did not delete the completed robot; it remains "
+                    "stopped in place."
                 )
         except Exception as exc:
-            self.get_logger().warning(f"Robot removal failed: {exc}")
-        self._finish_completion_shutdown()
-
-    def _entity_delete_timeout(self):
-        if self.completion_delete_timeout_timer is not None:
-            self.completion_delete_timeout_timer.cancel()
-        self.get_logger().warning("Timed out waiting for Gazebo robot removal.")
-        self._finish_completion_shutdown()
-
-    def _finish_completion_shutdown(self):
-        self.get_logger().info("Completion delivery finished; shutting down.")
-        if rclpy.ok():
-            rclpy.shutdown()
+            self.get_logger().warning(
+                f"Could not delete completed robot from Gazebo: {exc}"
+            )
 
     def _release_deferred_color_events(self):
         """Release the latest observations after the current action finishes."""
@@ -854,6 +888,18 @@ class RobotSupervisor(Node):
             return ActionSpec(
                 angular_z=search_sign * self.short_rotation_omega,
                 hold_s=self.supervisor_period,
+            )
+        if ev_name.startswith("EV_task_approach_"):
+            color = ev_name.removeprefix("EV_task_approach_")
+            offset = self.color_horizontal_offsets.get(color, float("nan"))
+            angular_z = (
+                -self.approach_steering_gain * offset
+                if math.isfinite(offset)
+                else 0.0
+            )
+            return ActionSpec(
+                linear_x=self.approach_linear_x,
+                angular_z=angular_z,
             )
         if ev_name == "EV_task_move_backward":
             if "BACK" in zones:

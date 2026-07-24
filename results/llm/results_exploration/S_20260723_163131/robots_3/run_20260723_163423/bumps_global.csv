@@ -1,5 +1,0 @@
-stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
-68,"('robot_1', 'robot_2')",left,right,EV_task_rotate_clockwise,EV_move_forward
-77,"('robot_0', 'box1::link::collision')",left,,EV_task_rotate_clockwise,
-77,"('robot_2', 'box1::link::collision')",left,,EV_rotate_counterclockwise,
-117,"('robot_0', 'robot_1')",right,back,none,EV_task_move_forward

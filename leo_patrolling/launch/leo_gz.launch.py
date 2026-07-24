@@ -27,7 +27,7 @@ import time
 from ament_index_python.packages import get_package_prefix, get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, Shutdown, TimerAction, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.actions import IncludeLaunchDescription, RegisterEventHandler, OpaqueFunction
 from launch.event_handlers import OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -126,6 +126,11 @@ def generate_launch_description():
         ),
         description="YAML file to copy into each run folder",
     )
+    target_color_order = DeclareLaunchArgument(
+        "target_color_order",
+        default_value="red,green,blue",
+        description="Required patrolling color order, as comma-separated names",
+    )
 
     # Setup to launch the simulator and Gazebo world
     gz_args = PythonExpression([
@@ -157,6 +162,7 @@ def generate_launch_description():
             "random_seed": LaunchConfiguration("random_seed"),
             "results_dir": LaunchConfiguration("results_dir"),
             "metadata_yaml_path": LaunchConfiguration("metadata_yaml_path"),
+            "target_color_order": LaunchConfiguration("target_color_order"),
         }.items(),
     )
 
@@ -190,6 +196,7 @@ def generate_launch_description():
             random_seed,
             results_dir,
             metadata_yaml_path,
+            target_color_order,
             gz_sim,
             spawn_robot,
             topic_bridge,
@@ -197,12 +204,6 @@ def generate_launch_description():
                 OnShutdown(
                     on_shutdown=[OpaqueFunction(function=_kill_gazebo_processes)],
                 )
-            ),
-            TimerAction(
-                period=LaunchConfiguration("run_duration"),
-                actions=[
-                    Shutdown(reason="Run duration reached"),
-                ],
             ),
         ]
     )

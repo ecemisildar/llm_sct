@@ -1,1 +1,0 @@
-Robots should draw a big spiral to explore the environment.

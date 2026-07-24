@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -40,6 +41,33 @@ def newest_yaml(directory: Path = DEFAULT_YAML_DIR) -> Path:
     return candidates[-1]
 
 
+def color_order_for_run(args: argparse.Namespace, yaml_path: Path) -> tuple[str, ...]:
+    if args.color_order:
+        colors = tuple(
+            color.strip().casefold()
+            for color in args.color_order.split(",")
+            if color.strip()
+        )
+    else:
+        prompt_path = yaml_path.with_suffix(".prompt.txt")
+        prompt = (
+            prompt_path.read_text(encoding="utf-8")
+            if prompt_path.is_file()
+            else ""
+        )
+        colors = tuple(dict.fromkeys(
+            match.casefold()
+            for match in re.findall(r"\b(red|green|blue)\b", prompt, re.IGNORECASE)
+        ))
+        if not colors:
+            colors = ("red", "green", "blue")
+    if len(colors) != 3 or set(colors) != {"red", "green", "blue"}:
+        raise ValueError(
+            "Color order must contain red, green, and blue exactly once"
+        )
+    return colors
+
+
 def build_launch_command(args: argparse.Namespace) -> tuple[list[str], Path, Path]:
     mission = MISSIONS[args.mission]
     yaml_path = (
@@ -66,6 +94,10 @@ def build_launch_command(args: argparse.Namespace) -> tuple[list[str], Path, Pat
         f"headless:={'true' if args.headless else 'false'}",
         f"random_seed:={args.random_seed}",
     ]
+    if args.mission == "patrolling":
+        command.append(
+            "target_color_order:=" + ",".join(color_order_for_run(args, yaml_path))
+        )
     return command, yaml_path, mission_results
 
 
@@ -103,6 +135,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--total-robots", type=int, default=3)
     parser.add_argument("--run-duration", type=float, default=300.0)
     parser.add_argument("--random-seed", default="auto")
+    parser.add_argument(
+        "--color-order",
+        help=(
+            "Patrolling order as comma-separated colors. By default it is "
+            "derived from the YAML's sibling .prompt.txt file."
+        ),
+    )
     parser.add_argument("--headless", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--results-root", default=str(DEFAULT_RESULTS_ROOT))
     parser.add_argument(

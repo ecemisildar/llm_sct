@@ -47,6 +47,11 @@ class CoverageCounter(Node):
         self.shutdown_on_task_complete = bool(
             self.declare_parameter("shutdown_on_task_complete", False).value
         )
+        self.wait_for_all_task_completion = bool(
+            self.declare_parameter(
+                "wait_for_all_task_completion", False
+            ).value
+        )
         self.task_progress_on_complete = int(
             self.declare_parameter("task_progress_on_complete", 3).value
         )
@@ -111,6 +116,7 @@ class CoverageCounter(Node):
             for robot_index in range(self.total_robots)
         }
         self.task_completion_duration = None
+        self._nominal_timeout_reported = False
         # grid
         self.env_min = -5
         self.env_max = 5
@@ -263,6 +269,17 @@ class CoverageCounter(Node):
     def _on_timeout_timer(self):
         elapsed = time.time() - self._wall_start
         if elapsed >= self.run_duration:
+            if (
+                self.wait_for_all_task_completion
+                and len(self.completed_robots) < self.total_robots
+            ):
+                if not self._nominal_timeout_reported:
+                    self._nominal_timeout_reported = True
+                    self._write_status(
+                        f"Nominal duration reached ({self.run_duration}s), "
+                        "but robots remain unfinished; continuing simulation.\n"
+                    )
+                return
             self._write_status(f"Timeout reached ({self.run_duration}s). Saving + shutdown.\n")
             self.shutdown_and_save()
 

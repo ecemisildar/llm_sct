@@ -284,17 +284,15 @@ def build_xml(
     if len(initial) != 1:
         raise ValueError(f"Expected exactly one initial state, found: {initial}")
 
-    marked_value = payload.get("marked_states", payload.get("marked"))
+    if "marked_states" not in payload:
+        raise ValueError(
+            "Each generated automaton must explicitly contain 'marked_states'; "
+            "the LLM must decide which states represent acceptable conditions"
+        )
+    marked_value = payload["marked_states"]
+    if not isinstance(marked_value, list):
+        raise ValueError("'marked_states' must be a list")
     marked = set(string_list(marked_value, "marked_states"))
-    if not marked and marked_value is None:
-        if any("marked" in options for options in state_options.values()):
-            marked = {
-                name
-                for name, options in state_options.items()
-                if bool(options.get("marked", False))
-            }
-        else:
-            marked = set(state_names)
 
     unknown_states = (set(initial) | marked) - set(state_names)
     if unknown_states:

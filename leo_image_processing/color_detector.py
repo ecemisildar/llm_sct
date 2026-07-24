@@ -25,7 +25,9 @@ class ColorDetector(Node):
         self.declare_parameter("rgb_topic", "depth_camera/image")
         self.declare_parameter("reached_distance", 1.0)
         self.declare_parameter("min_color_pixels", 4)
-        self.declare_parameter("visible_width_ratio", 0.50)
+        self.declare_parameter("visible_width_ratio", 0.90)
+        self.declare_parameter("visibility_on_frames", 2)
+        self.declare_parameter("visibility_off_frames", 5)
         self.declare_parameter("min_channel", 80)
         self.declare_parameter("channel_margin", 35)
         self.declare_parameter("heartbeat_period_s", 5.0)
@@ -45,6 +47,12 @@ class ColorDetector(Node):
         self.last_rgb_frame_at: Optional[float] = None
         self.last_heartbeat_at = time.monotonic()
         self.last_heartbeat_frame_count = 0
+        self.visibility_state = {color: False for color in COLORS}
+        self.visible_frame_counts = {color: 0 for color in COLORS}
+        self.missing_frame_counts = {color: 0 for color in COLORS}
+        self.last_horizontal_offsets = {
+            color: float("nan") for color in COLORS
+        }
         self.visible_publishers = {
             color: self.create_publisher(Bool, f"{color}_visible", 10)
             for color in COLORS
@@ -55,6 +63,12 @@ class ColorDetector(Node):
         }
         self.distance_publishers = {
             color: self.create_publisher(Float32, f"{color}_distance", 10)
+            for color in COLORS
+        }
+        self.horizontal_offset_publishers = {
+            color: self.create_publisher(
+                Float32, f"{color}_horizontal_offset", 10
+            )
             for color in COLORS
         }
         self.event_publisher = self.create_publisher(String, "color_events", 10)
@@ -226,14 +240,50 @@ class ColorDetector(Node):
         if self.task_completed:
             return
         min_pixels = int(self.get_parameter("min_color_pixels").value)
+        full_masks = self.color_masks(rgb)
         masks = {
             color: self.visible_region(mask)
-            for color, mask in self.color_masks(rgb).items()
+            for color, mask in full_masks.items()
         }
-        visible_by_color = {
-            color: int(np.count_nonzero(mask)) >= min_pixels
-            for color, mask in masks.items()
-        }
+        on_frames = max(
+            1, int(self.get_parameter("visibility_on_frames").value)
+        )
+        off_frames = max(
+            1, int(self.get_parameter("visibility_off_frames").value)
+        )
+        visible_by_color = {}
+        for color in COLORS:
+            detected = int(np.count_nonzero(masks[color])) >= min_pixels
+            if detected:
+                self.visible_frame_counts[color] += 1
+                self.missing_frame_counts[color] = 0
+                if self.visible_frame_counts[color] >= on_frames:
+                    self.visibility_state[color] = True
+            else:
+                self.visible_frame_counts[color] = 0
+                self.missing_frame_counts[color] += 1
+                if self.missing_frame_counts[color] >= off_frames:
+                    self.visibility_state[color] = False
+            visible_by_color[color] = self.visibility_state[color]
+
+            pixel_columns = np.flatnonzero(full_masks[color]) % rgb.shape[1]
+            if pixel_columns.size >= min_pixels:
+                horizontal_offset = float(
+                    np.clip(
+                        (2.0 * float(np.mean(pixel_columns))
+                         / max(1, rgb.shape[1] - 1)) - 1.0,
+                        -1.0,
+                        1.0,
+                    )
+                )
+                self.last_horizontal_offsets[color] = horizontal_offset
+            elif visible_by_color[color]:
+                horizontal_offset = self.last_horizontal_offsets[color]
+            else:
+                horizontal_offset = float("nan")
+            self.horizontal_offset_publishers[color].publish(
+                Float32(data=horizontal_offset)
+            )
         self.any_color_visible_publisher.publish(
             Bool(data=any(visible_by_color.values()))
         )

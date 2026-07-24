@@ -1,6 +1,0 @@
-Create a repeating zigzag exploration policy:
-three task_move_forward actions, one task_rotate_clockwise action,
-three task_move_forward actions, one task_rotate_counterclockwise action.
-Use explicit states for every step and enable exactly one controllable task
-event per state. Obstacle observations must not reset the zigzag phase.Whenever obstacle_front occurs, enable only task_move_forward.
-Never request a rotation near obstacles.Robots should draw a big spiral to explore the environment.

@@ -16,4 +16,8 @@ def generate_launch_description():
     return module.generate_multi_robot_launch(
         "leo_patrolling",
         enable_color_detector=True,
+        enable_color_order=True,
+        shutdown_on_task_complete=True,
+        wait_for_all_task_completion=True,
+        task_progress_on_complete=3,
     )

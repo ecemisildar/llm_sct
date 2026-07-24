@@ -25,6 +25,7 @@ ENV_MAX = 5
 GRID_SIZE = 1.0
 OBSTACLE_OCCUPANCY_THRESHOLD = 0.4
 CIRCLE_OBSTACLE_OCCUPANCY_THRESHOLD = 0.05
+DEFAULT_TARGET_CIRCLE_RADIUS = 1.075
 def pick_latest_run_dir(results_dirs: list[Path]) -> tuple[str, Path, Path]:
     run_dirs = []
     legacy_runs = []
@@ -221,6 +222,7 @@ def load_colored_target_circles(world_sdf: Path):
         if color is None:
             continue
         model_pose = parse_pose(model.findtext("pose"))
+        model_targets = []
         for link in model.findall("link"):
             link_pose = parse_pose(link.findtext("pose"))
             for visual in link.findall("visual"):
@@ -230,12 +232,23 @@ def load_colored_target_circles(world_sdf: Path):
                 if not radius_text:
                     continue
                 visual_pose = parse_pose(visual.findtext("pose"))
-                targets.append((
+                model_targets.append((
                     model_pose[0] + link_pose[0] + visual_pose[0],
                     model_pose[1] + link_pose[1] + visual_pose[1],
                     float(radius_text),
                     color,
                 ))
+        # The Gazebo reach-circle visuals may be commented out to keep them
+        # out of the RGB camera. Still show the detector's reach area on the
+        # offline map using the target model's world position.
+        if not model_targets:
+            model_targets.append((
+                model_pose[0],
+                model_pose[1],
+                DEFAULT_TARGET_CIRCLE_RADIUS,
+                color,
+            ))
+        targets.extend(model_targets)
     return targets
 
 

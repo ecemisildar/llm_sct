@@ -69,7 +69,10 @@ def generate_multi_robot_launch(
     mission_package: str,
     *,
     enable_color_detector: bool,
+    enable_color_order: bool = False,
     shutdown_on_task_complete: bool = False,
+    wait_for_all_task_completion: bool = False,
+    task_progress_on_complete: int = 1,
 ):
 
     leo_description = get_package_share_directory("leo_description")
@@ -106,7 +109,11 @@ def generate_multi_robot_launch(
         evaluation_parameters.extend(
             [
                 {"shutdown_on_task_complete": True},
-                {"task_progress_on_complete": 1},
+                {"task_progress_on_complete": task_progress_on_complete},
+                {
+                    "wait_for_all_task_completion":
+                    wait_for_all_task_completion
+                },
             ]
         )
     evaluation_parameters.append(
@@ -126,6 +133,14 @@ def generate_multi_robot_launch(
             )
         }
     )
+    if enable_color_order:
+        evaluation_parameters.append(
+            {
+                "launch_target_color_order": ParameterValue(
+                    LaunchConfiguration("target_color_order"), value_type=str
+                )
+            }
+        )
 
     plot_node = Node(
             package="evaluation",
@@ -177,6 +192,7 @@ def generate_multi_robot_launch(
         bridge_args += [
             "/world/random_world/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
             "/world/random_world/remove@ros_gz_interfaces/srv/DeleteEntity",
+            "/world/random_world/set_pose@ros_gz_interfaces/srv/SetEntityPose",
         ]
 
         bridge_node = Node(
@@ -257,19 +273,25 @@ def generate_multi_robot_launch(
                 output="screen",
             )
 
+            behavior_parameters = [
+                {"motion_hold_duration": 1.0},
+                {"supervisor_yaml_path": LaunchConfiguration("metadata_yaml_path")},
+                {"random_seed": random_seed},
+                {"run_id": run_id},
+                {"results_dir": LaunchConfiguration("results_dir")},
+                {"total_robots": LaunchConfiguration("total_robots")},
+            ]
+            if enable_color_order:
+                behavior_parameters.append(
+                    {"target_color_order": LaunchConfiguration("target_color_order")}
+                )
+
             behavior_node = Node(
                 package=mission_package,
                 executable="robot_supervisor",
                 name="robot_supervisor",
                 namespace=ns,
-                parameters=[
-                    {"motion_hold_duration": 1.0},
-                    {"supervisor_yaml_path": LaunchConfiguration("metadata_yaml_path")},
-                    {"random_seed": random_seed},
-                    {"run_id": run_id},
-                    {"results_dir": LaunchConfiguration("results_dir")},
-                    {"total_robots": LaunchConfiguration("total_robots")},
-                ],
+                parameters=behavior_parameters,
                 remappings=[("cmd_vel", "cmd_vel_supervisor")],
                 output="screen",
             )
@@ -378,11 +400,14 @@ def generate_multi_robot_launch(
                 )
             )
         )
+    if not wait_for_all_task_completion:
+        actions.append(
+            TimerAction(
+                period=LaunchConfiguration("run_duration"),
+                actions=[Shutdown(reason="run_duration reached")],
+            )
+        )
     actions.extend([
-        TimerAction(
-            period=LaunchConfiguration("run_duration"),
-            actions=[Shutdown(reason="run_duration reached")],
-        ),
         plot_node,
         Node(
             package="evaluation",
