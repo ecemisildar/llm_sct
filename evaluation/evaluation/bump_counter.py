@@ -565,6 +565,12 @@ class BumpCounter(Node):
         ra = self._robot_from_entity_name(entity_a)
         rb = self._robot_from_entity_name(entity_b)
 
+        # Wheel / chassis support on the world floor is normal operation, not
+        # an obstacle bump. This also prevents parked completed robots from
+        # producing false collision events.
+        if "ground_plane" in entity_a or "ground_plane" in entity_b:
+            return "unknown", None, None
+
         if ra and rb:
             return "robot", ra, rb
 

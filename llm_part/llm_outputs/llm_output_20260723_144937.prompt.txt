@@ -1,1 +1,0 @@
-the robot should cover the environment while sweeping considering the obstacles

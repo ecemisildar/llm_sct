@@ -6,32 +6,25 @@ Replace this paragraph with the mission, coordination, sequencing, or safety req
 TASK
 Generate only deterministic control-specification automata for the control objective above. The pipeline supplies the mission-appropriate fixed plant automata and any fixed safety specifications; their exact JSON descriptions and synthesis roles appear at the end of this request. Never generate a plant. Separate independent sequencing, coordination, safety, and mission restrictions into specifications when useful. The output will be parsed automatically and synchronized with the fixed Nadzoru automata. Return only one valid JSON object containing an automata array. Do not include Markdown, code fences, commentary, explanations, or text outside the JSON object.
 
-The request also includes the selected fixed automata as JSON. Read `fixed_synthesis_roles`: `G_plants` lists exactly the plants used to build G, while `K_fixed_specifications` lists fixed specifications added to K. Never regenerate or replace them. The fixed automata contain protected low-level motion events used exclusively by hardcoded safety logic. Never use or constrain those low-level events in generated specifications. Express mission choices only with the `task_*` controllable events listed below.
+The request also includes the selected fixed automata as JSON. Read `fixed_synthesis_roles`: `G_plants` lists exactly the plants used to build G, while `K_fixed_specifications` lists fixed specifications added to K. Never regenerate or replace them. The fixed automata contain protected low-level motion events used exclusively by hardcoded safety logic. Never use or constrain those low-level events in generated specifications. Express mission choices only with the controllable events in the authoritative task-specific event list.
 
 IMPORTANT SYNCHRONIZATION SEMANTICS: an event omitted from a specification's alphabet is private to the other synchronized automata and is therefore NOT disabled by that specification. If a mission must prevent an action in a state, include that event somewhere in the same specification's alphabet and omit its transition from the states where it must be disabled. Merely omitting an action from the entire specification does not constrain it.
 
-For a mission that searches for and approaches targets, model both phases explicitly for each target:
+For a mission that searches for and approaches targets, model both phases explicitly for each target. Patrolling uses generic `search_color` and `approach_color` events; the runtime resolves them to the currently required color. Delivery uses per-color `task_search_<color>` and `task_approach_<color>` events.
 
-- In a search state, enable the corresponding `task_search_<color>` event so the runtime can safely acquire the requested target.
+- In a patrolling search state, enable `search_color`; in a delivery search state, enable the corresponding `task_search_<color>`.
 - On the requested target's *_visible event, enter its approach state.
-- In the approach state, enable the corresponding `task_approach_<color>` event so the runtime can safely drive toward the visible target.
+- In a patrolling approach state, enable `approach_color`; in a delivery approach state, enable the corresponding `task_approach_<color>`.
 - On the requested target's *_not_visible event, return to its search state so the robot reacquires it.
 - On the requested target's *_reached event, advance to the next target's search state.
-- Include only the appropriate `task_*` controllable events for each mission phase.
-- Do not add protected publication, reception, or skip events. Sequential target visits use only task search/approach requests and color observations.
+- Include only the appropriate authoritative controllable events for each mission phase.
+- Do not add protected publication, reception, or skip events. Sequential target visits use only the mission's search/approach requests and color observations.
 
 TARGET REACHED EVENT PRIORITY
 
 The runtime publishes exactly one color event per camera update. If a target is within its reached distance, it publishes `<color>_reached` instead of `<color>_visible`. Therefore, `<color>_reached` may occur without a preceding `<color>_visible` event.
 
-For every requested target phase, both its search state and its approach state must explicitly accept the corresponding reached event and advance to the same next mission phase. For a red, then green, then blue sequence, the required transitions are:
-
-- `search_red + red_reached -> search_green`
-- `approach_red + red_reached -> search_green`
-- `search_green + green_reached -> search_blue`
-- `approach_green + green_reached -> search_blue`
-- `search_blue + blue_reached -> done`
-- `approach_blue + blue_reached -> done`
+For every requested target phase, both its search state and its approach state must explicitly accept the corresponding reached event and advance to the next color in the exact order stated by the control objective. The last requested color's reached event must advance to the done state. Never substitute a default color order.
 
 Never use a self-loop for the currently requested target's reached event. Reached events for targets that are not currently requested may be self-loops when they genuinely do not change the mission phase.
 
@@ -60,9 +53,19 @@ task-specific event list required by the CONTROL OBJECTIVE.
 MANDATORY SCT RULES
 
 1. Do NOT introduce any new controllable or uncontrollable events. Use ONLY the event names listed above, with exactly the same spelling and case.
-1a. Every generated controllable transition must use one of the listed `task_*` events. All low-level controllable events shown in fixed-automata context are forbidden.
+1a. Every generated controllable transition must use one of the authoritative mission-specific controllable events. All protected low-level controllable events shown in fixed-automata context are forbidden.
 2. Do NOT invent sensor events beyond the uncontrollable list. Events such as battery_low, target_lost, timeout, failure, or emergency_stop are forbidden because they are not in the baseline alphabet.
 3. The provided event lists define the allowed global alphabet. An automaton does NOT have to use every event. Give each plant or specification only the minimal subset relevant to the component or rule it models. Using an event merely because it appears in the allowed list is incorrect.
+3a. The events field defines the specification's local alphabet. Include every
+event used by a transition. Also include a relevant controllable event when the
+specification must disable it in some or all states, even if that event has no
+transition. An event absent from events is private to other synchronized
+automata and is not disabled by this specification.
+3b. Treat words such as "only", "never", "must not", and "do not" as explicit
+exclusion requirements. For an "only spin" objective, events must include
+`task_move_forward` as well as the permitted task rotation events, but
+transitions must contain no `task_move_forward` transition. This is how the
+specification disables forward requests during synchronization.
 4. The automaton must be deterministic. For every (state, event) pair, define exactly one next state. Never repeat a (state, event) pair, even when the repeated transition has the same target.
 5. Every transition label must be exactly one event from the lists above.
 6. For every specification, explicitly write each uncontrollable transition that changes the specification state. The converter automatically adds missing transitions as self-loops for every uncontrollable event used elsewhere in that specification, so do not write inert uncontrollable self-loops yourself.
@@ -103,7 +106,7 @@ Do not represent transitions as objects, dictionaries, maps, nested arrays, tupl
 
 REQUIRED JSON STRUCTURE
 
-Return exactly one JSON object with one top-level field named automata. Its value must be a non-empty array. Each array element must contain exactly these six fields: type, name, states, initial_state, marked_states, and transitions.
+Return exactly one JSON object with one top-level field named automata. Its value must be a non-empty array. Each array element must contain exactly these seven fields: type, name, states, initial_state, marked_states, events, and transitions.
 
 {
   "automata": [
@@ -113,10 +116,15 @@ Return exactly one JSON object with one top-level field named automata. Its valu
       "states": ["waiting", "green_detected"],
       "initial_state": "waiting",
       "marked_states": ["green_detected"],
+      "events": [
+        "green_visible",
+        "search_color",
+        "approach_color"
+      ],
       "transitions": [
         "(\"waiting\", \"green_visible\", \"green_detected\")",
-        "(\"waiting\", \"task_search_green\", \"waiting\")",
-        "(\"green_detected\", \"task_approach_green\", \"green_detected\")"
+        "(\"waiting\", \"search_color\", \"waiting\")",
+        "(\"green_detected\", \"approach_color\", \"green_detected\")"
       ]
     }
   ]
@@ -126,8 +134,11 @@ Before returning the JSON, silently verify all of the following:
 
 - The response is valid JSON.
 - The response has exactly one top-level field named automata.
-- automata is a non-empty array and every entry has exactly the six required fields.
+- automata is a non-empty array and every entry has exactly the seven required fields.
 - Every type is exactly specification, every name ends with _specification, and every automaton name is unique.
+- Every events field is a non-empty array containing the specification's exact
+  local alphabet. It includes every transition event and every relevant
+  controllable event that the specification intends to disable.
 - Every transitions field is an array containing only strings in the exact required format.
 - Every transition event belongs to one of the provided event lists.
 - Every used event is directly relevant to the CONTROL OBJECTIVE; no unrelated color, communication, target, or skip behavior is included.

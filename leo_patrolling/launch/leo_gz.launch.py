@@ -173,6 +173,7 @@ def generate_launch_description():
         name="clock_bridge",
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock",
+            "/world/random_world/set_pose@ros_gz_interfaces/srv/SetEntityPose",
         ],
         parameters=[
             {

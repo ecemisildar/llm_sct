@@ -6,6 +6,8 @@
   <description>Shared utilities for LEO task supervisors</description>
   <maintainer email="ecem@todo.todo">ecem</maintainer>
   <license>TODO: License declaration</license>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
   <export>
     <build_type>ament_python</build_type>
   </export>

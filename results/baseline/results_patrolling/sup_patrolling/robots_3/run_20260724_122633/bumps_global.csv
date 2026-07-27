@@ -1,3 +1,0 @@
-stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
-11,"('robot_0', 'robot_1')",right,back,EV_full_rotate,EV_full_rotate
-66,"('robot_0', 'robot_2')",left,right,EV_move_forward,EV_rotate_clockwise

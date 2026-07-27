@@ -4,6 +4,7 @@ import ast
 import csv
 import math
 import os
+from datetime import datetime
 from pathlib import Path
 
 import matplotlib
@@ -14,11 +15,28 @@ import xml.etree.ElementTree as ET
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
+
+
+def find_results_root() -> Path:
+    override = os.environ.get("SCT_RESULTS_ROOT", "").strip()
+    if override:
+        return Path(override).expanduser().resolve()
+
+    candidates = [Path.cwd() / "src" / "llm_sct" / "results"]
+    for parent in Path(__file__).resolve().parents:
+        if parent.name == "install":
+            candidates.append(parent.parent / "src" / "llm_sct" / "results")
+            break
+    candidates.append(PACKAGE_ROOT / "results")
+    return next((path for path in candidates if path.is_dir()), candidates[0])
+
+
+RESULTS_ROOT = find_results_root()
 RESULTS_DIRS = [
-    PACKAGE_ROOT / "results" / "baseline",
-    PACKAGE_ROOT / "results" / "llm",
+    RESULTS_ROOT / "baseline",
+    RESULTS_ROOT / "llm",
 ]
-WORLD_SDF = PACKAGE_ROOT / "worlds" / "random_world_rgb.sdf"
+WORLD_SDF = RESULTS_ROOT.parent / "worlds" / "random_world_rgb.sdf"
 
 ENV_MIN = -5
 ENV_MAX = 5
@@ -133,8 +151,43 @@ def read_visited_cells(path: Path):
     return visited
 
 
-def read_robot_paths(path: Path):
+def read_task_completion_times(path: Path):
+    completion_times = {}
+    if not path.exists():
+        return completion_times
+    with path.open("r", newline="") as f:
+        for row in csv.DictReader(f):
+            robot = (row.get("robot") or "").strip()
+            if not robot or (row.get("complete") or "").casefold() != "true":
+                continue
+            try:
+                completion_times[robot] = float(row.get("completion_s", ""))
+                continue
+            except (TypeError, ValueError):
+                pass
+            reached_times = []
+            for key in ("red_reached_s", "green_reached_s", "blue_reached_s"):
+                value = row.get(key, "")
+                try:
+                    reached_times.append(float(value))
+                except (TypeError, ValueError):
+                    pass
+            if reached_times:
+                completion_times[robot] = max(reached_times)
+    return completion_times
+
+
+def run_start_timestamp(run_id: str):
+    try:
+        return datetime.strptime(run_id, "run_%Y%m%d_%H%M%S").timestamp()
+    except ValueError:
+        return None
+
+
+def read_robot_paths(path: Path, completion_times=None, run_id=""):
+    completion_times = completion_times or {}
     paths = {}
+    rows = []
     with path.open("r", newline="") as f:
         r = csv.DictReader(f)
         for row in r:
@@ -148,7 +201,37 @@ def read_robot_paths(path: Path):
                 py = float(y)
             except ValueError:
                 continue
-            paths.setdefault(robot, []).append((px, py))
+            try:
+                stamp = float(row.get("stamp_sec", "")) + (
+                    float(row.get("stamp_nsec", "0")) * 1e-9
+                )
+            except (TypeError, ValueError):
+                stamp = None
+            try:
+                elapsed = float(row.get("elapsed_s", ""))
+            except (TypeError, ValueError):
+                elapsed = None
+            rows.append((robot, px, py, stamp, elapsed))
+    legacy_start = run_start_timestamp(run_id)
+    stamped = [stamp for _, _, _, stamp, _ in rows if stamp is not None]
+    if legacy_start is None:
+        legacy_start = min(stamped) if stamped else None
+    for robot, px, py, stamp, elapsed in rows:
+        completion = completion_times.get(robot)
+        path_elapsed = (
+            elapsed
+            if elapsed is not None
+            else stamp - legacy_start
+            if stamp is not None and legacy_start is not None
+            else None
+        )
+        if (
+            completion is not None
+            and path_elapsed is not None
+            and path_elapsed > completion
+        ):
+            continue
+        paths.setdefault(robot, []).append((px, py))
     return paths
 
 
@@ -417,6 +500,20 @@ def plot_coverage_map(cells, visited, blocked, paths, target_circles, out_png: P
             alpha=0.35,
             zorder=4,
         ))
+        ax.scatter(
+            [x], [y], marker="*", s=180, color=color,
+            edgecolor="black", linewidth=1.0, zorder=6,
+        )
+        ax.annotate(
+            f"{color.capitalize()} target",
+            (x, y),
+            xytext=(6, 6),
+            textcoords="offset points",
+            fontsize=10,
+            fontweight="bold",
+            color=color,
+            zorder=7,
+        )
 
     for robot, pts in sorted(paths.items()):
         if len(pts) < 2:
@@ -548,7 +645,13 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
     paths_csv = run_dir / "coverage_paths.csv"
     if not paths_csv.exists():
         paths_csv = root_dir / f"{run_id}_coverage_paths.csv"
-    paths = read_robot_paths(paths_csv) if paths_csv.exists() else {}
+    task_progress_csv = run_dir / "task_progress.csv"
+    completion_times = read_task_completion_times(task_progress_csv)
+    paths = (
+        read_robot_paths(paths_csv, completion_times, run_id)
+        if paths_csv.exists()
+        else {}
+    )
 
     cells = build_cells(ENV_MIN, ENV_MAX)
     world_sdf = world_sdf_for_run(run_dir)

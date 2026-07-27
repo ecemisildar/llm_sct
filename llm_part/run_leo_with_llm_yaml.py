@@ -55,15 +55,18 @@ def color_order_for_run(args: argparse.Namespace, yaml_path: Path) -> tuple[str,
             if prompt_path.is_file()
             else ""
         )
-        colors = tuple(dict.fromkeys(
+        colors = tuple(
             match.casefold()
             for match in re.findall(r"\b(red|green|blue)\b", prompt, re.IGNORECASE)
-        ))
+        )
         if not colors:
             colors = ("red", "green", "blue")
-    if len(colors) != 3 or set(colors) != {"red", "green", "blue"}:
+    if not colors:
+        raise ValueError("Color order must contain at least one color")
+    unsupported = sorted(set(colors) - {"red", "green", "blue"})
+    if unsupported:
         raise ValueError(
-            "Color order must contain red, green, and blue exactly once"
+            "Unsupported colors in order: " + ", ".join(unsupported)
         )
     return colors
 

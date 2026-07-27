@@ -79,11 +79,7 @@ def allowed_events_for_profile(
             },
         }
     else:
-        controllable = {
-            f"task_{phase}_{color}"
-            for phase in ("search", "approach")
-            for color in ("red", "green", "blue")
-        }
+        controllable = {"search_color", "approach_color"}
         uncontrollable = {**OBSTACLE_EVENTS, **COLOR_EVENTS}
     return {
         **{event: True for event in sorted(controllable)},

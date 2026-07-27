@@ -17,6 +17,8 @@ DEFAULT_JSON_DIR = SCRIPT_DIR / "llm_outputs"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR.parent / "automata" / "llm_generated_automata"
 DEFAULT_BASELINE_DIR = SCRIPT_DIR.parent / "automata" / "baseline_automata"
 ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
+    "search_color",
+    "approach_color",
     "task_move_forward",
     "task_search_red",
     "task_search_green",
@@ -308,24 +310,38 @@ def build_xml(
     if overlap:
         raise ValueError(f"Events are both controllable and uncontrollable: {sorted(overlap)}")
     event_names = ordered_unique(event for _, event, _ in transitions)
-    declared_events = payload.get("events", [])
-    if isinstance(declared_events, list):
-        for event in declared_events:
-            if isinstance(event, dict):
-                name_value = event.get("name", event.get("id"))
-                if name_value is None:
-                    raise ValueError(f"Event dictionary has no name/id: {event}")
-                name = str(name_value)
-                if bool(event.get("controllable", True)):
-                    controllable.add(name)
-                else:
-                    uncontrollable.add(name)
+    if "events" not in payload:
+        raise ValueError(
+            "Each generated automaton must explicitly contain an 'events' "
+            "list defining its local synchronization alphabet"
+        )
+    declared_events = payload["events"]
+    if not isinstance(declared_events, list) or not declared_events:
+        raise ValueError("'events' must be a non-empty list")
+    declared_event_names: list[str] = []
+    for event in declared_events:
+        if isinstance(event, dict):
+            name_value = event.get("name", event.get("id"))
+            if name_value is None:
+                raise ValueError(f"Event dictionary has no name/id: {event}")
+            name = str(name_value)
+            if bool(event.get("controllable", True)):
+                controllable.add(name)
             else:
-                name = str(event)
-            if name not in event_names:
-                event_names.append(name)
-    elif declared_events:
-        raise ValueError("'events' must be a list")
+                uncontrollable.add(name)
+        else:
+            name = str(event)
+        declared_event_names.append(name)
+        if name not in event_names:
+            event_names.append(name)
+    undeclared_transition_events = (
+        set(event for _, event, _ in transitions) - set(declared_event_names)
+    )
+    if undeclared_transition_events:
+        raise ValueError(
+            "Transition events missing from the automaton's 'events' list: "
+            f"{sorted(undeclared_transition_events)}"
+        )
 
     overlap = controllable & uncontrollable
     if overlap:
@@ -352,6 +368,13 @@ def build_xml(
             "Events are absent from the baseline automata: "
             f"{sorted(unknown_events)}"
         )
+    if allowed_generated_events is not None:
+        outside_task = set(event_names) - allowed_generated_events
+        if outside_task:
+            raise ValueError(
+                "Generated specifications declare events outside the "
+                f"task-specific event list: {sorted(outside_task)}"
+            )
 
     name = automaton_name(payload, fallback_name)
     root = ET.Element("model", version="0.0", type="FSA", id=name)

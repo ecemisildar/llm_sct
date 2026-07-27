@@ -1,0 +1,1 @@
+do not use counterclockwise turns use only clockwise turns to explore the environment

@@ -1,0 +1,5 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+49,"('robot_1', 'robot_2')",left,front,EV_task_rotate_clockwise,ZONE_ESCAPE_REVERSE
+59,"('robot_0', 'robot_2')",right,left,none,EV_task_rotate_counterclockwise
+64,"('robot_0', 'robot_2')",front,left,EV_task_rotate_clockwise,EV_task_rotate_counterclockwise
+70,"('robot_0', 'robot_2')",back,back,EV_task_rotate_counterclockwise,EV_task_rotate_counterclockwise

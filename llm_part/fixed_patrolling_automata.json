@@ -1,40 +1,39 @@
 {
   "fixed_synthesis_roles": {
-    "mission": "patrolling",
+    "mission": "exploration",
     "G_plants": [
-      "obstacle_sensor",
-      "color_sensor",
-      "motion_plant"
+      "G1",
+      "G2"
     ],
     "K_fixed_specifications": [
-      "collision_avoidance"
+      "E1"
     ],
     "llm_output_role": "specifications_only"
   },
   "fixed_automata": [
     {
-      "name": "obstacle_sensor",
+      "name": "G1",
       "type": "plant",
       "states": [
         "RIGHT",
-        "FRONT",
+        "LEFT",
         "CLEAR",
-        "LEFT"
+        "FRONT"
       ],
       "initial_state": "CLEAR",
       "marked_states": [
         "RIGHT",
-        "FRONT",
+        "LEFT",
         "CLEAR",
-        "LEFT"
+        "FRONT"
       ],
       "events": [
         {
-          "name": "obstacle_left",
+          "name": "obstacle_front",
           "controllable": false
         },
         {
-          "name": "path_clear",
+          "name": "obstacle_left",
           "controllable": false
         },
         {
@@ -42,15 +41,15 @@
           "controllable": false
         },
         {
-          "name": "obstacle_front",
+          "name": "path_clear",
           "controllable": false
         }
       ],
       "transitions": [
         {
           "source": "RIGHT",
-          "event": "path_clear",
-          "target": "CLEAR"
+          "event": "obstacle_left",
+          "target": "LEFT"
         },
         {
           "source": "RIGHT",
@@ -59,58 +58,13 @@
         },
         {
           "source": "RIGHT",
-          "event": "obstacle_right",
-          "target": "RIGHT"
+          "event": "path_clear",
+          "target": "CLEAR"
         },
         {
           "source": "RIGHT",
-          "event": "obstacle_left",
-          "target": "LEFT"
-        },
-        {
-          "source": "FRONT",
-          "event": "obstacle_left",
-          "target": "LEFT"
-        },
-        {
-          "source": "FRONT",
-          "event": "path_clear",
-          "target": "CLEAR"
-        },
-        {
-          "source": "FRONT",
-          "event": "obstacle_front",
-          "target": "FRONT"
-        },
-        {
-          "source": "FRONT",
           "event": "obstacle_right",
           "target": "RIGHT"
-        },
-        {
-          "source": "CLEAR",
-          "event": "path_clear",
-          "target": "CLEAR"
-        },
-        {
-          "source": "CLEAR",
-          "event": "obstacle_right",
-          "target": "RIGHT"
-        },
-        {
-          "source": "CLEAR",
-          "event": "obstacle_front",
-          "target": "FRONT"
-        },
-        {
-          "source": "CLEAR",
-          "event": "obstacle_left",
-          "target": "LEFT"
-        },
-        {
-          "source": "LEFT",
-          "event": "path_clear",
-          "target": "CLEAR"
         },
         {
           "source": "LEFT",
@@ -124,116 +78,65 @@
         },
         {
           "source": "LEFT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "FRONT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "FRONT",
           "event": "obstacle_left",
           "target": "LEFT"
         }
       ]
     },
     {
-      "name": "color_sensor",
+      "name": "G2",
       "type": "plant",
       "states": [
-        "detecting"
+        "READY"
       ],
-      "initial_state": "detecting",
+      "initial_state": "READY",
       "marked_states": [
-        "detecting"
-      ],
-      "events": [
-        {
-          "name": "green_visible",
-          "controllable": false
-        },
-        {
-          "name": "red_not_visible",
-          "controllable": false
-        },
-        {
-          "name": "blue_not_visible",
-          "controllable": false
-        },
-        {
-          "name": "blue_visible",
-          "controllable": false
-        },
-        {
-          "name": "green_not_visible",
-          "controllable": false
-        },
-        {
-          "name": "red_visible",
-          "controllable": false
-        },
-        {
-          "name": "red_reached",
-          "controllable": false
-        },
-        {
-          "name": "blue_reached",
-          "controllable": false
-        },
-        {
-          "name": "green_reached",
-          "controllable": false
-        }
-      ],
-      "transitions": [
-        {
-          "source": "detecting",
-          "event": "blue_visible",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "blue_not_visible",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "red_reached",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "red_visible",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "green_not_visible",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "blue_reached",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "green_reached",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "red_not_visible",
-          "target": "detecting"
-        },
-        {
-          "source": "detecting",
-          "event": "green_visible",
-          "target": "detecting"
-        }
-      ]
-    },
-    {
-      "name": "motion_plant",
-      "type": "plant",
-      "states": [
-        "ready"
-      ],
-      "initial_state": "ready",
-      "marked_states": [
-        "ready"
+        "READY"
       ],
       "events": [
         {
@@ -241,7 +144,7 @@
           "controllable": true
         },
         {
-          "name": "full_rotate",
+          "name": "rotate_clockwise",
           "controllable": true
         },
         {
@@ -249,118 +152,79 @@
           "controllable": true
         },
         {
-          "name": "rotate_clockwise",
+          "name": "full_rotate",
           "controllable": true
         },
         {
-          "name": "task_search_red",
+          "name": "task_move_forward",
           "controllable": true
         },
         {
-          "name": "task_search_green",
+          "name": "task_rotate_clockwise",
           "controllable": true
         },
         {
-          "name": "task_search_blue",
-          "controllable": true
-        },
-        {
-          "name": "task_approach_red",
-          "controllable": true
-        },
-        {
-          "name": "task_approach_green",
-          "controllable": true
-        },
-        {
-          "name": "task_approach_blue",
+          "name": "task_rotate_counterclockwise",
           "controllable": true
         }
       ],
       "transitions": [
         {
-          "source": "ready",
-          "event": "rotate_counterclockwise",
-          "target": "ready"
-        },
-        {
-          "source": "ready",
-          "event": "rotate_clockwise",
-          "target": "ready"
-        },
-        {
-          "source": "ready",
-          "event": "move_forward",
-          "target": "ready"
-        },
-        {
-          "source": "ready",
+          "source": "READY",
           "event": "full_rotate",
-          "target": "ready"
+          "target": "READY"
         },
         {
-          "source": "ready",
-          "event": "task_search_red",
-          "target": "ready"
+          "source": "READY",
+          "event": "rotate_counterclockwise",
+          "target": "READY"
         },
         {
-          "source": "ready",
-          "event": "task_search_green",
-          "target": "ready"
+          "source": "READY",
+          "event": "rotate_clockwise",
+          "target": "READY"
         },
         {
-          "source": "ready",
-          "event": "task_search_blue",
-          "target": "ready"
+          "source": "READY",
+          "event": "move_forward",
+          "target": "READY"
         },
         {
-          "source": "ready",
-          "event": "task_approach_red",
-          "target": "ready"
+          "source": "READY",
+          "event": "task_move_forward",
+          "target": "READY"
         },
         {
-          "source": "ready",
-          "event": "task_approach_green",
-          "target": "ready"
+          "source": "READY",
+          "event": "task_rotate_clockwise",
+          "target": "READY"
         },
         {
-          "source": "ready",
-          "event": "task_approach_blue",
-          "target": "ready"
+          "source": "READY",
+          "event": "task_rotate_counterclockwise",
+          "target": "READY"
         }
       ]
     },
     {
-      "name": "collision_avoidance",
+      "name": "E1",
       "type": "specification",
       "states": [
         "S_CLEAR",
         "S_FRONT",
-        "S_LEFT",
-        "S_RIGHT"
+        "S_RIGHT",
+        "S_LEFT"
       ],
       "initial_state": "S_CLEAR",
       "marked_states": [
         "S_CLEAR",
         "S_FRONT",
-        "S_LEFT",
-        "S_RIGHT"
+        "S_RIGHT",
+        "S_LEFT"
       ],
       "events": [
         {
-          "name": "rotate_clockwise",
-          "controllable": true
-        },
-        {
           "name": "path_clear",
-          "controllable": false
-        },
-        {
-          "name": "move_forward",
-          "controllable": true
-        },
-        {
-          "name": "obstacle_right",
           "controllable": false
         },
         {
@@ -368,101 +232,113 @@
           "controllable": true
         },
         {
-          "name": "obstacle_front",
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_left",
           "controllable": false
+        },
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
         },
         {
           "name": "rotate_counterclockwise",
           "controllable": true
         },
         {
-          "name": "obstacle_left",
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_front",
           "controllable": false
         }
       ],
       "transitions": [
         {
           "source": "S_CLEAR",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_CLEAR",
           "event": "move_forward",
           "target": "S_CLEAR"
         },
         {
-          "source": "S_CLEAR",
-          "event": "obstacle_front",
-          "target": "S_FRONT"
-        },
-        {
-          "source": "S_CLEAR",
-          "event": "rotate_clockwise",
-          "target": "S_CLEAR"
-        },
-        {
-          "source": "S_CLEAR",
-          "event": "path_clear",
-          "target": "S_CLEAR"
-        },
-        {
-          "source": "S_CLEAR",
-          "event": "obstacle_right",
-          "target": "S_RIGHT"
-        },
-        {
-          "source": "S_CLEAR",
-          "event": "obstacle_left",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "obstacle_left",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "rotate_clockwise",
-          "target": "S_FRONT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "full_rotate",
-          "target": "S_FRONT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "path_clear",
-          "target": "S_CLEAR"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "obstacle_right",
-          "target": "S_RIGHT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "obstacle_front",
-          "target": "S_FRONT"
-        },
-        {
           "source": "S_FRONT",
           "event": "rotate_counterclockwise",
           "target": "S_FRONT"
         },
         {
-          "source": "S_LEFT",
-          "event": "obstacle_left",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_LEFT",
-          "event": "obstacle_front",
-          "target": "S_FRONT"
-        },
-        {
-          "source": "S_LEFT",
+          "source": "S_FRONT",
           "event": "path_clear",
           "target": "S_CLEAR"
         },
         {
-          "source": "S_LEFT",
+          "source": "S_FRONT",
+          "event": "full_rotate",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "rotate_clockwise",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "rotate_counterclockwise",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_RIGHT",
           "event": "obstacle_right",
           "target": "S_RIGHT"
         },
@@ -473,65 +349,38 @@
         },
         {
           "source": "S_LEFT",
-          "event": "full_rotate",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_RIGHT",
-          "event": "obstacle_front",
-          "target": "S_FRONT"
-        },
-        {
-          "source": "S_RIGHT",
           "event": "obstacle_right",
           "target": "S_RIGHT"
         },
         {
-          "source": "S_RIGHT",
+          "source": "S_LEFT",
           "event": "path_clear",
           "target": "S_CLEAR"
         },
         {
-          "source": "S_RIGHT",
-          "event": "full_rotate",
-          "target": "S_RIGHT"
-        },
-        {
-          "source": "S_RIGHT",
+          "source": "S_LEFT",
           "event": "obstacle_left",
           "target": "S_LEFT"
         },
         {
-          "source": "S_RIGHT",
-          "event": "rotate_counterclockwise",
-          "target": "S_RIGHT"
+          "source": "S_LEFT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
         }
       ]
     }
   ],
   "llm_allowed_events": {
     "controllable": [
-      "task_approach_blue",
-      "task_approach_green",
-      "task_approach_red",
-      "task_search_blue",
-      "task_search_green",
-      "task_search_red"
+      "task_move_forward",
+      "task_rotate_clockwise",
+      "task_rotate_counterclockwise"
     ],
     "uncontrollable": [
-      "blue_not_visible",
-      "blue_reached",
-      "blue_visible",
-      "green_not_visible",
-      "green_reached",
-      "green_visible",
       "obstacle_front",
       "obstacle_left",
       "obstacle_right",
-      "path_clear",
-      "red_not_visible",
-      "red_reached",
-      "red_visible"
+      "path_clear"
     ]
   }
 }

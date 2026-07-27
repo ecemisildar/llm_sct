@@ -3,7 +3,6 @@ import random
 import math
 import re
 import time
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -19,40 +18,19 @@ from ros_gz_interfaces.msg import Contacts
 from ament_index_python.packages import get_package_share_directory
 from leo_delivery.sct import SCT
 from leo_supervisor_common.decision_logger import SctDecisionLogger
+from leo_supervisor_common.motion import (
+    ActionSpec,
+    wrap_to_pi as _wrap_to_pi,
+    yaw_from_quat as _yaw_from_quat,
+)
+from leo_supervisor_common.target_approach import TargetApproachMixin
+from leo_supervisor_common.zone_escape import ZoneLivelockEscapeMixin
 
 
 TARGET_COLORS = ("red", "green", "blue")
 
 
-@dataclass
-class ActionSpec:
-    """How to execute a controllable event in the ROS node."""
-    linear_x: float = 0.0
-    angular_z: float = 0.0
-    hold_s: Optional[float] = None          # if None -> use default hold (motion_hold_duration)
-    is_full_rotate: bool = False            # special: rotate 180 deg using odom (or timed fallback)
-
-
-def _wrap_to_pi(a: float) -> float:
-    # normalize to (-pi, pi]
-    while a <= -math.pi:
-        a += 2.0 * math.pi
-    while a > math.pi:
-        a -= 2.0 * math.pi
-    return a
-
-
-def _yaw_from_quat(q) -> float:
-    # q is geometry_msgs/Quaternion
-    # yaw from quaternion (x,y,z,w)
-    x, y, z, w = q.x, q.y, q.z, q.w
-    # yaw (Z axis)
-    siny_cosp = 2.0 * (w * z + x * y)
-    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
-    return math.atan2(siny_cosp, cosy_cosp)
-
-
-class RobotSupervisor(Node):
+class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
     def __init__(self):
         super().__init__("robot_supervisor")
 
@@ -101,6 +79,7 @@ class RobotSupervisor(Node):
         self.obstacle_zone_memory_s = float(
             self.declare_parameter("obstacle_zone_memory_s", 0.4).value
         )
+        self._initialize_zone_escape()
 
         # Random seed (per-robot namespace)
         self.ns = self.get_namespace().strip("/") or "root"
@@ -152,6 +131,7 @@ class RobotSupervisor(Node):
         self.deferred_color_events = {}
         self.pending_received_colors = set()
         self.reached_colors = set()
+        self._initialize_target_approach()
         self.all_colors_reached = False
 
         # -------------------------------
@@ -241,6 +221,7 @@ class RobotSupervisor(Node):
             self.delivery_message_callback,
             10,
         )
+        self._create_target_approach_subscriptions()
         self.sub_odom = self.create_subscription(Odometry, "odom", self.odom_callback, 10)
         self.sub_contact = self.create_subscription(
             Contacts,
@@ -383,6 +364,8 @@ class RobotSupervisor(Node):
     def _current_command_event_label(self) -> str:
         if self.contact_recovery_until > time.time():
             return "CONTACT_RECOVERY"
+        if self.escape_phase is not None:
+            return f"ZONE_ESCAPE_{self.escape_phase.upper()}"
         if self.full_rotate_active:
             return self.active_event or "FULL_ROTATE"
         return self.active_event or "none"
@@ -566,6 +549,8 @@ class RobotSupervisor(Node):
         if zone != "CLEAR":
             self.last_non_clear_obstacle_zone = zone
             self.last_non_clear_obstacle_zone_time = now
+        if zone in {"LEFT", "RIGHT"}:
+            self._record_zone_for_livelock(now, zone)
         if zone != self.last_logged_zone:
             # self.get_logger().info(f"Detected zone changed to {zone}")
             self.last_logged_zone = zone
@@ -858,6 +843,12 @@ class RobotSupervisor(Node):
                 angular_z=search_sign * self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             )
+        if ev_name.startswith("EV_task_approach_"):
+            linear_x, angular_z = self._target_approach_components(ev_name)
+            return ActionSpec(
+                linear_x=linear_x,
+                angular_z=angular_z,
+            )
         if ev_name == "EV_task_move_backward":
             if "BACK" in zones:
                 return ActionSpec()
@@ -905,6 +896,12 @@ class RobotSupervisor(Node):
             self._start_full_rotate(spec.angular_z)
             return
 
+        if self._record_motion_for_livelock(
+            time.time(), float(spec.linear_x), float(spec.angular_z)
+        ):
+            self._run_zone_escape(time.time())
+            return
+
         # Normal pulse action
         twist = Twist()
         twist.linear.x = float(spec.linear_x)
@@ -925,6 +922,10 @@ class RobotSupervisor(Node):
 
         if now < self.contact_recovery_until:
             self._publish_contact_recovery_cmd()
+            return
+
+        if self.escape_phase is not None:
+            self._run_zone_escape(now)
             return
 
         # If we’re in the middle of a true full_rotate, keep executing until complete.

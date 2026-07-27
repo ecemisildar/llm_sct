@@ -55,6 +55,18 @@ class CoverageCounter(Node):
         self.task_progress_on_complete = int(
             self.declare_parameter("task_progress_on_complete", 3).value
         )
+        configured_color_order = str(
+            self.declare_parameter(
+                "target_color_order", "red,green,blue"
+            ).value
+        )
+        self.target_color_order = tuple(
+            color.strip().casefold()
+            for color in configured_color_order.split(",")
+            if color.strip()
+        )
+        self.total_task_targets = max(1, len(self.target_color_order))
+        self.task_progress_on_complete = self.total_task_targets
         self.flush_interval_sec = float(self.declare_parameter("flush_interval_sec", 3.0).value)
         self.flush_max_rows = int(self.declare_parameter("flush_max_rows", 2000).value)
         launch_parameter_names = (
@@ -108,6 +120,9 @@ class CoverageCounter(Node):
         except ValueError:
             self.total_robots = 1
         self.completed_robots = set()
+        self.robot_completion_times = {
+            robot_index: None for robot_index in range(self.total_robots)
+        }
         self.robot_task_progress = {
             robot_index: 0 for robot_index in range(self.total_robots)
         }
@@ -229,7 +244,9 @@ class CoverageCounter(Node):
 
     # timers
     def _task_progress_callback(self, robot_index: int, msg: Int32):
-        progress = min(3, max(0, int(msg.data)))
+        progress = min(
+            self.total_task_targets, max(0, int(msg.data))
+        )
         self.robot_task_progress[robot_index] = max(
             self.robot_task_progress[robot_index], progress
         )
@@ -249,6 +266,7 @@ class CoverageCounter(Node):
         if not msg.data or robot_index in self.completed_robots:
             return
         self.completed_robots.add(robot_index)
+        self.robot_completion_times[robot_index] = time.time() - self._wall_start
         self.robot_task_progress[robot_index] = self.task_progress_on_complete
         self._write_status(f"robot_{robot_index} completed the patrolling task.\n")
         if len(self.completed_robots) == self.total_robots:
@@ -344,7 +362,7 @@ class CoverageCounter(Node):
         with self.task_result_path.open("w", newline="") as f:
             writer = csv.writer(f)
             completed_targets = sum(self.robot_task_progress.values())
-            total_targets = self.total_robots * 3
+            total_targets = self.total_robots * self.total_task_targets
             progress_pct = 100.0 * completed_targets / total_targets
             writer.writerow(
                 [
@@ -379,6 +397,7 @@ class CoverageCounter(Node):
                     "total_colors",
                     "progress_pct",
                     "complete",
+                    "completion_s",
                     "red_reached_s",
                     "green_reached_s",
                     "blue_reached_s",
@@ -391,9 +410,12 @@ class CoverageCounter(Node):
                     [
                         f"robot_{robot_index}",
                         completed,
-                        3,
-                        f"{100.0 * completed / 3.0:.3f}",
-                        str(completed == 3).lower(),
+                        self.total_task_targets,
+                        f"{100.0 * completed / self.total_task_targets:.3f}",
+                        str(completed == self.total_task_targets).lower(),
+                        self._format_optional_time(
+                            self.robot_completion_times[robot_index]
+                        ),
                         self._format_optional_time(reached_times["red"]),
                         self._format_optional_time(reached_times["green"]),
                         self._format_optional_time(reached_times["blue"]),
@@ -410,6 +432,7 @@ class CoverageCounter(Node):
                 w = csv.writer(f)
                 w.writerow([
                     "stamp_sec", "stamp_nsec",
+                    "elapsed_s",
                     "robot",
                     "x", "y"
                 ])
@@ -427,9 +450,17 @@ class CoverageCounter(Node):
                 ])
 
     def _append_path_row(self, robot: str, x: float, y: float):
+        try:
+            robot_index = int(robot.removeprefix("robot_"))
+        except ValueError:
+            robot_index = -1
+        if robot_index in self.completed_robots:
+            return
         stamp = self.get_clock().now().to_msg()
+        elapsed_s = time.time() - self._wall_start
         self._path_rows.append([
             int(stamp.sec), int(stamp.nanosec),
+            f"{elapsed_s:.3f}",
             robot,
             f"{x:.3f}", f"{y:.3f}"
         ])

@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model version="0.0" type="FSA" id="sequential_color_search_specification">
+  <data>
+    <state id="0" name="search_green" initial="True" marked="False" x="150" y="150" />
+    <state id="1" name="approach_green" initial="False" marked="False" x="330" y="150" />
+    <state id="2" name="search_blue" initial="False" marked="False" x="510" y="150" />
+    <state id="3" name="approach_blue" initial="False" marked="False" x="690" y="150" />
+    <state id="4" name="search_red" initial="False" marked="False" x="150" y="250" />
+    <state id="5" name="approach_red" initial="False" marked="False" x="330" y="250" />
+    <state id="6" name="done" initial="False" marked="True" x="510" y="250" />
+    <event id="0" name="green_visible" controllable="False" observable="True" />
+    <event id="1" name="green_reached" controllable="False" observable="True" />
+    <event id="2" name="search_color" controllable="True" observable="True" />
+    <event id="3" name="green_not_visible" controllable="False" observable="True" />
+    <event id="4" name="approach_color" controllable="True" observable="True" />
+    <event id="5" name="blue_visible" controllable="False" observable="True" />
+    <event id="6" name="blue_reached" controllable="False" observable="True" />
+    <event id="7" name="blue_not_visible" controllable="False" observable="True" />
+    <event id="8" name="red_visible" controllable="False" observable="True" />
+    <event id="9" name="red_reached" controllable="False" observable="True" />
+    <event id="10" name="red_not_visible" controllable="False" observable="True" />
+    <transition source="0" target="1" event="0" />
+    <transition source="0" target="2" event="1" />
+    <transition source="0" target="0" event="2" />
+    <transition source="1" target="0" event="3" />
+    <transition source="1" target="2" event="1" />
+    <transition source="1" target="1" event="4" />
+    <transition source="2" target="3" event="5" />
+    <transition source="2" target="4" event="6" />
+    <transition source="2" target="2" event="2" />
+    <transition source="3" target="2" event="7" />
+    <transition source="3" target="4" event="6" />
+    <transition source="3" target="3" event="4" />
+    <transition source="4" target="5" event="8" />
+    <transition source="4" target="6" event="9" />
+    <transition source="4" target="4" event="2" />
+    <transition source="5" target="4" event="10" />
+    <transition source="5" target="6" event="9" />
+    <transition source="5" target="5" event="4" />
+    <transition source="0" target="0" event="7" />
+    <transition source="0" target="0" event="6" />
+    <transition source="0" target="0" event="5" />
+    <transition source="0" target="0" event="3" />
+    <transition source="0" target="0" event="10" />
+    <transition source="0" target="0" event="9" />
+    <transition source="0" target="0" event="8" />
+    <transition source="1" target="1" event="7" />
+    <transition source="1" target="1" event="6" />
+    <transition source="1" target="1" event="5" />
+    <transition source="1" target="1" event="0" />
+    <transition source="1" target="1" event="10" />
+    <transition source="1" target="1" event="9" />
+    <transition source="1" target="1" event="8" />
+    <transition source="2" target="2" event="7" />
+    <transition source="2" target="2" event="3" />
+    <transition source="2" target="2" event="1" />
+    <transition source="2" target="2" event="0" />
+    <transition source="2" target="2" event="10" />
+    <transition source="2" target="2" event="9" />
+    <transition source="2" target="2" event="8" />
+    <transition source="3" target="3" event="5" />
+    <transition source="3" target="3" event="3" />
+    <transition source="3" target="3" event="1" />
+    <transition source="3" target="3" event="0" />
+    <transition source="3" target="3" event="10" />
+    <transition source="3" target="3" event="9" />
+    <transition source="3" target="3" event="8" />
+    <transition source="4" target="4" event="7" />
+    <transition source="4" target="4" event="6" />
+    <transition source="4" target="4" event="5" />
+    <transition source="4" target="4" event="3" />
+    <transition source="4" target="4" event="1" />
+    <transition source="4" target="4" event="0" />
+    <transition source="4" target="4" event="10" />
+    <transition source="5" target="5" event="7" />
+    <transition source="5" target="5" event="6" />
+    <transition source="5" target="5" event="5" />
+    <transition source="5" target="5" event="3" />
+    <transition source="5" target="5" event="1" />
+    <transition source="5" target="5" event="0" />
+    <transition source="5" target="5" event="8" />
+    <transition source="6" target="6" event="7" />
+    <transition source="6" target="6" event="6" />
+    <transition source="6" target="6" event="5" />
+    <transition source="6" target="6" event="3" />
+    <transition source="6" target="6" event="1" />
+    <transition source="6" target="6" event="0" />
+    <transition source="6" target="6" event="10" />
+    <transition source="6" target="6" event="9" />
+    <transition source="6" target="6" event="8" />
+  </data>
+</model>

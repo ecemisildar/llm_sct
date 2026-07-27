@@ -1,0 +1,1 @@
+do random walk even if it is a clear path to explore more

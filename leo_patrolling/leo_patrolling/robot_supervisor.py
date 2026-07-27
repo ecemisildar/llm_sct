@@ -3,7 +3,6 @@ import random
 import math
 import re
 import time
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -11,48 +10,27 @@ import rclpy
 from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool, Float32, Int32, String
+from std_msgs.msg import Bool, Int32, String
 from nav_msgs.msg import Odometry
 from ros_gz_interfaces.msg import Contacts, Entity
-from ros_gz_interfaces.srv import DeleteEntity
+from ros_gz_interfaces.srv import SetEntityPose
 
 from ament_index_python.packages import get_package_share_directory
 from leo_patrolling.sct import SCT
 from leo_supervisor_common.decision_logger import SctDecisionLogger
+from leo_supervisor_common.motion import (
+    ActionSpec,
+    wrap_to_pi as _wrap_to_pi,
+    yaw_from_quat as _yaw_from_quat,
+)
+from leo_supervisor_common.target_approach import TargetApproachMixin
+from leo_supervisor_common.zone_escape import ZoneLivelockEscapeMixin
 
 
 DEFAULT_TARGET_COLOR_ORDER = ("red", "green", "blue")
 
 
-@dataclass
-class ActionSpec:
-    """How to execute a controllable event in the ROS node."""
-    linear_x: float = 0.0
-    angular_z: float = 0.0
-    hold_s: Optional[float] = None          # if None -> use default hold (motion_hold_duration)
-    is_full_rotate: bool = False            # special: rotate 180 deg using odom (or timed fallback)
-
-
-def _wrap_to_pi(a: float) -> float:
-    # normalize to (-pi, pi]
-    while a <= -math.pi:
-        a += 2.0 * math.pi
-    while a > math.pi:
-        a -= 2.0 * math.pi
-    return a
-
-
-def _yaw_from_quat(q) -> float:
-    # q is geometry_msgs/Quaternion
-    # yaw from quaternion (x,y,z,w)
-    x, y, z, w = q.x, q.y, q.z, q.w
-    # yaw (Z axis)
-    siny_cosp = 2.0 * (w * z + x * y)
-    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
-    return math.atan2(siny_cosp, cosy_cosp)
-
-
-class RobotSupervisor(Node):
+class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
     def __init__(self):
         super().__init__("robot_supervisor")
 
@@ -108,10 +86,33 @@ class RobotSupervisor(Node):
         self.obstacle_zone_memory_s = float(
             self.declare_parameter("obstacle_zone_memory_s", 0.4).value
         )
+        self._initialize_zone_escape()
 
         # Random seed (per-robot namespace)
         self.ns = self.get_namespace().strip("/") or "root"
         self.robot_index = self._namespace_index()
+
+        # Runtime deletion of sensor-equipped models can crash Gazebo Fortress.
+        # Completed robots are therefore stopped and moved below the world.
+        self.world_name = str(
+            self.declare_parameter("world_name", "random_world").value
+        ).strip()
+        self.robot_model_name = str(
+            self.declare_parameter("robot_model_name", self.ns).value
+        ).strip()
+        self.remove_completed_robot = bool(
+            self.declare_parameter("remove_completed_robot", True).value
+        )
+        self.completed_robot_z = float(
+            self.declare_parameter("completed_robot_z", -100.0).value
+        )
+        self.set_pose_service_name = f"/world/{self.world_name}/set_pose"
+        self.set_pose_client = self.create_client(
+            SetEntityPose,
+            self.set_pose_service_name,
+        )
+        self.set_pose_future = None
+        self.completed_robot_moved = False
         base_seed = int(self.declare_parameter("random_seed", 12345).value)
         robot_seed = base_seed + self.robot_index
         self.rng = random.Random(robot_seed)
@@ -127,7 +128,7 @@ class RobotSupervisor(Node):
         self.results_dir = str(self.declare_parameter("results_dir", "").value).strip()
         self.run_id = str(self.declare_parameter("run_id", "").value).strip()
         self.total_robots = int(self.declare_parameter("total_robots", 1).value)
-        default_forward_probability = 0.35
+        default_forward_probability = 0.15
         self.forward_probability = float(
             self.declare_parameter(
                 "forward_probability",
@@ -167,28 +168,20 @@ class RobotSupervisor(Node):
             for color in configured_color_order.split(",")
             if color.strip()
         )
-        if (
-            len(parsed_color_order) != len(DEFAULT_TARGET_COLOR_ORDER)
-            or set(parsed_color_order) != set(DEFAULT_TARGET_COLOR_ORDER)
-        ):
+        unsupported_colors = (
+            set(parsed_color_order) - set(DEFAULT_TARGET_COLOR_ORDER)
+        )
+        if not parsed_color_order or unsupported_colors:
             self.get_logger().warning(
                 f"Invalid target_color_order '{configured_color_order}'; "
                 "using red,green,blue."
             )
             parsed_color_order = DEFAULT_TARGET_COLOR_ORDER
         self.target_color_order = parsed_color_order
-        self.target_colors = frozenset(parsed_color_order)
-        self.color_horizontal_offsets = {
-            color: float("nan") for color in DEFAULT_TARGET_COLOR_ORDER
-        }
-        self.approach_steering_gain = float(
-            self.declare_parameter("approach_steering_gain", 1.2).value
-        )
-        self.approach_linear_x = float(
-            self.declare_parameter("approach_linear_x", 0.20).value
-        )
-        self.reached_colors = set()
+        self._initialize_target_approach()
         self.reached_color_sequence = []
+        self.reached_color_index = 0
+        self.reached_color_latches = set()
         self.all_colors_reached = False
         self.get_logger().info(
             "Required color order: " + " -> ".join(self.target_color_order)
@@ -265,9 +258,6 @@ class RobotSupervisor(Node):
         self.task_progress_event_pub = self.create_publisher(
             String, "task_progress_event", 10
         )
-        self.delete_entity_client = self.create_client(
-            DeleteEntity, "/world/random_world/remove"
-        )
         self.sub_zone = self.create_subscription(String, "detected_zones", self.zone_callback, 10)
         self.create_subscription(
             String,
@@ -275,17 +265,7 @@ class RobotSupervisor(Node):
             self.color_event_callback,
             10,
         )
-        self.color_offset_subscriptions = [
-            self.create_subscription(
-                Float32,
-                f"{color}_horizontal_offset",
-                lambda message, color=color: self.color_offset_callback(
-                    color, message
-                ),
-                10,
-            )
-            for color in DEFAULT_TARGET_COLOR_ORDER
-        ]
+        self._create_target_approach_subscriptions()
         self.sub_odom = self.create_subscription(Odometry, "odom", self.odom_callback, 10)
         self.sub_contact = self.create_subscription(
             Contacts,
@@ -408,6 +388,8 @@ class RobotSupervisor(Node):
     def _current_command_event_label(self) -> str:
         if self.contact_recovery_until > time.time():
             return "CONTACT_RECOVERY"
+        if self.escape_phase is not None:
+            return f"ZONE_ESCAPE_{self.escape_phase.upper()}"
         if self.full_rotate_active:
             return self.active_event or "FULL_ROTATE"
         return self.active_event or "none"
@@ -450,9 +432,6 @@ class RobotSupervisor(Node):
 
         self._accept_color_event(event)
 
-    def color_offset_callback(self, color: str, message: Float32):
-        self.color_horizontal_offsets[color] = float(message.data)
-
     def _accept_color_event(self, event: str):
         """Queue a color event when no motion event is executing."""
         color = event.split("_")[1]
@@ -465,15 +444,21 @@ class RobotSupervisor(Node):
         )
         self.pending_color_events.add(event)
 
+        not_visible_match = re.fullmatch(
+            r"EV_(red|green|blue)_not_visible", event
+        )
+        if not_visible_match is not None:
+            self.reached_color_latches.discard(not_visible_match.group(1))
+
         match = re.fullmatch(r"EV_(red|green|blue)_reached", event)
         if match is None or self.all_colors_reached:
             return
 
         color = match.group(1)
-        if color in self.reached_colors:
+        if color in self.reached_color_latches:
             return
 
-        expected_color = self.target_color_order[len(self.reached_colors)]
+        expected_color = self.target_color_order[self.reached_color_index]
         if color != expected_color:
             self.get_logger().warning(
                 f"Reached {color} out of order; next required color is "
@@ -481,17 +466,18 @@ class RobotSupervisor(Node):
             )
             return
 
-        self.reached_colors.add(color)
+        self.reached_color_latches.add(color)
         self.reached_color_sequence.append(color)
-        self.task_progress_pub.publish(Int32(data=len(self.reached_colors)))
+        self.reached_color_index += 1
+        self.task_progress_pub.publish(Int32(data=self.reached_color_index))
         self.task_progress_event_pub.publish(String(data=color))
         self.get_logger().info(
             f"Reached {color}; progress: "
-            f"{len(self.reached_colors)}/{len(self.target_colors)} colors"
+            f"{self.reached_color_index}/{len(self.target_color_order)} colors"
         )
 
         if (
-            self.reached_colors == self.target_colors
+            self.reached_color_index == len(self.target_color_order)
             and not self.task_complete_sent
         ):
             self.all_colors_reached = True
@@ -509,38 +495,85 @@ class RobotSupervisor(Node):
             )
 
     def _hold_after_completion(self):
-        """Delete a completed robot model from Gazebo."""
+        """Stop and move the completed robot outside the active Gazebo world."""
         if self.completion_shutdown_timer is not None:
             self.completion_shutdown_timer.cancel()
+            self.completion_shutdown_timer = None
+
+        # Cancel every motion mode before moving the model.
+        self.active_event = None
+        self.motion_until = 0.0
+        self.full_rotate_active = False
+        self.contact_recovery_until = 0.0
+        self.turn_settle_until = 0.0
+        self.escape_phase = None
+
         self._publish_stop()
-        if not self.delete_entity_client.service_is_ready():
-            self.get_logger().warning(
-                "Gazebo remove service is unavailable; completed robot will "
-                "remain stopped in place."
+        self.move_completed_robot_outside_world()
+
+    def move_completed_robot_outside_world(self):
+        """Move this robot below the world without deleting its Gazebo sensors."""
+        if not self.remove_completed_robot:
+            self.get_logger().info(
+                "Completed robot removal is disabled; robot remains stopped."
             )
             return
 
-        request = DeleteEntity.Request()
-        request.entity = Entity(name=self.ns, type=Entity.MODEL)
-        future = self.delete_entity_client.call_async(request)
-        future.add_done_callback(self._deletion_done)
+        if self.completed_robot_moved:
+            return
 
-    def _deletion_done(self, future):
+        if not self.set_pose_client.service_is_ready():
+            self.get_logger().warning(
+                "Gazebo set-pose service is unavailable: "
+                f"{self.set_pose_service_name}. The robot will remain stopped."
+            )
+            return
+
+        request = SetEntityPose.Request()
+        request.entity.name = self.robot_model_name
+        request.entity.type = Entity.MODEL
+
+        request.pose.position.x = float(self.x)
+        request.pose.position.y = float(self.y)
+        request.pose.position.z = self.completed_robot_z
+        request.pose.orientation.x = 0.0
+        request.pose.orientation.y = 0.0
+        request.pose.orientation.z = 0.0
+        request.pose.orientation.w = 1.0
+
+        self.completed_robot_moved = True
+        self.get_logger().info(
+            f"Moving completed Gazebo model '{self.robot_model_name}' "
+            f"to z={self.completed_robot_z:.1f}."
+        )
+
+        self.set_pose_future = self.set_pose_client.call_async(request)
+        self.set_pose_future.add_done_callback(
+            self._completed_robot_pose_callback
+        )
+
+    def _completed_robot_pose_callback(self, future):
+        """Handle Gazebo's response to the completed-robot pose request."""
         try:
             response = future.result()
-            if response.success:
-                self.get_logger().info(
-                    "Deleted completed robot from Gazebo; waiting "
-                    "for the remaining robots."
-                )
-            else:
-                self.get_logger().warning(
-                    "Gazebo did not delete the completed robot; it remains "
-                    "stopped in place."
-                )
         except Exception as exc:
-            self.get_logger().warning(
-                f"Could not delete completed robot from Gazebo: {exc}"
+            self.completed_robot_moved = False
+            self.get_logger().error(
+                f"Failed to move completed robot "
+                f"'{self.robot_model_name}': {exc}"
+            )
+            return
+
+        if response.success:
+            self.get_logger().info(
+                f"Completed robot '{self.robot_model_name}' "
+                "was moved outside the Gazebo arena."
+            )
+        else:
+            self.completed_robot_moved = False
+            self.get_logger().error(
+                f"Gazebo rejected the set-pose request for "
+                f"'{self.robot_model_name}'."
             )
 
     def _release_deferred_color_events(self):
@@ -610,6 +643,8 @@ class RobotSupervisor(Node):
         if zone != "CLEAR":
             self.last_non_clear_obstacle_zone = zone
             self.last_non_clear_obstacle_zone_time = now
+        if zone in {"LEFT", "RIGHT"}:
+            self._record_zone_for_livelock(now, zone)
         if zone != self.last_logged_zone:
             # self.get_logger().info(f"Detected zone changed to {zone}")
             self.last_logged_zone = zone
@@ -635,6 +670,8 @@ class RobotSupervisor(Node):
         return unique_zones
 
     def contact_callback(self, msg: Contacts):
+        if self.all_colors_reached:
+            return
         if not self.contact_recovery_enabled:
             return
         if not msg.contacts:
@@ -852,6 +889,14 @@ class RobotSupervisor(Node):
 
     def _task_action_spec(self, ev_name: str) -> Optional[ActionSpec]:
         """Translate a high-level LLM request through fixed obstacle safety."""
+        if ev_name in {"EV_search_color", "EV_approach_color"}:
+            if self.reached_color_index >= len(self.target_color_order):
+                return ActionSpec()
+            target_color = self.target_color_order[self.reached_color_index]
+            if ev_name == "EV_search_color":
+                ev_name = f"EV_task_search_{target_color}"
+            else:
+                ev_name = f"EV_task_approach_{target_color}"
         if not ev_name.startswith("EV_task_"):
             return None
         motion_requests = {
@@ -890,15 +935,9 @@ class RobotSupervisor(Node):
                 hold_s=self.supervisor_period,
             )
         if ev_name.startswith("EV_task_approach_"):
-            color = ev_name.removeprefix("EV_task_approach_")
-            offset = self.color_horizontal_offsets.get(color, float("nan"))
-            angular_z = (
-                -self.approach_steering_gain * offset
-                if math.isfinite(offset)
-                else 0.0
-            )
+            linear_x, angular_z = self._target_approach_components(ev_name)
             return ActionSpec(
-                linear_x=self.approach_linear_x,
+                linear_x=linear_x,
                 angular_z=angular_z,
             )
         if ev_name == "EV_task_move_backward":
@@ -948,6 +987,12 @@ class RobotSupervisor(Node):
             self._start_full_rotate(spec.angular_z)
             return
 
+        if self._record_motion_for_livelock(
+            time.time(), float(spec.linear_x), float(spec.angular_z)
+        ):
+            self._run_zone_escape(time.time())
+            return
+
         # Normal pulse action
         twist = Twist()
         twist.linear.x = float(spec.linear_x)
@@ -966,8 +1011,17 @@ class RobotSupervisor(Node):
     def timer_callback(self):
         now = time.time()
 
+        # Completion has priority over contact recovery, escape and active turns.
+        if self.all_colors_reached:
+            self._publish_stop()
+            return
+
         if now < self.contact_recovery_until:
             self._publish_contact_recovery_cmd()
+            return
+
+        if self.escape_phase is not None:
+            self._run_zone_escape(now)
             return
 
         # If we’re in the middle of a true full_rotate, keep executing until complete.

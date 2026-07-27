@@ -1,1 +1,0 @@
-robots should explore the environment as soon as possible

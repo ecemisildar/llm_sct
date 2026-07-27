@@ -1,1 +1,0 @@
-Robots should move in spiral shape.

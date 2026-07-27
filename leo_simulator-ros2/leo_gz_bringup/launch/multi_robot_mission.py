@@ -136,6 +136,9 @@ def generate_multi_robot_launch(
     if enable_color_order:
         evaluation_parameters.append(
             {
+                "target_color_order": ParameterValue(
+                    LaunchConfiguration("target_color_order"), value_type=str
+                ),
                 "launch_target_color_order": ParameterValue(
                     LaunchConfiguration("target_color_order"), value_type=str
                 )
