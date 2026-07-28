@@ -1,1 +1,0 @@
-robot should go to blue, red and green in this order.

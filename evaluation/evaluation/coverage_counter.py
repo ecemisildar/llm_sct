@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import os
+import threading
 import time
 import math
 import csv
@@ -321,6 +323,12 @@ class CoverageCounter(Node):
             self.save_all_artifacts()
         finally:
             self._saving_now = False
+            # Launch shutdown is triggered by this process exiting. Some ROS 2
+            # middleware configurations can block indefinitely inside
+            # rclpy.shutdown(), leaving Gazebo alive after all artifacts were
+            # already saved. Arm a short post-save fallback that guarantees the
+            # process exit and therefore the launch OnProcessExit event.
+            threading.Timer(0.5, lambda: os._exit(0)).start()
             rclpy.shutdown()
 
     def save_all_artifacts(self):

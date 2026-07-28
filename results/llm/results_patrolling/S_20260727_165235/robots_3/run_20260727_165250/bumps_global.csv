@@ -1,4 +1,0 @@
-stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
-42,"('robot_0', 'robot_1')",right,front,EV_move_forward,EV_full_rotate
-54,"('robot_0', 'robot_1')",front,front,ZONE_ESCAPE_REVERSE,EV_search_color
-56,"('robot_0', 'robot_1')",back,left,ZONE_ESCAPE_TURN,EV_full_rotate

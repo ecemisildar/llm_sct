@@ -25,45 +25,25 @@ class LLMTaskApp:
         frame = ttk.Frame(root, padding=14)
         frame.pack(fill=tk.BOTH, expand=True)
         frame.columnconfigure(0, weight=1)
-        frame.rowconfigure(4, weight=2)
-        frame.rowconfigure(9, weight=1)
-
-        mission_frame = ttk.Frame(frame)
-        mission_frame.grid(row=0, column=0, sticky="ew")
-        mission_frame.columnconfigure(1, weight=1)
-        ttk.Label(mission_frame, text="Mission:").grid(
-            row=0, column=0, sticky="w"
-        )
-        self.mission_var = tk.StringVar()
-        self.mission_selector = ttk.Combobox(
-            mission_frame,
-            textvariable=self.mission_var,
-            values=("exploration", "patrolling", "delivery"),
-            state="readonly",
-        )
-        self.mission_selector.grid(
-            row=0, column=1, sticky="ew", padx=(8, 0)
-        )
+        frame.rowconfigure(2, weight=2)
+        frame.rowconfigure(7, weight=1)
 
         ttk.Label(frame, text="Control task").grid(
-            row=2, column=0, sticky="w", pady=(12, 0)
+            row=0, column=0, sticky="w"
         )
         ttk.Label(
             frame,
-            text="Describe the plants and control requirements the LLM should model.",
-        ).grid(row=3, column=0, sticky="w", pady=(2, 6))
+            text="Describe the behavior and requirements; the LLM will select relevant events.",
+        ).grid(row=1, column=0, sticky="w", pady=(2, 6))
 
         self.task_text = scrolledtext.ScrolledText(
-            frame, wrap=tk.WORD, height=12, state=tk.DISABLED
+            frame, wrap=tk.WORD, height=12
         )
-        self.task_text.grid(row=4, column=0, sticky="nsew")
-        self.mission_selector.bind(
-            "<<ComboboxSelected>>", self._mission_selected
-        )
-        self.mission_selector.focus_set()
+        self.task_text.grid(row=2, column=0, sticky="nsew")
+        self.task_text.focus_set()
 
         options = ttk.Frame(frame)
-        options.grid(row=5, column=0, sticky="ew", pady=(10, 0))
+        options.grid(row=3, column=0, sticky="ew", pady=(10, 0))
         options.columnconfigure(1, weight=1)
         ttk.Label(options, text="Model:").grid(row=0, column=0, sticky="w")
         self.model_var = tk.StringVar(value=DEFAULT_MODEL)
@@ -74,38 +54,22 @@ class LLMTaskApp:
         self.generate_button = ttk.Button(
             frame, text="Generate JSON", command=self.start_generation
         )
-        self.generate_button.grid(row=6, column=0, sticky="ew", pady=(10, 0))
+        self.generate_button.grid(row=4, column=0, sticky="ew", pady=(10, 0))
 
-        self.status_var = tk.StringVar(value="Select a mission")
+        self.status_var = tk.StringVar(value="Enter a control task")
         ttk.Label(frame, textvariable=self.status_var).grid(
-            row=7, column=0, sticky="w", pady=(8, 8)
+            row=5, column=0, sticky="w", pady=(8, 8)
         )
 
-        ttk.Label(frame, text="Generated JSON").grid(row=8, column=0, sticky="w")
+        ttk.Label(frame, text="Generated JSON").grid(row=6, column=0, sticky="w")
         self.output_text = scrolledtext.ScrolledText(
             frame, wrap=tk.NONE, height=12, state=tk.DISABLED
         )
-        self.output_text.grid(row=9, column=0, sticky="nsew", pady=(6, 0))
-
-    def _mission_selected(self, _event=None) -> None:
-        mission = self.mission_var.get()
-        self.task_text.config(state=tk.NORMAL)
-        self.task_text.focus_set()
-        self.status_var.set(
-            f"{mission.capitalize()} selected — enter the control task"
-        )
+        self.output_text.grid(row=7, column=0, sticky="nsew", pady=(6, 0))
 
     def start_generation(self) -> None:
-        mission = self.mission_var.get().strip()
         task = self.task_text.get("1.0", tk.END).strip()
         model = self.model_var.get().strip()
-        if not mission:
-            messagebox.showwarning(
-                "Missing mission",
-                "Select Exploration, Patrolling, or Delivery first.",
-            )
-            self.mission_selector.focus_set()
-            return
         if not task:
             messagebox.showwarning("Missing task", "Enter a control task first.")
             self.task_text.focus_set()
@@ -119,17 +83,16 @@ class LLMTaskApp:
         self._set_output("")
         threading.Thread(
             target=self._generate_worker,
-            args=(mission, task, model),
+            args=(task, model),
             daemon=True,
         ).start()
         self.root.after(100, self._poll_worker)
 
-    def _generate_worker(self, mission: str, task: str, model: str) -> None:
+    def _generate_worker(self, task: str, model: str) -> None:
         try:
             result = run_pipeline(
                 task=task,
                 model=model,
-                mission=mission,
                 status=lambda message: self.ui_queue.put(("status", message)),
             )
         except Exception as error:

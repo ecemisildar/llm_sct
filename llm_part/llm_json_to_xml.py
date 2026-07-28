@@ -154,7 +154,7 @@ def validate_sct_rules(
         outside_task = used_events - allowed_generated_events
         if outside_task:
             raise ValueError(
-                "Generated specifications use events outside the task-specific "
+                "Generated specifications use events outside the authoritative "
                 f"event list: {sorted(outside_task)}"
             )
     forbidden_events = {
@@ -205,21 +205,16 @@ def validate_sct_rules(
                 )
 
 
-def complete_specification_uncontrollable_events(
+def complete_specification_events(
     states: Sequence[str],
     transitions: Sequence[tuple[str, str, str]],
-    baseline_events: dict[str, bool],
+    self_loop_events: set[str],
 ) -> list[tuple[str, str, str]]:
-    """Add self-loops for missing events in the specification's local UCE alphabet."""
+    """Add missing inert transitions for events that must remain enabled."""
     completed = list(transitions)
-    local_uncontrollable = {
-        event
-        for _, event, _ in transitions
-        if event in baseline_events and not baseline_events[event]
-    }
     existing = {(source, event) for source, event, _ in transitions}
     for state in states:
-        for event in sorted(local_uncontrollable):
+        for event in sorted(self_loop_events):
             if (state, event) not in existing:
                 completed.append((state, event, state))
     return completed
@@ -231,6 +226,8 @@ def build_xml(
     fallback_name: str,
     baseline_events: dict[str, bool],
     allowed_generated_events: set[str] | None = None,
+    complete_event_alphabet: dict[str, bool] | None = None,
+    globally_selected_events: set[str] | None = None,
 ) -> tuple[str, bytes]:
     raw_transitions = payload.get("transitions")
     if not isinstance(raw_transitions, list) or not raw_transitions:
@@ -255,14 +252,35 @@ def build_xml(
     for source, _, target in transitions:
         state_names.extend((source, target))
     state_names = ordered_unique(state_names)
+    declared_events = payload.get("events")
+    if not isinstance(declared_events, list) or not declared_events:
+        raise ValueError("'events' must be a non-empty list")
+    originally_declared_events = {
+        str(
+            event.get("name", event.get("id"))
+            if isinstance(event, dict)
+            else event
+        )
+        for event in declared_events
+    }
     automaton_type = str(payload.get("type", "specification")).casefold()
     if automaton_type not in {"spec", "specification", "control_specification"}:
         raise ValueError(
             f"Generated automata must be specifications; got type {automaton_type!r}. "
             "The pipeline supplies fixed, tested plant automata."
         )
-    transitions = complete_specification_uncontrollable_events(
-        state_names, transitions, baseline_events
+    completion = complete_event_alphabet or {}
+    selected = globally_selected_events or {
+        event for _, event, _ in transitions
+    }
+    self_loop_events = {
+        event
+        for event, controllable in completion.items()
+        if not controllable
+        or (event in selected and event not in originally_declared_events)
+    }
+    transitions = complete_specification_events(
+        state_names, transitions, self_loop_events
     )
     validate_sct_rules(
         state_names,
@@ -315,9 +333,6 @@ def build_xml(
             "Each generated automaton must explicitly contain an 'events' "
             "list defining its local synchronization alphabet"
         )
-    declared_events = payload["events"]
-    if not isinstance(declared_events, list) or not declared_events:
-        raise ValueError("'events' must be a non-empty list")
     declared_event_names: list[str] = []
     for event in declared_events:
         if isinstance(event, dict):
@@ -332,6 +347,11 @@ def build_xml(
         else:
             name = str(event)
         declared_event_names.append(name)
+        if name not in event_names:
+            event_names.append(name)
+    for name in sorted(completion):
+        if name not in declared_event_names:
+            declared_event_names.append(name)
         if name not in event_names:
             event_names.append(name)
     undeclared_transition_events = (
@@ -373,7 +393,7 @@ def build_xml(
         if outside_task:
             raise ValueError(
                 "Generated specifications declare events outside the "
-                f"task-specific event list: {sorted(outside_task)}"
+                f"authoritative event list: {sorted(outside_task)}"
             )
 
     name = automaton_name(payload, fallback_name)
@@ -440,23 +460,35 @@ def convert(
     output_dir: Path,
     baseline_dir: Path,
     allowed_generated_events: set[str] | None = None,
+    complete_event_alphabet: dict[str, bool] | None = None,
 ) -> list[Path]:
     try:
         document = json.loads(json_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
         raise ValueError(f"Invalid JSON in {json_path}: {error}") from error
+    automata = extract_automata(document)
+    globally_selected_events = {
+        event
+        for payload in automata
+        for _, event, _ in (
+            parse_transition(item)
+            for item in payload.get("transitions", [])
+        )
+    }
     fallback = json_path.stem
     baseline_events = baseline_event_map(baseline_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     outputs: list[Path] = []
     used_names: set[str] = set()
-    for index, payload in enumerate(extract_automata(document), start=1):
+    for index, payload in enumerate(automata, start=1):
         item_fallback = fallback if index == 1 else f"{fallback}_{index}"
         name, xml = build_xml(
             payload,
             item_fallback,
             baseline_events,
             allowed_generated_events=allowed_generated_events,
+            complete_event_alphabet=complete_event_alphabet,
+            globally_selected_events=globally_selected_events,
         )
         filename = f"{name}.xml"
         if filename.casefold() in used_names:

@@ -38,7 +38,7 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         # Parameters
         # -------------------------------
         self.supervisor_period = float(self.declare_parameter("supervisor_period", 0.1).value)
-        self.motion_hold_duration = float(self.declare_parameter("motion_hold_duration", 0.6).value)
+        self.motion_hold_duration = float(self.declare_parameter("motion_hold_duration", 0.2).value)
         self.completion_shutdown_delay = max(
             0.1,
             float(
@@ -128,7 +128,7 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         self.results_dir = str(self.declare_parameter("results_dir", "").value).strip()
         self.run_id = str(self.declare_parameter("run_id", "").value).strip()
         self.total_robots = int(self.declare_parameter("total_robots", 1).value)
-        default_forward_probability = 0.15
+        default_forward_probability = 0.50
         self.forward_probability = float(
             self.declare_parameter(
                 "forward_probability",

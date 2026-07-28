@@ -1,1 +1,0 @@
-robot should search, approach and reach the red, green and blue colors sequentially

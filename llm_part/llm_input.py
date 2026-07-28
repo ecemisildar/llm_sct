@@ -33,58 +33,40 @@ COLOR_EVENTS = {
     for suffix in ("visible", "not_visible", "reached")
 }
 
-
-def allowed_events_for_profile(
-    mission: str,
-    exploration_mode: str = "without_backward",
-    task: str = "",
-) -> dict[str, bool]:
-    """Return the exact event alphabet exposed to the LLM for a mission."""
-    if mission == "exploration":
-        if exploration_mode == "auto":
-            text = task.casefold()
-            without_backward = (
-                "without backward" in text or "no backward" in text
-            )
-            exploration_mode = (
-                "with_backward"
-                if "backward" in text and not without_backward
-                else "without_backward"
-            )
-        controllable = {
+ALL_EVENTS = {
+    **{
+        event: True
+        for event in (
+            "search_color",
+            "approach_color",
             "task_move_forward",
+            "task_move_backward",
             "task_rotate_clockwise",
             "task_rotate_counterclockwise",
-        }
-        if exploration_mode == "with_backward":
-            controllable.add("task_move_backward")
-        uncontrollable = OBSTACLE_EVENTS
-    elif mission == "delivery":
-        controllable = {
-            f"task_{phase}_{color}"
-            for phase in ("search", "approach")
-            for color in ("red", "green", "blue")
-        }
-        controllable.update(
-            f"task_{action}_{color}"
-            for action in ("pub_going", "skip")
-            for color in ("red", "green", "blue")
-        )
-        uncontrollable = {
-            **OBSTACLE_EVENTS,
-            **COLOR_EVENTS,
-            **{
-                f"received_going_{color}": False
+            *(
+                f"task_{phase}_{color}"
+                for phase in ("search", "approach")
                 for color in ("red", "green", "blue")
-            },
-        }
-    else:
-        controllable = {"search_color", "approach_color"}
-        uncontrollable = {**OBSTACLE_EVENTS, **COLOR_EVENTS}
-    return {
-        **{event: True for event in sorted(controllable)},
-        **uncontrollable,
-    }
+            ),
+            *(
+                f"task_{action}_{color}"
+                for action in ("pub_going", "skip")
+                for color in ("red", "green", "blue")
+            ),
+        )
+    },
+    **OBSTACLE_EVENTS,
+    **COLOR_EVENTS,
+    **{
+        f"received_going_{color}": False
+        for color in ("red", "green", "blue")
+    },
+}
+
+
+def all_events() -> dict[str, bool]:
+    """Return the complete event alphabet available for every LLM request."""
+    return dict(ALL_EVENTS)
 
 
 def add_allowed_event_list(
@@ -99,10 +81,11 @@ def add_allowed_event_list(
         if not is_controllable
     )
     return (
-        f"{prompt}\n\nAUTHORITATIVE TASK-SPECIFIC EVENT LIST\n"
+        f"{prompt}\n\nAUTHORITATIVE EVENT LIST\n"
         "Use only events in this list. Events visible in fixed-automata JSON but "
         "absent here are forbidden in generated output.\n"
-        f"Controllable task events: {json.dumps(controllable)}\n"
+        "Select only the events relevant to the user's control objective.\n"
+        f"Controllable events: {json.dumps(controllable)}\n"
         f"Uncontrollable observation events: {json.dumps(uncontrollable)}"
     )
 FIXED_PATROLLING_AUTOMATA = {
@@ -308,7 +291,6 @@ def generate_json(
     obstacle_context_path: Path = DEFAULT_OBSTACLE_CONTEXT_PATH,
     context_files: Sequence[Path] | None = None,
     context_mission: str = "patrolling",
-    allowed_events: dict[str, bool] | None = None,
 ) -> tuple[object, Path]:
     base_prompt = read_required_text(prompt_path, "Prompt")
     api_key = read_required_text(api_key_path, "API key")
@@ -317,9 +299,7 @@ def generate_json(
         if context_files is not None
         else obstacle_avoidance_as_json(obstacle_dir)
     )
-    allowed_events = allowed_events or allowed_events_for_profile(
-        context_mission, task=task
-    )
+    allowed_events = all_events()
     context["llm_allowed_events"] = {
         "controllable": sorted(
             event for event, controllable in allowed_events.items()

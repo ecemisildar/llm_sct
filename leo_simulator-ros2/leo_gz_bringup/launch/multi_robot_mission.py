@@ -3,6 +3,7 @@ import os
 import random
 import sys
 import time
+import xml.etree.ElementTree as ET
 
 import xacro
 
@@ -24,33 +25,96 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 
-def _build_robot_spawn_slots(total_robots: int, world_path: str):
-    del world_path
-    if total_robots == 1:
-        return [{"x": 0.0, "y": 0.0, "yaw": 0.0}]
-
-    minimum_spacing = 0.8
-    radius = max(
-        0.75,
-        minimum_spacing / (2.0 * math.sin(math.pi / total_robots)),
+def _pose_xy(element):
+    pose = element.find("pose")
+    if pose is None or not pose.text:
+        return 0.0, 0.0
+    values = pose.text.split()
+    return (
+        float(values[0]) if len(values) > 0 else 0.0,
+        float(values[1]) if len(values) > 1 else 0.0,
     )
-    if radius > 3.5:
-        raise RuntimeError(
-            f"Cannot place {total_robots} robots on the central ring with "
-            f"{minimum_spacing:.1f} m spacing inside the world."
+
+
+def _world_obstacle_circles(world_path: str):
+    """Approximate static collision geometry with conservative XY circles."""
+    try:
+        root = ET.parse(world_path).getroot()
+    except (ET.ParseError, OSError, ValueError):
+        return []
+
+    obstacles = []
+    for model in root.findall(".//world/model"):
+        name = model.get("name", "")
+        if name in {"ground_plane", "north_wall", "south_wall", "east_wall", "west_wall"}:
+            continue
+        model_x, model_y = _pose_xy(model)
+        radius = 0.0
+        for collision in model.findall(".//collision"):
+            local_x, local_y = _pose_xy(collision)
+            geometry = collision.find("geometry")
+            if geometry is None:
+                continue
+            box_size = geometry.findtext("box/size")
+            cylinder_radius = geometry.findtext("cylinder/radius")
+            if box_size:
+                values = [float(value) for value in box_size.split()]
+                if len(values) >= 2:
+                    geometry_radius = math.hypot(values[0], values[1]) / 2.0
+                else:
+                    continue
+            elif cylinder_radius:
+                geometry_radius = float(cylinder_radius)
+            else:
+                continue
+            radius = max(
+                radius,
+                math.hypot(local_x, local_y) + geometry_radius,
+            )
+        if radius > 0.0:
+            obstacles.append((model_x, model_y, radius))
+    return obstacles
+
+
+def _build_robot_spawn_slots(
+    total_robots: int,
+    world_path: str,
+    rng: random.Random,
+):
+    minimum_spacing = 1.0
+    obstacle_clearance = 0.55
+    spawn_limit = 4.35
+    obstacles = _world_obstacle_circles(world_path)
+    slots = []
+
+    for _ in range(10000):
+        if len(slots) == total_robots:
+            return slots
+        x = rng.uniform(-spawn_limit, spawn_limit)
+        y = rng.uniform(-spawn_limit, spawn_limit)
+        if any(
+            math.hypot(x - slot["x"], y - slot["y"]) < minimum_spacing
+            for slot in slots
+        ):
+            continue
+        if any(
+            math.hypot(x - obstacle_x, y - obstacle_y)
+            < obstacle_radius + obstacle_clearance
+            for obstacle_x, obstacle_y, obstacle_radius in obstacles
+        ):
+            continue
+        slots.append(
+            {
+                "x": x,
+                "y": y,
+                "yaw": rng.uniform(-math.pi, math.pi),
+            }
         )
 
-    return [
-        {
-            "x": radius * math.cos(angle),
-            "y": radius * math.sin(angle),
-            "yaw": angle,
-        }
-        for angle in (
-            2.0 * math.pi * index / total_robots
-            for index in range(total_robots)
-        )
-    ]
+    raise RuntimeError(
+        f"Could not find {total_robots} random collision-free spawn positions "
+        f"in {world_path}."
+    )
 
 
 def _resolve_seed(value: str, name: str) -> int:
@@ -165,7 +229,12 @@ def generate_multi_robot_launch(
             f"[spawn_multi_robots] run_id={run_id} random_seed={random_seed} ",
             flush=True,
         )
-        base_slots = _build_robot_spawn_slots(total_robots, world_path)
+        spawn_rng = random.Random(random_seed ^ 0x5A17C0DE)
+        base_slots = _build_robot_spawn_slots(
+            total_robots,
+            world_path,
+            spawn_rng,
+        )
         robots = []
         for i, slot in enumerate(base_slots):
             robots.append({
@@ -277,13 +346,19 @@ def generate_multi_robot_launch(
             )
 
             behavior_parameters = [
-                {"motion_hold_duration": 1.0},
+                {"motion_hold_duration": 0.2},
                 {"supervisor_yaml_path": LaunchConfiguration("metadata_yaml_path")},
                 {"random_seed": random_seed},
                 {"run_id": run_id},
                 {"results_dir": LaunchConfiguration("results_dir")},
                 {"total_robots": LaunchConfiguration("total_robots")},
             ]
+            if shutdown_on_task_complete:
+                # The evaluation node saves the final completion timestamp and
+                # exits first. Its OnProcessExit handler then shuts down Gazebo.
+                # Keep the final robot in place long enough to prevent its
+                # relocation timer from racing that save-and-shutdown sequence.
+                behavior_parameters.append({"completion_shutdown_delay": 5.0})
             if enable_color_order:
                 behavior_parameters.append(
                     {"target_color_order": LaunchConfiguration("target_color_order")}
@@ -307,7 +382,7 @@ def generate_multi_robot_launch(
                 parameters=[
                     {"use_sim_time": True},
                     {"depth_topic": f"/{ns}/depth_camera/depth_image"},
-                    {"obstacle_threshold": 0.70},
+                    {"obstacle_threshold": 0.90},
                 ],
                 output="screen"
             )
@@ -399,7 +474,14 @@ def generate_multi_robot_launch(
             RegisterEventHandler(
                 OnProcessExit(
                     target_action=plot_node,
-                    on_exit=[Shutdown(reason="all robots reached a goal")],
+                    on_exit=[
+                        Shutdown(
+                            reason=(
+                                "task completion time saved; "
+                                "shutting down Gazebo"
+                            )
+                        )
+                    ],
                 )
             )
         )

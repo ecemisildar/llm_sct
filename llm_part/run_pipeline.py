@@ -18,7 +18,7 @@ from llm_input import (
     DEFAULT_API_KEY_PATH,
     DEFAULT_MODEL,
     DEFAULT_PROMPT_PATH,
-    allowed_events_for_profile,
+    all_events,
     generate_json,
     read_required_text,
 )
@@ -65,18 +65,14 @@ def select_profile(
             mission = "patrolling"
 
     baseline = nadzoru_sync.AUTOMATA_DIR / "baseline_automata"
+    shared_motion_plant = baseline / "shared" / "motion_plant.xml"
+    shared_obstacle_sensor = baseline / "shared" / "obstacle_sensor.xml"
+    shared_collision_avoidance = baseline / "shared" / "collision_avoidance.xml"
     if mission == "exploration":
-        if exploration_mode == "auto":
-            without_backward = "without backward" in text or "no backward" in text
-            exploration_mode = (
-                "with_backward" if "backward" in text and not without_backward
-                else "without_backward"
-            )
-        variant = baseline / "exploration" / f"exploration_{exploration_mode}"
         return (
             mission,
-            [variant / "G1.xml", variant / "G2.xml"],
-            [variant / "E1.xml"],
+            [shared_obstacle_sensor, shared_motion_plant],
+            [shared_collision_avoidance],
         )
     if mission == "delivery":
         directory = baseline / "delivery"
@@ -100,14 +96,14 @@ def select_profile(
 
     directory = baseline / "patrolling"
     plants = [
-        directory / "obstacle_sensor.xml",
+        shared_obstacle_sensor,
         directory / "color_sensor.xml",
-        directory / "motion_plant.xml",
+        shared_motion_plant,
     ]
     return (
         mission,
         plants,
-        [directory / "collision_avoidance.xml"],
+        [shared_collision_avoidance],
     )
 
 
@@ -128,9 +124,7 @@ def run_pipeline(
         f"Selected {selected_mission} fixed automata: "
         + ", ".join(path.stem for path in [*fixed_plants, *fixed_specs])
     )
-    allowed_events = allowed_events_for_profile(
-        selected_mission, exploration_mode, task
-    )
+    allowed_events = all_events()
 
     report("Requesting JSON automata from OpenAI…")
     payload, json_path = generate_json(
@@ -140,16 +134,28 @@ def run_pipeline(
         model=model,
         context_files=[*fixed_plants, *fixed_specs],
         context_mission=selected_mission,
-        allowed_events=allowed_events,
     )
 
     report("Converting generated JSON to Nadzoru XML…")
+    plant_events: set[str] = set()
+    for path in fixed_plants:
+        plant_events.update(nadzoru_sync.xml_event_names(path))
+    complete_event_alphabet = {
+        event: controllable
+        for event, controllable in allowed_events.items()
+        if event in plant_events
+    }
+    report(
+        "Completing the generated specifications with the fixed-plant event "
+        "alphabet; unused actions will be disabled."
+    )
     generated_xml = tuple(
         llm_json_to_xml.convert(
             json_path,
             llm_json_to_xml.DEFAULT_OUTPUT_DIR,
             llm_json_to_xml.DEFAULT_BASELINE_DIR,
             allowed_generated_events=set(allowed_events),
+            complete_event_alphabet=complete_event_alphabet,
         )
     )
 

@@ -37,10 +37,11 @@ from launch_ros.actions import Node
 
 def _kill_gazebo_processes(*_args, **_kwargs):
     patterns = [
-        r"^ign gazebo ",
+        r"gz sim",
+        r"ign gazebo",
         r"parameter_bridge",
     ]
-    for signal in ("-TERM", "-KILL"):
+    for signal in ("-INT", "-TERM", "-KILL"):
         for pattern in patterns:
             subprocess.run(
                 ["pkill", signal, "-f", pattern],

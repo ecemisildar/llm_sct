@@ -2,38 +2,38 @@
   "fixed_synthesis_roles": {
     "mission": "exploration",
     "G_plants": [
-      "G1",
-      "G2"
+      "obstacle_sensor",
+      "motion_plant"
     ],
     "K_fixed_specifications": [
-      "E1"
+      "collision_avoidance"
     ],
     "llm_output_role": "specifications_only"
   },
   "fixed_automata": [
     {
-      "name": "G1",
+      "name": "obstacle_sensor",
       "type": "plant",
       "states": [
-        "RIGHT",
-        "LEFT",
-        "CLEAR",
-        "FRONT"
+        "clear",
+        "front",
+        "right",
+        "left"
       ],
-      "initial_state": "CLEAR",
+      "initial_state": "clear",
       "marked_states": [
-        "RIGHT",
-        "LEFT",
-        "CLEAR",
-        "FRONT"
+        "clear",
+        "front",
+        "right",
+        "left"
       ],
       "events": [
         {
-          "name": "obstacle_front",
+          "name": "path_clear",
           "controllable": false
         },
         {
-          "name": "obstacle_left",
+          "name": "obstacle_front",
           "controllable": false
         },
         {
@@ -41,106 +41,110 @@
           "controllable": false
         },
         {
-          "name": "path_clear",
+          "name": "obstacle_left",
           "controllable": false
         }
       ],
       "transitions": [
         {
-          "source": "RIGHT",
-          "event": "obstacle_left",
-          "target": "LEFT"
-        },
-        {
-          "source": "RIGHT",
-          "event": "obstacle_front",
-          "target": "FRONT"
-        },
-        {
-          "source": "RIGHT",
+          "source": "clear",
           "event": "path_clear",
-          "target": "CLEAR"
+          "target": "clear"
         },
         {
-          "source": "RIGHT",
-          "event": "obstacle_right",
-          "target": "RIGHT"
-        },
-        {
-          "source": "LEFT",
-          "event": "obstacle_right",
-          "target": "RIGHT"
-        },
-        {
-          "source": "LEFT",
+          "source": "clear",
           "event": "obstacle_front",
-          "target": "FRONT"
+          "target": "front"
         },
         {
-          "source": "LEFT",
-          "event": "path_clear",
-          "target": "CLEAR"
-        },
-        {
-          "source": "LEFT",
-          "event": "obstacle_left",
-          "target": "LEFT"
-        },
-        {
-          "source": "CLEAR",
-          "event": "obstacle_left",
-          "target": "LEFT"
-        },
-        {
-          "source": "CLEAR",
-          "event": "obstacle_front",
-          "target": "FRONT"
-        },
-        {
-          "source": "CLEAR",
-          "event": "path_clear",
-          "target": "CLEAR"
-        },
-        {
-          "source": "CLEAR",
+          "source": "clear",
           "event": "obstacle_right",
-          "target": "RIGHT"
+          "target": "right"
         },
         {
-          "source": "FRONT",
-          "event": "path_clear",
-          "target": "CLEAR"
-        },
-        {
-          "source": "FRONT",
-          "event": "obstacle_right",
-          "target": "RIGHT"
-        },
-        {
-          "source": "FRONT",
-          "event": "obstacle_front",
-          "target": "FRONT"
-        },
-        {
-          "source": "FRONT",
+          "source": "clear",
           "event": "obstacle_left",
-          "target": "LEFT"
+          "target": "left"
+        },
+        {
+          "source": "front",
+          "event": "path_clear",
+          "target": "clear"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "right",
+          "event": "path_clear",
+          "target": "clear"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "left",
+          "event": "path_clear",
+          "target": "clear"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_left",
+          "target": "left"
         }
       ]
     },
     {
-      "name": "G2",
+      "name": "motion_plant",
       "type": "plant",
       "states": [
-        "READY"
+        "ready"
       ],
-      "initial_state": "READY",
+      "initial_state": "ready",
       "marked_states": [
-        "READY"
+        "ready"
       ],
       "events": [
         {
-          "name": "rotate_counterclockwise",
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "move_backward",
           "controllable": true
         },
         {
@@ -148,7 +152,7 @@
           "controllable": true
         },
         {
-          "name": "move_forward",
+          "name": "rotate_counterclockwise",
           "controllable": true
         },
         {
@@ -156,7 +160,19 @@
           "controllable": true
         },
         {
+          "name": "search_color",
+          "controllable": true
+        },
+        {
+          "name": "approach_color",
+          "controllable": true
+        },
+        {
           "name": "task_move_forward",
+          "controllable": true
+        },
+        {
+          "name": "task_move_backward",
           "controllable": true
         },
         {
@@ -166,61 +182,135 @@
         {
           "name": "task_rotate_counterclockwise",
           "controllable": true
+        },
+        {
+          "name": "task_search_red",
+          "controllable": true
+        },
+        {
+          "name": "task_search_green",
+          "controllable": true
+        },
+        {
+          "name": "task_search_blue",
+          "controllable": true
+        },
+        {
+          "name": "task_approach_red",
+          "controllable": true
+        },
+        {
+          "name": "task_approach_green",
+          "controllable": true
+        },
+        {
+          "name": "task_approach_blue",
+          "controllable": true
         }
       ],
       "transitions": [
         {
-          "source": "READY",
-          "event": "full_rotate",
-          "target": "READY"
-        },
-        {
-          "source": "READY",
-          "event": "rotate_counterclockwise",
-          "target": "READY"
-        },
-        {
-          "source": "READY",
-          "event": "rotate_clockwise",
-          "target": "READY"
-        },
-        {
-          "source": "READY",
+          "source": "ready",
           "event": "move_forward",
-          "target": "READY"
+          "target": "ready"
         },
         {
-          "source": "READY",
+          "source": "ready",
+          "event": "move_backward",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_clockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_counterclockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "full_rotate",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "search_color",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "approach_color",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
           "event": "task_move_forward",
-          "target": "READY"
+          "target": "ready"
         },
         {
-          "source": "READY",
+          "source": "ready",
+          "event": "task_move_backward",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
           "event": "task_rotate_clockwise",
-          "target": "READY"
+          "target": "ready"
         },
         {
-          "source": "READY",
+          "source": "ready",
           "event": "task_rotate_counterclockwise",
-          "target": "READY"
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_search_red",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_search_green",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_search_blue",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_approach_red",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_approach_green",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "task_approach_blue",
+          "target": "ready"
         }
       ]
     },
     {
-      "name": "E1",
+      "name": "collision_avoidance",
       "type": "specification",
       "states": [
-        "S_CLEAR",
-        "S_FRONT",
-        "S_RIGHT",
-        "S_LEFT"
+        "clear",
+        "front",
+        "right",
+        "left"
       ],
-      "initial_state": "S_CLEAR",
+      "initial_state": "clear",
       "marked_states": [
-        "S_CLEAR",
-        "S_FRONT",
-        "S_RIGHT",
-        "S_LEFT"
+        "clear",
+        "front",
+        "right",
+        "left"
       ],
       "events": [
         {
@@ -228,16 +318,24 @@
           "controllable": false
         },
         {
-          "name": "full_rotate",
-          "controllable": true
+          "name": "obstacle_front",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_left",
+          "controllable": false
         },
         {
           "name": "move_forward",
           "controllable": true
         },
         {
-          "name": "obstacle_left",
-          "controllable": false
+          "name": "move_backward",
+          "controllable": true
         },
         {
           "name": "rotate_clockwise",
@@ -248,139 +346,195 @@
           "controllable": true
         },
         {
-          "name": "obstacle_right",
-          "controllable": false
+          "name": "full_rotate",
+          "controllable": true
         },
         {
-          "name": "obstacle_front",
-          "controllable": false
+          "name": "search_color",
+          "controllable": true
+        },
+        {
+          "name": "approach_color",
+          "controllable": true
         }
       ],
       "transitions": [
         {
-          "source": "S_CLEAR",
-          "event": "obstacle_right",
-          "target": "S_RIGHT"
-        },
-        {
-          "source": "S_CLEAR",
-          "event": "obstacle_left",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_CLEAR",
+          "source": "clear",
           "event": "path_clear",
-          "target": "S_CLEAR"
+          "target": "clear"
         },
         {
-          "source": "S_CLEAR",
+          "source": "clear",
           "event": "obstacle_front",
-          "target": "S_FRONT"
+          "target": "front"
         },
         {
-          "source": "S_CLEAR",
+          "source": "clear",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "clear",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "clear",
           "event": "move_forward",
-          "target": "S_CLEAR"
+          "target": "clear"
         },
         {
-          "source": "S_FRONT",
-          "event": "rotate_counterclockwise",
-          "target": "S_FRONT"
+          "source": "clear",
+          "event": "search_color",
+          "target": "clear"
         },
         {
-          "source": "S_FRONT",
+          "source": "clear",
+          "event": "approach_color",
+          "target": "clear"
+        },
+        {
+          "source": "front",
           "event": "path_clear",
-          "target": "S_CLEAR"
+          "target": "clear"
         },
         {
-          "source": "S_FRONT",
+          "source": "front",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "front",
+          "event": "move_backward",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "rotate_clockwise",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "rotate_counterclockwise",
+          "target": "front"
+        },
+        {
+          "source": "front",
           "event": "full_rotate",
-          "target": "S_FRONT"
+          "target": "front"
         },
         {
-          "source": "S_FRONT",
-          "event": "obstacle_right",
-          "target": "S_RIGHT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "obstacle_front",
-          "target": "S_FRONT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "rotate_clockwise",
-          "target": "S_FRONT"
-        },
-        {
-          "source": "S_FRONT",
-          "event": "obstacle_left",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_RIGHT",
+          "source": "right",
           "event": "path_clear",
-          "target": "S_CLEAR"
+          "target": "clear"
         },
         {
-          "source": "S_RIGHT",
+          "source": "right",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "right",
           "event": "rotate_counterclockwise",
-          "target": "S_RIGHT"
+          "target": "right"
         },
         {
-          "source": "S_RIGHT",
-          "event": "obstacle_front",
-          "target": "S_FRONT"
+          "source": "right",
+          "event": "full_rotate",
+          "target": "right"
         },
         {
-          "source": "S_RIGHT",
-          "event": "obstacle_left",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_RIGHT",
-          "event": "obstacle_right",
-          "target": "S_RIGHT"
-        },
-        {
-          "source": "S_LEFT",
-          "event": "rotate_clockwise",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_LEFT",
-          "event": "obstacle_right",
-          "target": "S_RIGHT"
-        },
-        {
-          "source": "S_LEFT",
+          "source": "left",
           "event": "path_clear",
-          "target": "S_CLEAR"
+          "target": "clear"
         },
         {
-          "source": "S_LEFT",
-          "event": "obstacle_left",
-          "target": "S_LEFT"
-        },
-        {
-          "source": "S_LEFT",
+          "source": "left",
           "event": "obstacle_front",
-          "target": "S_FRONT"
+          "target": "front"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "left",
+          "event": "rotate_clockwise",
+          "target": "left"
+        },
+        {
+          "source": "left",
+          "event": "full_rotate",
+          "target": "left"
         }
       ]
     }
   ],
   "llm_allowed_events": {
     "controllable": [
+      "approach_color",
+      "search_color",
+      "task_approach_blue",
+      "task_approach_green",
+      "task_approach_red",
+      "task_move_backward",
       "task_move_forward",
+      "task_pub_going_blue",
+      "task_pub_going_green",
+      "task_pub_going_red",
       "task_rotate_clockwise",
-      "task_rotate_counterclockwise"
+      "task_rotate_counterclockwise",
+      "task_search_blue",
+      "task_search_green",
+      "task_search_red",
+      "task_skip_blue",
+      "task_skip_green",
+      "task_skip_red"
     ],
     "uncontrollable": [
+      "blue_not_visible",
+      "blue_reached",
+      "blue_visible",
+      "green_not_visible",
+      "green_reached",
+      "green_visible",
       "obstacle_front",
       "obstacle_left",
       "obstacle_right",
-      "path_clear"
+      "path_clear",
+      "received_going_blue",
+      "received_going_green",
+      "received_going_red",
+      "red_not_visible",
+      "red_reached",
+      "red_visible"
     ]
   }
 }

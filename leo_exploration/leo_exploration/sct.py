@@ -136,18 +136,16 @@ class SCT:
         actives = self.get_active_controllable_events()
 
         enabled = [i for i, active in enumerate(actives) if active]
-        task_interface_present = any(
-            name.startswith("EV_task_") for name in self.EV
-        )
-        if task_interface_present:
-            enabled = [
-                event
-                for event in enabled
-                if next(
-                    name for name, index in self.EV.items()
-                    if index == event
-                ).startswith("EV_task_")
-            ]
+        enabled_task_events = [
+            event
+            for event in enabled
+            if next(
+                name for name, index in self.EV.items()
+                if index == event
+            ).startswith("EV_task_")
+        ]
+        if enabled_task_events:
+            enabled = enabled_task_events
         if enabled:
             if self.choice_mode == "first":
                 return True, enabled[0]
