@@ -88,8 +88,8 @@ def generate_launch_description():
     )
     random_seed = DeclareLaunchArgument(
         "random_seed",
-        default_value="auto",
-        description="Base seed for per-robot supervisor random choices. Use 'auto' for a fresh seed each run.",
+        default_value="12345",
+        description="Base seed for reproducible per-robot choices; use 'auto' for a fresh seed.",
     )
     
     results_dir = DeclareLaunchArgument(

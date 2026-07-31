@@ -11,9 +11,10 @@ import rclpy
 from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool, Int32, String
+from std_msgs.msg import Bool, Float32, Int32, String
 from nav_msgs.msg import Odometry
-from ros_gz_interfaces.msg import Contacts
+from ros_gz_interfaces.msg import Contacts, Entity
+from ros_gz_interfaces.srv import SetEntityPose
 
 from ament_index_python.packages import get_package_share_directory
 from leo_delivery.sct import SCT
@@ -28,6 +29,16 @@ from leo_supervisor_common.zone_escape import ZoneLivelockEscapeMixin
 
 
 TARGET_COLORS = ("red", "green", "blue")
+COLOR_EVENT_RE = re.compile(
+    r"EV_(?P<color>[^_]+)_(?P<target>object|zone)_"
+    r"(?P<observation>not_visible|visible|reached)$"
+)
+DELIVERY_COMMAND_RE = re.compile(
+    r"EV_(?P<action>claim|release|publish_delivered)_(?P<color>[^_]+)$"
+)
+DELIVERY_RECEIVED_RE = re.compile(
+    r"EV_received_(?P<action>claim|release|delivered)_(?P<color>[^_]+)$"
+)
 
 
 class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
@@ -40,6 +51,8 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         self.supervisor_period = float(self.declare_parameter("supervisor_period", 0.1).value)
         self.motion_hold_duration = float(self.declare_parameter("motion_hold_duration", 0.6).value)
         self.task_complete_sent = False
+        self.robot_retired = False
+        self.robot_relocation_requested = False
 
         # Full-rotate execution settings
         # Cap at 180 degrees max, even if overridden via parameters.
@@ -84,6 +97,14 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         # Random seed (per-robot namespace)
         self.ns = self.get_namespace().strip("/") or "root"
         self.robot_index = self._namespace_index()
+        # Deleting a sensor-equipped model can abort Gazebo Fortress. Retired
+        # delivery robots are instead moved below the world, as in patrolling.
+        self.completed_robot_z = float(
+            self.declare_parameter("completed_robot_z", -100.0).value
+        )
+        self.set_pose_client = self.create_client(
+            SetEntityPose, "/world/random_world/set_pose"
+        )
         base_seed = int(self.declare_parameter("random_seed", 12345).value)
         robot_seed = base_seed + self.robot_index
         self.rng = random.Random(robot_seed)
@@ -129,9 +150,18 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         )
         self.pending_color_events = set()
         self.deferred_color_events = {}
-        self.pending_received_colors = set()
-        self.reached_colors = set()
+        self.pending_delivery_events = set()
+        self.delivered_colors = set()
+        self.delivery_colors = set(TARGET_COLORS)
+        self.delivery_phase = "object"
+        self.claimed_delivery_color: Optional[str] = None
+        self.active_delivery_color: Optional[str] = None
         self._initialize_target_approach()
+        self.delivery_target_offsets = {
+            (color, target): float("nan")
+            for color in TARGET_COLORS
+            for target in ("object", "zone")
+        }
         self.all_colors_reached = False
 
         # -------------------------------
@@ -222,6 +252,17 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
             10,
         )
         self._create_target_approach_subscriptions()
+        self.delivery_target_offset_subscriptions = [
+            self.create_subscription(
+                Float32,
+                f"{color}_{target}_horizontal_offset",
+                lambda message, color=color, target=target:
+                    self._delivery_target_offset_callback(color, target, message),
+                10,
+            )
+            for color in TARGET_COLORS
+            for target in ("object", "zone")
+        ]
         self.sub_odom = self.create_subscription(Odometry, "odom", self.odom_callback, 10)
         self.sub_contact = self.create_subscription(
             Contacts,
@@ -265,6 +306,14 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
             forward_probability=self.forward_probability,
         )
         self.ev_name_by_id = {ev_id: ev_name for ev_name, ev_id in self.sct.EV.items()}
+        yaml_colors = {
+            match.group("color")
+            for event in self.sct.EV
+            for pattern in (COLOR_EVENT_RE, DELIVERY_COMMAND_RE, DELIVERY_RECEIVED_RE)
+            if (match := pattern.fullmatch(event)) is not None
+        }
+        if yaml_colors:
+            self.delivery_colors = yaml_colors
         for ev_id in self.sct.EV.values():
             if ev_id not in self.sct.callback:
                 self.sct.callback[ev_id] = {
@@ -276,21 +325,28 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         self._install_delivery_controllable_callbacks()
 
     def _install_delivery_controllable_callbacks(self):
-        for color in TARGET_COLORS:
-            for event in (
-                f"EV_pub_{color}",
-                f"EV_pub_going_{color}",
-                f"EV_task_pub_going_{color}",
-            ):
-                if event in self.sct.EV:
-                    self.sct.add_callback(
-                        self.sct.EV[event],
-                        lambda _sup_data, color=color: self._publish_delivery_color(
-                            color
-                        ),
-                        None,
-                        None,
-                    )
+        for event, event_id in self.sct.EV.items():
+            match = DELIVERY_COMMAND_RE.fullmatch(event)
+            if match is None:
+                continue
+            action = match.group("action")
+            color = match.group("color")
+            message_action = "delivered" if action == "publish_delivered" else action
+            self.sct.add_callback(
+                event_id,
+                lambda _sup_data, action=message_action, color=color:
+                    self._publish_delivery_message(action, color),
+                None,
+                None,
+            )
+        for event, callback in (
+            ("EV_pick_up_object", self._confirm_pickup),
+            ("EV_drop_object", self._confirm_delivery),
+        ):
+            if event in self.sct.EV:
+                self.sct.add_callback(
+                    self.sct.EV[event], callback, None, None
+                )
 
     def _load_initial_sct(self):
         if self.explicit_yaml_path:
@@ -346,9 +402,9 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         for event in uncontrollable_events:
             if event == "EV_path_clear":
                 continue
-            if event == "EV_red_reached" or event == "EV_green_reached" or event == "EV_blue_reached":
+            if event.endswith(("_object_reached", "_zone_reached")):
                 self.get_logger().info(f"############################# REACHED: {event} #############################")
-            elif event == "EV_red_visible" or event == "EV_green_visible" or event == "EV_blue_visible":
+            elif event.endswith(("_object_visible", "_zone_visible")):
                 self.get_logger().info(f"############################# VISIBLE: {event} #############################")
             else:
                 self.get_logger().info(f"Triggered uncontrollable event: {event}")
@@ -384,22 +440,47 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         )
 
     def color_event_callback(self, msg):
-        event = msg.data.strip()
-        color_events = {
-            "EV_red_not_visible",
-            "EV_red_visible",
-            "EV_red_reached",
-            "EV_green_not_visible",
-            "EV_green_visible",
-            "EV_green_reached",
-            "EV_blue_not_visible",
-            "EV_blue_visible",
-            "EV_blue_reached",
-        }
-        if event not in color_events:
+        source_event = msg.data.strip()
+        delivery_match = COLOR_EVENT_RE.fullmatch(source_event)
+        if delivery_match is not None:
+            if source_event not in self.sct.EV:
+                return
+            color = delivery_match.group("color")
+            target = delivery_match.group("target")
+            # The delivery detector publishes object and zone observations in
+            # parallel. Only feed the target type for the current task phase to
+            # the supervisor: object before pickup, zone after pickup.
+            if target != self.delivery_phase:
+                return
+            if (
+                self.claimed_delivery_color is not None
+                and color != self.claimed_delivery_color
+            ):
+                return
+            event = source_event
+            if self._motion_event_in_progress():
+                self.deferred_color_events[
+                    f"{color}_{target}"
+                ] = event
+                return
+            self._accept_color_event(event)
+            return
+        match = re.fullmatch(
+            r"EV_(red|green|blue)_(not_visible|visible|reached)",
+            source_event,
+        )
+        if match is None:
             return
 
-        color = event.split("_")[1]
+        color, observation = match.groups()
+        if (
+            self.claimed_delivery_color is not None
+            and color != self.claimed_delivery_color
+        ):
+            return
+        event = f"EV_{color}_{self.delivery_phase}_{observation}"
+        if event not in self.sct.EV:
+            return
         if self._motion_event_in_progress():
             # Retain only the newest observation for this color. It will not be
             # presented to the SCT until the executing action has finished.
@@ -410,77 +491,191 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
 
     def delivery_message_callback(self, msg: String):
         try:
-            sender, color = msg.data.strip().split(":", 1)
+            sender, action, color = msg.data.strip().split(":", 2)
         except ValueError:
             return
+        action = action.lower()
         color = color.lower()
-        if sender == self.ns or color not in TARGET_COLORS:
+        if (
+            sender == self.ns
+            or action not in {"claim", "release", "delivered"}
+            or color not in self.delivery_colors
+        ):
             return
-        match = re.fullmatch(r"robot_(\d+)", sender)
-        if match is None or int(match.group(1)) >= self.robot_index:
+        if re.fullmatch(r"robot_(\d+)", sender) is None:
             return
-        self.pending_received_colors.add(color)
+        event = f"EV_received_{action}_{color}"
+        if action == "delivered":
+            self._record_delivered_color(color, publish_event=False)
+        if event not in self.sct.EV:
+            return
+        self.pending_delivery_events.add(event)
         self.get_logger().info(
-            f"DELIVERY RECEIVED: EV_received_{color} from {sender}"
+            f"DELIVERY RECEIVED: {event} from {sender}"
         )
         self._cancel_all_motion()
         self._publish_stop()
 
-    def _publish_delivery_color(self, color: str):
-        self.delivery_message_pub.publish(String(data=f"{self.ns}:{color}"))
-        self.get_logger().info(f"DELIVERY PUBLISHED: EV_pub_{color}")
+    def _publish_delivery_message(self, action: str, color: str):
+        if action == "claim":
+            self.claimed_delivery_color = color
+            self.active_delivery_color = color
+            self._discard_other_color_observations(color)
+        elif (
+            action in {"release", "delivered"}
+            and self.claimed_delivery_color == color
+        ):
+            self.claimed_delivery_color = None
+        self.delivery_message_pub.publish(
+            String(data=f"{self.ns}:{action}:{color}")
+        )
+        self.get_logger().info(
+            f"DELIVERY PUBLISHED: {action}:{color}"
+        )
+        if action == "delivered":
+            self._record_delivered_color(color, publish_event=True)
+            self._retire_robot_after_delivery()
 
-    def _consume_received_color(self, color: str) -> bool:
-        if color not in self.pending_received_colors:
+    def _retire_robot_after_delivery(self):
+        """Stop this supervisor and move its model away after one delivery."""
+        if self.robot_retired:
+            return
+        self.robot_retired = True
+        self._cancel_all_motion()
+        self._publish_stop()
+        self.get_logger().info(
+            f"Delivery complete; retiring robot entity '{self.ns}'."
+        )
+        self._request_robot_relocation()
+
+    def _request_robot_relocation(self):
+        if self.robot_relocation_requested:
+            return
+        if not self.set_pose_client.service_is_ready():
+            self.get_logger().warning(
+                "Robot set-pose service is not ready; will retry."
+            )
+            return
+
+        request = SetEntityPose.Request()
+        request.entity.name = self.ns
+        request.entity.type = Entity.MODEL
+        request.pose.position.x = float(self.x)
+        request.pose.position.y = float(self.y)
+        request.pose.position.z = self.completed_robot_z
+        request.pose.orientation.w = 1.0
+        self.robot_relocation_requested = True
+        future = self.set_pose_client.call_async(request)
+        future.add_done_callback(self._robot_relocation_done)
+
+    def _robot_relocation_done(self, future):
+        try:
+            response = future.result()
+        except Exception as exc:  # pragma: no cover - middleware failure
+            self.robot_relocation_requested = False
+            self.get_logger().error(f"Robot relocation request failed: {exc}")
+            return
+        if response.success:
+            self.get_logger().info(
+                f"Robot entity '{self.ns}' moved to "
+                f"z={self.completed_robot_z:.1f}."
+            )
+            return
+        self.robot_relocation_requested = False
+        self.get_logger().error(
+            f"Simulator rejected relocation of robot entity '{self.ns}'."
+        )
+
+    def _record_delivered_color(self, color: str, publish_event: bool):
+        if color in self.delivered_colors:
+            return
+        self.delivered_colors.add(color)
+        self.task_progress_pub.publish(Int32(data=len(self.delivered_colors)))
+        if publish_event:
+            self.task_progress_event_pub.publish(String(data=color))
+        if (
+            self.delivery_colors
+            and self.delivered_colors >= self.delivery_colors
+            and not self.task_complete_sent
+        ):
+            self.all_colors_reached = True
+            self.task_complete_sent = True
+            self.task_complete_pub.publish(Bool(data=True))
+            self.get_logger().info("All delivery colors completed by the team.")
+
+    def _consume_delivery_event(self, event: str) -> bool:
+        if event not in self.pending_delivery_events:
             return False
-        self.pending_received_colors.remove(color)
+        self.pending_delivery_events.remove(event)
         return True
 
-    def received_red_check(self, _sup_data):
-        return self._consume_received_color("red")
+    def _confirm_pickup(self, _sup_data):
+        if "EV_pickup_confirmed" in self.sct.EV:
+            self.pending_delivery_events.add("EV_pickup_confirmed")
+        self.pending_color_events.clear()
+        self.deferred_color_events.clear()
+        self.delivery_phase = "zone"
 
-    def received_green_check(self, _sup_data):
-        return self._consume_received_color("green")
+    def _confirm_delivery(self, _sup_data):
+        if "EV_delivery_confirmed" in self.sct.EV:
+            self.pending_delivery_events.add("EV_delivery_confirmed")
+        if self.active_delivery_color is not None:
+            # The 38-event baseline YAML has no publish-delivered controllable
+            # event. Treat EV_drop_object itself as successful completion and
+            # notify the rest of the team out of band.
+            self._publish_delivery_message(
+                "delivered", self.active_delivery_color
+            )
+            self.active_delivery_color = None
+        self.pending_color_events.clear()
+        self.deferred_color_events.clear()
+        self.delivery_phase = "object"
 
-    def received_blue_check(self, _sup_data):
-        return self._consume_received_color("blue")
+    def _discard_other_color_observations(self, claimed_color: str):
+        """Keep only observations belonging to this robot's claimed color."""
+        self.pending_color_events = {
+            event
+            for event in self.pending_color_events
+            if event.startswith(f"EV_{claimed_color}_")
+        }
+        self.deferred_color_events = {
+            key: event
+            for key, event in self.deferred_color_events.items()
+            if event.startswith(f"EV_{claimed_color}_")
+        }
+
+    def _delivery_target_offset_callback(
+        self, color: str, target: str, message: Float32
+    ):
+        self.delivery_target_offsets[(color, target)] = float(message.data)
+
+    def _delivery_target_approach_components(self, target: str):
+        color = self.claimed_delivery_color or self.active_delivery_color
+        offset = self.delivery_target_offsets.get(
+            (color, target), float("nan")
+        )
+        angular_z = (
+            -self.approach_steering_gain * offset
+            if math.isfinite(offset)
+            else 0.0
+        )
+        return self.approach_linear_x, angular_z
 
     def _accept_color_event(self, event: str):
         """Queue a color event when no motion event is executing."""
         color = event.split("_")[1]
         self.pending_color_events.difference_update(
             {
-                f"EV_{color}_not_visible",
-                f"EV_{color}_visible",
-                f"EV_{color}_reached",
+                f"EV_{color}_{self.delivery_phase}_not_visible",
+                f"EV_{color}_{self.delivery_phase}_visible",
+                f"EV_{color}_{self.delivery_phase}_reached",
             }
         )
         self.pending_color_events.add(event)
 
-        match = re.fullmatch(r"EV_(red|green|blue)_reached", event)
-        if match is None or self.all_colors_reached:
-            return
-
-        color = match.group(1)
-        if color in self.reached_colors:
-            return
-
-        self.reached_colors.add(color)
-        self.task_progress_pub.publish(Int32(data=len(self.reached_colors)))
-        self.task_progress_event_pub.publish(String(data=color))
-        self.get_logger().info(
-            f"Reached {color}; progress: "
-            f"{len(self.reached_colors)}/{len(TARGET_COLORS)} colors"
-        )
-
-        if not self.task_complete_sent:
-            self.all_colors_reached = True
-            self.task_complete_sent = True
-            self.task_complete_pub.publish(Bool(data=True))
-            self._publish_stop()
-            self.get_logger().info(
-                f"Delivery goal {color} reached; waiting for all robots."
-            )
+        reached = COLOR_EVENT_RE.fullmatch(event)
+        if reached is not None and self.claimed_delivery_color is None:
+            self.active_delivery_color = reached.group("color")
 
     def _release_deferred_color_events(self):
         """Release the latest observations after the current action finishes."""
@@ -496,33 +691,6 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
             return False
         self.pending_color_events.remove(event)
         return True
-
-    def red_visible_check(self, sup_data):
-        return self._consume_color_event("EV_red_visible")
-
-    def red_not_visible_check(self, sup_data):
-        return self._consume_color_event("EV_red_not_visible")
-
-    def red_reached_check(self, sup_data):
-        return self._consume_color_event("EV_red_reached")
-
-    def green_visible_check(self, sup_data):
-        return self._consume_color_event("EV_green_visible")
-
-    def green_not_visible_check(self, sup_data):
-        return self._consume_color_event("EV_green_not_visible")
-
-    def green_reached_check(self, sup_data):
-        return self._consume_color_event("EV_green_reached")
-
-    def blue_visible_check(self, sup_data):
-        return self._consume_color_event("EV_blue_visible")
-
-    def blue_not_visible_check(self, sup_data):
-        return self._consume_color_event("EV_blue_not_visible")
-
-    def blue_reached_check(self, sup_data):
-        return self._consume_color_event("EV_blue_reached")
 
     def odom_callback(self, msg: Odometry):
         self.have_odom = True
@@ -664,18 +832,29 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         add("path_clear", self.clear_path_check)
         add("obstacle_left", self.left_check)
         add("obstacle_right", self.right_check)
-        add("red_not_visible", self.red_not_visible_check)
-        add("red_visible", self.red_visible_check)
-        add("red_reached", self.red_reached_check)
-        add("green_not_visible", self.green_not_visible_check)
-        add("green_visible", self.green_visible_check)
-        add("green_reached", self.green_reached_check)
-        add("blue_not_visible", self.blue_not_visible_check)
-        add("blue_visible", self.blue_visible_check)
-        add("blue_reached", self.blue_reached_check)
-        add("received_red", self.received_red_check)
-        add("received_green", self.received_green_check)
-        add("received_blue", self.received_blue_check)
+        for event in self.sct.EV:
+            if COLOR_EVENT_RE.fullmatch(event):
+                add(
+                    event.removeprefix("EV_"),
+                    lambda _sup_data, event=event: self._consume_color_event(event),
+                )
+            elif DELIVERY_RECEIVED_RE.fullmatch(event):
+                add(
+                    event.removeprefix("EV_"),
+                    lambda _sup_data, event=event: self._consume_delivery_event(event),
+                )
+        for event in (
+            "pickup_confirmed",
+            "pickup_failed",
+            "delivery_confirmed",
+            "delivery_failed",
+        ):
+            add(
+                event,
+                lambda _sup_data, event=event: self._consume_delivery_event(
+                    f"EV_{event}"
+                ),
+            )
 
     def _namespace_index(self) -> int:
         if self.ns.startswith("robot_"):
@@ -805,23 +984,21 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
         return done
 
     def _task_action_spec(self, ev_name: str) -> Optional[ActionSpec]:
-        """Translate a high-level LLM request through fixed obstacle safety."""
-        if not ev_name.startswith("EV_task_"):
-            return None
-        motion_requests = {
-            "EV_task_move_forward",
-            "EV_task_move_backward",
-            "EV_task_rotate_clockwise",
-            "EV_task_rotate_counterclockwise",
-            "EV_task_search_red",
-            "EV_task_search_green",
-            "EV_task_search_blue",
-            "EV_task_approach_red",
-            "EV_task_approach_green",
-            "EV_task_approach_blue",
+        """Translate delivery requests through fixed obstacle safety."""
+        delivery_motion = {
+            "EV_search_object",
+            "EV_approach_object",
+            "EV_search_zone",
+            "EV_approach_zone",
         }
-        if ev_name not in motion_requests:
+        delivery_actions = {
+            "EV_pick_up_object",
+            "EV_drop_object",
+        }
+        if ev_name in delivery_actions or DELIVERY_COMMAND_RE.fullmatch(ev_name):
             return ActionSpec()
+        if ev_name not in delivery_motion:
+            return None
         zones = self._effective_obstacle_zones()
         if "CORNER" in zones:
             return ActionSpec(
@@ -837,35 +1014,22 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
                 angular_z=self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             )
-        if ev_name.startswith("EV_task_search_"):
+        if ev_name in {"EV_search_object", "EV_search_zone"}:
             search_sign = 1.0 if self.robot_index % 2 == 0 else -1.0
             return ActionSpec(
                 angular_z=search_sign * self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             )
-        if ev_name.startswith("EV_task_approach_"):
-            linear_x, angular_z = self._target_approach_components(ev_name)
+        if ev_name in {"EV_approach_object", "EV_approach_zone"}:
+            target = ev_name.removeprefix("EV_approach_")
+            linear_x, angular_z = self._delivery_target_approach_components(
+                target
+            )
             return ActionSpec(
                 linear_x=linear_x,
                 angular_z=angular_z,
             )
-        if ev_name == "EV_task_move_backward":
-            if "BACK" in zones:
-                return ActionSpec()
-            return ActionSpec(
-                linear_x=-0.2, hold_s=self.recovery_back_hold_s
-            )
-        if ev_name == "EV_task_rotate_clockwise":
-            return ActionSpec(
-                angular_z=-self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        if ev_name == "EV_task_rotate_counterclockwise":
-            return ActionSpec(
-                angular_z=self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        return ActionSpec(linear_x=0.3)
+        return ActionSpec()
 
     def publish_twist_for_event(self, ev_name: str):
         spec = self._task_action_spec(ev_name) or self.action_table.get(ev_name)
@@ -918,6 +1082,11 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
     # Supervisor tick
     # -------------------------------
     def timer_callback(self):
+        if self.robot_retired:
+            self._publish_stop()
+            self._request_robot_relocation()
+            return
+
         now = time.time()
 
         if now < self.contact_recovery_until:

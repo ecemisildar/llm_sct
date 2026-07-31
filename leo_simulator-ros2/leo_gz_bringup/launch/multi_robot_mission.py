@@ -155,12 +155,18 @@ def generate_multi_robot_launch(
 
     random_seed_arg = DeclareLaunchArgument(
         "random_seed",
-        default_value="auto",
-        description="Base seed for per-robot supervisor random choices. Use 'auto' for a fresh seed each run.",
+        default_value="12345",
+        description="Base seed for reproducible per-robot choices; use 'auto' for a fresh seed.",
+    )
+    forward_probability_arg = DeclareLaunchArgument(
+        "forward_probability",
+        default_value="0.90",
+        description="Probability of choosing forward when multiple motion requests are enabled.",
     )
 
     evaluation_parameters = [
         {"run_id": run_id},
+        {"mission": mission_package.removeprefix("leo_")},
         {
             "run_duration": ParameterValue(
                 LaunchConfiguration("run_duration"), value_type=float
@@ -352,6 +358,12 @@ def generate_multi_robot_launch(
                 {"run_id": run_id},
                 {"results_dir": LaunchConfiguration("results_dir")},
                 {"total_robots": LaunchConfiguration("total_robots")},
+                {
+                    "forward_probability": ParameterValue(
+                        LaunchConfiguration("forward_probability"),
+                        value_type=float,
+                    )
+                },
             ]
             if shutdown_on_task_complete:
                 # The evaluation node saves the final completion timestamp and
@@ -382,7 +394,7 @@ def generate_multi_robot_launch(
                 parameters=[
                     {"use_sim_time": True},
                     {"depth_topic": f"/{ns}/depth_camera/depth_image"},
-                    {"obstacle_threshold": 0.90},
+                    {"obstacle_threshold": 0.70},
                 ],
                 output="screen"
             )
@@ -395,23 +407,29 @@ def generate_multi_robot_launch(
                 output="screen",
             )
 
+            stuck_recovery_parameters = [
+                {"enabled": True},
+                {"timeout_s": 5.0},
+                {"displacement_m": 0.10},
+                {"escape_turn_rad": 2.356194490192345},
+                {"escape_angular_z": 1.0},
+                {"reverse_linear_x": -0.20},
+                {"reverse_duration_s": 0.8},
+                {"forward_linear_x": 0.20},
+                {"forward_duration_s": 0.8},
+                {"cooldown_s": 3.0},
+            ]
+            if enable_color_order:
+                stuck_recovery_parameters.append(
+                    {"target_color_order": LaunchConfiguration("target_color_order")}
+                )
+
             stuck_recovery_node = Node(
                 package="leo_image_processing",
                 executable="stuck_recovery",
                 name="stuck_recovery",
                 namespace=ns,
-                parameters=[
-                    {"enabled": True},
-                    {"timeout_s": 5.0},
-                    {"displacement_m": 0.10},
-                    {"escape_turn_rad": 2.356194490192345},
-                    {"escape_angular_z": 1.0},
-                    {"reverse_linear_x": -0.20},
-                    {"reverse_duration_s": 0.8},
-                    {"forward_linear_x": 0.20},
-                    {"forward_duration_s": 0.8},
-                    {"cooldown_s": 3.0},
-                ],
+                parameters=stuck_recovery_parameters,
                 output="screen",
             )
 
@@ -420,8 +438,16 @@ def generate_multi_robot_launch(
                 delayed_nodes.append(
                     Node(
                         package="leo_image_processing",
-                        executable="color_detector",
-                        name="color_detector",
+                        executable=(
+                            "delivery_shape_detector"
+                            if mission_package == "leo_delivery"
+                            else "color_detector"
+                        ),
+                        name=(
+                            "delivery_shape_detector"
+                            if mission_package == "leo_delivery"
+                            else "color_detector"
+                        ),
                         namespace=ns,
                         parameters=[
                             {"use_sim_time": True},
@@ -458,6 +484,7 @@ def generate_multi_robot_launch(
     actions = [
         SetEnvironmentVariable(name="PYTHONPATH", value=python_path),
         random_seed_arg,
+        forward_probability_arg,
         RegisterEventHandler(
             OnShutdown(
                 on_shutdown=[
@@ -485,7 +512,7 @@ def generate_multi_robot_launch(
                 )
             )
         )
-    if not wait_for_all_task_completion:
+    if not wait_for_all_task_completion and not shutdown_on_task_complete:
         actions.append(
             TimerAction(
                 period=LaunchConfiguration("run_duration"),

@@ -15,7 +15,10 @@ setup(
         ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
         ('share/' + package_name + '/config', glob('config/*.yaml')),
         ('share/' + package_name + '/rviz', glob('rviz/*.rviz')),
-        ('share/' + package_name + '/worlds', ['../worlds/random_world.sdf']),
+        ('share/' + package_name + '/worlds', [
+            '../worlds/random_world.sdf',
+            '../worlds/coverage_friendly_world.sdf',
+        ]),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

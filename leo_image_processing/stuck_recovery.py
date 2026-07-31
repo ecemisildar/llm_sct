@@ -68,10 +68,30 @@ class StuckRecovery(Node):
         self.anchor_y: Optional[float] = None
         self.anchor_time = time.time()
         self.obstacle_zone = "CLEAR"
+        configured_color_order = str(
+            self.declare_parameter(
+                "target_color_order", ",".join(TARGET_COLOR_ORDER)
+            ).value
+        )
+        parsed_color_order = tuple(
+            color.strip().casefold()
+            for color in configured_color_order.split(",")
+            if color.strip()
+        )
+        if (
+            not parsed_color_order
+            or set(parsed_color_order) - set(TARGET_COLOR_ORDER)
+        ):
+            self.get_logger().warning(
+                f"Invalid target_color_order '{configured_color_order}'; "
+                "using red,green,blue."
+            )
+            parsed_color_order = TARGET_COLOR_ORDER
+        self.target_color_order = parsed_color_order
         self.visible_by_color = {
             color: False for color in TARGET_COLOR_ORDER
         }
-        self.reached_colors = set()
+        self.reached_goal_index = 0
         self.recovery_active = False
         self.recovery_phase = ""
         self.phase_until = 0.0
@@ -141,14 +161,16 @@ class StuckRecovery(Node):
 
     def task_progress_callback(self, message: String):
         color = message.data.strip().lower()
-        if color in TARGET_COLOR_ORDER:
-            self.reached_colors.add(color)
+        if (
+            self.reached_goal_index < len(self.target_color_order)
+            and color == self.target_color_order[self.reached_goal_index]
+        ):
+            self.reached_goal_index += 1
 
     def _expected_color(self) -> Optional[str]:
-        for color in TARGET_COLOR_ORDER:
-            if color not in self.reached_colors:
-                return color
-        return None
+        if self.reached_goal_index >= len(self.target_color_order):
+            return None
+        return self.target_color_order[self.reached_goal_index]
 
     def _expected_color_visible(self) -> bool:
         expected = self._expected_color()

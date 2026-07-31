@@ -26,7 +26,7 @@ class LLMTaskApp:
         frame.pack(fill=tk.BOTH, expand=True)
         frame.columnconfigure(0, weight=1)
         frame.rowconfigure(2, weight=2)
-        frame.rowconfigure(7, weight=1)
+        frame.rowconfigure(9, weight=1)
 
         ttk.Label(frame, text="Control task").grid(
             row=0, column=0, sticky="w"
@@ -42,8 +42,16 @@ class LLMTaskApp:
         self.task_text.grid(row=2, column=0, sticky="nsew")
         self.task_text.focus_set()
 
+        ttk.Label(frame, text="Previous-run feedback (optional JSON)").grid(
+            row=3, column=0, sticky="w", pady=(10, 0)
+        )
+        self.feedback_text = scrolledtext.ScrolledText(
+            frame, wrap=tk.WORD, height=6
+        )
+        self.feedback_text.grid(row=4, column=0, sticky="nsew", pady=(6, 0))
+
         options = ttk.Frame(frame)
-        options.grid(row=3, column=0, sticky="ew", pady=(10, 0))
+        options.grid(row=5, column=0, sticky="ew", pady=(10, 0))
         options.columnconfigure(1, weight=1)
         ttk.Label(options, text="Model:").grid(row=0, column=0, sticky="w")
         self.model_var = tk.StringVar(value=DEFAULT_MODEL)
@@ -54,22 +62,23 @@ class LLMTaskApp:
         self.generate_button = ttk.Button(
             frame, text="Generate JSON", command=self.start_generation
         )
-        self.generate_button.grid(row=4, column=0, sticky="ew", pady=(10, 0))
+        self.generate_button.grid(row=6, column=0, sticky="ew", pady=(10, 0))
 
         self.status_var = tk.StringVar(value="Enter a control task")
         ttk.Label(frame, textvariable=self.status_var).grid(
-            row=5, column=0, sticky="w", pady=(8, 8)
+            row=7, column=0, sticky="w", pady=(8, 8)
         )
 
-        ttk.Label(frame, text="Generated JSON").grid(row=6, column=0, sticky="w")
+        ttk.Label(frame, text="Generated JSON").grid(row=8, column=0, sticky="w")
         self.output_text = scrolledtext.ScrolledText(
             frame, wrap=tk.NONE, height=12, state=tk.DISABLED
         )
-        self.output_text.grid(row=7, column=0, sticky="nsew", pady=(6, 0))
+        self.output_text.grid(row=9, column=0, sticky="nsew", pady=(6, 0))
 
     def start_generation(self) -> None:
         task = self.task_text.get("1.0", tk.END).strip()
         model = self.model_var.get().strip()
+        feedback_source = self.feedback_text.get("1.0", tk.END).strip()
         if not task:
             messagebox.showwarning("Missing task", "Enter a control task first.")
             self.task_text.focus_set()
@@ -77,22 +86,34 @@ class LLMTaskApp:
         if not model:
             messagebox.showwarning("Missing model", "Enter an OpenAI model ID.")
             return
+        try:
+            feedback = json.loads(feedback_source) if feedback_source else None
+        except json.JSONDecodeError as error:
+            messagebox.showwarning(
+                "Invalid feedback JSON",
+                f"Previous-run feedback is not valid JSON: {error}",
+            )
+            self.feedback_text.focus_set()
+            return
 
         self.generate_button.config(state=tk.DISABLED)
         self.status_var.set("Starting pipeline…")
         self._set_output("")
         threading.Thread(
             target=self._generate_worker,
-            args=(task, model),
+            args=(task, model, feedback),
             daemon=True,
         ).start()
         self.root.after(100, self._poll_worker)
 
-    def _generate_worker(self, task: str, model: str) -> None:
+    def _generate_worker(
+        self, task: str, model: str, feedback: object | None
+    ) -> None:
         try:
             result = run_pipeline(
                 task=task,
                 model=model,
+                feedback=feedback,
                 status=lambda message: self.ui_queue.put(("status", message)),
             )
         except Exception as error:

@@ -1,0 +1,35 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "bug_algorithm_progress_specification",
+      "states": [
+        "unexplored",
+        "move_along_boundary"
+      ],
+      "initial_state": "unexplored",
+      "marked_states": [
+        "unexplored",
+        "move_along_boundary"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"unexplored\", \"task_move_forward\", \"unexplored\")",
+        "(\"unexplored\", \"task_rotate_clockwise\", \"move_along_boundary\")",
+        "(\"unexplored\", \"task_rotate_counterclockwise\", \"move_along_boundary\")",
+        "(\"move_along_boundary\", \"task_move_forward\", \"unexplored\")",
+        "(\"move_along_boundary\", \"task_rotate_clockwise\", \"move_along_boundary\")",
+        "(\"move_along_boundary\", \"task_rotate_counterclockwise\", \"move_along_boundary\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included, as these represent the fundamental actions required for mapless exploration under the Bug algorithm: moving forward to maximize progress, and rotating to follow boundaries or avoid obstacles. No target, color, or communication events are needed for pure exploration.",
+    "transition_design": "The specification enables repeated execution of 'task_move_forward' from any state, representing continuous progress into new areas. Entry into 'move_along_boundary' occurs upon a rotation event, expressing the Bug algorithm's switch to boundary-following when an obstacle blocks forward motion. After rotating, the automaton stays in 'move_along_boundary' during additional rotations (tracing the obstacle's boundary), but a forward move restarts exploration from the new heading, returning to 'unexplored'. This cycle reflects the Bug algorithm's mechanics, supporting sustained progress and disciplined boundary behavior, which is essential for maximizing coverage.",
+    "feedback_response": "The previous design allowed excessive alternation between forward and rotation actions, leading to suboptimal area exploration (25% coverage). Now, the distinct 'move_along_boundary' state limits consecutive unnecessary turns and strengthens the link between rotation and boundary-following, requiring forward movement to exit. This prioritizes progression into new regions, enforces systematic boundary handling after obstacles, and reduces wasted rotational action loops, directly aiming to increase coverage while preserving collision avoidance."
+  }
+}

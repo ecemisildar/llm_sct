@@ -3,9 +3,7 @@
 
 from __future__ import annotations
 
-import argparse
 import json
-import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
@@ -16,11 +14,6 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_PROMPT_PATH = SCRIPT_DIR / "input_prompt.txt"
 DEFAULT_API_KEY_PATH = SCRIPT_DIR / "api_key.txt"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "llm_outputs"
-DEFAULT_OBSTACLE_DIR = (
-    SCRIPT_DIR.parent / "automata" / "baseline_automata" / "patrolling"
-)
-DEFAULT_OBSTACLE_CONTEXT_PATH = SCRIPT_DIR / "fixed_patrolling_automata.json"
-
 OBSTACLE_EVENTS = {
     "obstacle_front": False,
     "obstacle_left": False,
@@ -40,16 +33,15 @@ ALL_EVENTS = {
             "search_color",
             "approach_color",
             "task_move_forward",
-            "task_move_backward",
             "task_rotate_clockwise",
             "task_rotate_counterclockwise",
             *(
-                f"task_{phase}_{color}"
+                f"{phase}_{color}"
                 for phase in ("search", "approach")
                 for color in ("red", "green", "blue")
             ),
             *(
-                f"task_{action}_{color}"
+                f"{action}_{color}"
                 for action in ("pub_going", "skip")
                 for color in ("red", "green", "blue")
             ),
@@ -67,6 +59,18 @@ ALL_EVENTS = {
 def all_events() -> dict[str, bool]:
     """Return the complete event alphabet available for every LLM request."""
     return dict(ALL_EVENTS)
+
+
+def events_for_mission(mission: str) -> dict[str, bool]:
+    """Return the authoritative LLM event alphabet for a mission profile."""
+    if mission == "exploration":
+        return {
+            "task_move_forward": True,
+            "task_rotate_clockwise": True,
+            "task_rotate_counterclockwise": True,
+            **OBSTACLE_EVENTS,
+        }
+    return all_events()
 
 
 def add_allowed_event_list(
@@ -88,18 +92,7 @@ def add_allowed_event_list(
         f"Controllable events: {json.dumps(controllable)}\n"
         f"Uncontrollable observation events: {json.dumps(uncontrollable)}"
     )
-FIXED_PATROLLING_AUTOMATA = {
-    "obstacle_sensor",
-    "color_sensor",
-    "motion_plant",
-    "collision_avoidance",
-}
 DEFAULT_MODEL = "gpt-4.1"
-CONTROL_OBJECTIVE_PLACEHOLDER = (
-    "Replace this paragraph with the physical behavior, mission, coordination, "
-    "or safety requirements that the generated plant and specification automata "
-    "must model or enforce."
-)
 
 
 def read_required_text(path: Path, description: str) -> str:
@@ -140,6 +133,33 @@ def request_json(prompt: str, api_key: str, model: str) -> object:
         raise RuntimeError(f"The API response was not valid JSON: {error}") from error
 
 
+def validate_response_explanation(payload: object) -> None:
+    """Require the design rationale that accompanies generated automata."""
+    if not isinstance(payload, dict):
+        raise RuntimeError("The API response must be a JSON object")
+    required_top_level = {"automata", "explanation"}
+    if set(payload) != required_top_level:
+        raise RuntimeError(
+            "The API response must contain exactly the top-level fields "
+            "'automata' and 'explanation'"
+        )
+    explanation = payload["explanation"]
+    required_explanation = {
+        "event_selection",
+        "transition_design",
+        "feedback_response",
+    }
+    if not isinstance(explanation, dict) or set(explanation) != required_explanation:
+        raise RuntimeError(
+            "The response explanation must contain exactly 'event_selection', "
+            "'transition_design', and 'feedback_response'"
+        )
+    for field in sorted(required_explanation):
+        value = explanation[field]
+        if not isinstance(value, str) or not value.strip():
+            raise RuntimeError(f"Explanation field '{field}' must be a non-empty string")
+
+
 def default_output_path(output_dir: Path) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     return output_dir / f"llm_output_{timestamp}.json"
@@ -169,22 +189,24 @@ def save_task_prompt(task: str, output_path: Path) -> Path:
     return prompt_path
 
 
-def combine_prompt(base_prompt: str, task: str) -> str:
+def combine_prompt(
+    base_prompt: str,
+    task: str,
+    feedback: object | None = None,
+) -> str:
     task = task.strip()
     if not task:
         raise ValueError("The control task is empty")
-    if CONTROL_OBJECTIVE_PLACEHOLDER in base_prompt:
-        return base_prompt.replace(CONTROL_OBJECTIVE_PLACEHOLDER, task, 1)
-    return f"CONTROL OBJECTIVE\n{task}\n\n{base_prompt}"
-
-
-def obstacle_avoidance_as_json(xml_dir: Path) -> dict[str, object]:
-    """Convert the existing obstacle-avoidance Nadzoru XML files to LLM context."""
-    xml_paths = sorted(
-        path for path in xml_dir.glob("*.xml")
-        if path.stem in FIXED_PATROLLING_AUTOMATA
-    )
-    return automata_files_as_json(xml_paths, "patrolling")
+    sections = [f"CONTROL OBJECTIVE\n{task}"]
+    if feedback is not None:
+        sections.append(
+            "PREVIOUS RUN FEEDBACK\n"
+            "Use this evidence to revise the specification while preserving the "
+            "control objective and fixed safety constraints.\n"
+            f"{json.dumps(feedback, indent=2, ensure_ascii=False)}"
+        )
+    sections.append(base_prompt)
+    return "\n\n".join(sections)
 
 
 def automata_files_as_json(
@@ -271,10 +293,10 @@ def automata_files_as_json(
 
 def add_existing_automata_context(prompt: str, context: dict[str, object]) -> str:
     return (
-        f"{prompt}\n\nFIXED PATROLLING AUTOMATA (JSON)\n"
+        f"{prompt}\n\nFIXED AUTOMATA (JSON)\n"
         "These automata are already included during synchronization. Do not regenerate "
         "them. Use their exact states, events, and transitions to design compatible "
-        "additional plants and specifications. When the control objective requires "
+        "additional control specifications. When the control objective requires "
         "robot motion, explicitly connect relevant observations and mission states to "
         "the existing controllable movement events.\n"
         f"{json.dumps(context, indent=2, ensure_ascii=False)}"
@@ -283,105 +305,27 @@ def add_existing_automata_context(prompt: str, context: dict[str, object]) -> st
 
 def generate_json(
     task: str,
+    context_files: Sequence[Path],
     prompt_path: Path = DEFAULT_PROMPT_PATH,
     api_key_path: Path = DEFAULT_API_KEY_PATH,
     model: str = DEFAULT_MODEL,
     output_path: Path | None = None,
-    obstacle_dir: Path = DEFAULT_OBSTACLE_DIR,
-    obstacle_context_path: Path = DEFAULT_OBSTACLE_CONTEXT_PATH,
-    context_files: Sequence[Path] | None = None,
     context_mission: str = "patrolling",
+    feedback: object | None = None,
 ) -> tuple[object, Path]:
     base_prompt = read_required_text(prompt_path, "Prompt")
     api_key = read_required_text(api_key_path, "API key")
-    context = (
-        automata_files_as_json(context_files, context_mission)
-        if context_files is not None
-        else obstacle_avoidance_as_json(obstacle_dir)
+    context = automata_files_as_json(context_files, context_mission)
+    allowed_events = events_for_mission(context_mission)
+    prompt = add_existing_automata_context(
+        combine_prompt(base_prompt, task, feedback), context
     )
-    allowed_events = all_events()
-    context["llm_allowed_events"] = {
-        "controllable": sorted(
-            event for event, controllable in allowed_events.items()
-            if controllable
-        ),
-        "uncontrollable": sorted(
-            event for event, controllable in allowed_events.items()
-            if not controllable
-        ),
-    }
-    save_json(context, obstacle_context_path)
-    prompt = add_existing_automata_context(combine_prompt(base_prompt, task), context)
     prompt = add_allowed_event_list(prompt, allowed_events)
     destination = output_path or default_output_path(DEFAULT_OUTPUT_DIR)
     save_task_prompt(task, destination)
+    if feedback is not None:
+        save_json(feedback, destination.with_suffix(".feedback.json"))
     payload = request_json(prompt, api_key, model)
+    validate_response_explanation(payload)
     save_json(payload, destination)
     return payload, destination
-
-
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Send a prompt to OpenAI and save the JSON-formatted response."
-    )
-    parser.add_argument(
-        "--prompt-file",
-        default=str(DEFAULT_PROMPT_PATH),
-        help=f"Prompt text file (default: {DEFAULT_PROMPT_PATH})",
-    )
-    parser.add_argument(
-        "--api-key-file",
-        default=str(DEFAULT_API_KEY_PATH),
-        help=f"File containing only the OpenAI API key (default: {DEFAULT_API_KEY_PATH})",
-    )
-    parser.add_argument(
-        "--model",
-        default=DEFAULT_MODEL,
-        help=f"OpenAI model ID (default: {DEFAULT_MODEL})",
-    )
-    parser.add_argument(
-        "--output",
-        help="Output JSON path (default: llm_outputs/llm_output_<timestamp>.json)",
-    )
-    task_group = parser.add_mutually_exclusive_group()
-    task_group.add_argument("--task", help="Control task to insert into the base prompt")
-    task_group.add_argument("--task-file", help="Text file containing the control task")
-    return parser
-
-
-def main(argv: Sequence[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
-    prompt_path = Path(args.prompt_file).expanduser().resolve()
-    api_key_path = Path(args.api_key_file).expanduser().resolve()
-    output_path = (
-        Path(args.output).expanduser().resolve()
-        if args.output
-        else default_output_path(DEFAULT_OUTPUT_DIR).resolve()
-    )
-
-    try:
-        if args.task_file:
-            task = read_required_text(
-                Path(args.task_file).expanduser().resolve(), "Task"
-            )
-        elif args.task:
-            task = args.task
-        else:
-            raise ValueError("Provide a control task with --task or --task-file")
-        _, output_path = generate_json(
-            task=task,
-            prompt_path=prompt_path,
-            api_key_path=api_key_path,
-            model=args.model,
-            output_path=output_path,
-        )
-    except (RuntimeError, ValueError) as error:
-        print(f"error: {error}", file=sys.stderr)
-        return 1
-
-    print(f"Saved JSON response to {output_path}")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

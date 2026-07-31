@@ -235,8 +235,13 @@ def read_robot_paths(path: Path, completion_times=None, run_id=""):
     return paths
 
 
-def build_cells(env_min, env_max):
-    return [(x, y) for x in range(env_min, env_max) for y in range(env_min, env_max)]
+def build_cells(env_min, env_max, grid_size=GRID_SIZE):
+    cells_per_axis = int((env_max - env_min) / grid_size)
+    return [
+        (env_min + ix * grid_size, env_min + iy * grid_size)
+        for ix in range(cells_per_axis)
+        for iy in range(cells_per_axis)
+    ]
 
 
 def parse_pose(pose_text):
@@ -333,6 +338,50 @@ def load_colored_target_circles(world_sdf: Path):
             ))
         targets.extend(model_targets)
     return targets
+
+
+def load_colored_delivery_boxes(world_sdf: Path):
+    """Load colored delivery-box collision geometry from the delivery world."""
+    if not world_sdf.exists():
+        return []
+    try:
+        root = ET.parse(world_sdf).getroot()
+    except ET.ParseError:
+        return []
+    world = root.find("world")
+    if world is None:
+        return []
+
+    colors = {
+        "red_delivery_box": "red",
+        "green_delivery_box": "green",
+        "blue_delivery_box": "blue",
+    }
+    boxes = []
+    for model in world.findall("model"):
+        color = colors.get(model.get("name", ""))
+        if color is None:
+            continue
+        model_pose = parse_pose(model.findtext("pose"))
+        for link in model.findall("link"):
+            link_pose = parse_pose(link.findtext("pose"))
+            for collision in link.findall("collision"):
+                size_text = collision.findtext("geometry/box/size")
+                if not size_text:
+                    continue
+                collision_pose = parse_pose(collision.findtext("pose"))
+                sx, sy, _ = (float(value) for value in size_text.split())
+                boxes.append(
+                    (
+                        model_pose[0] + link_pose[0] + collision_pose[0],
+                        model_pose[1] + link_pose[1] + collision_pose[1],
+                        sx,
+                        sy,
+                        model_pose[5] + link_pose[5] + collision_pose[5],
+                        color,
+                    )
+                )
+    return boxes
 
 
 def world_sdf_for_run(run_dir: Path) -> Path:
@@ -470,7 +519,16 @@ def compute_blocked_cells(cells, obstacles, grid_size, occupancy_threshold):
     return blocked
 
 
-def plot_coverage_map(cells, visited, blocked, paths, target_circles, out_png: Path):
+def plot_coverage_map(
+    cells,
+    visited,
+    blocked,
+    paths,
+    obstacles,
+    delivery_boxes,
+    target_circles,
+    out_png: Path,
+):
     fig, ax = plt.subplots(figsize=(8, 8))
     ax.set_xlabel("X (m)", fontsize=16)
     ax.set_ylabel("Y (m)", fontsize=16)
@@ -489,6 +547,51 @@ def plot_coverage_map(cells, visited, blocked, paths, target_circles, out_png: P
             facecolor=color, edgecolor="black", alpha=0.3
         )
         ax.add_patch(rect)
+
+    # Draw the actual collision geometry over the grid so the map shows the
+    # physical boxes/cylinders rather than only their blocked-cell footprint.
+    for obstacle in obstacles:
+        if obstacle[0] == "box":
+            _, x, y, sx, sy, yaw = obstacle
+            ax.add_patch(
+                plt.Polygon(
+                    rect_corners(x, y, sx, sy, yaw),
+                    closed=True,
+                    facecolor="dimgray",
+                    edgecolor="black",
+                    linewidth=1.5,
+                    alpha=0.75,
+                    zorder=3,
+                )
+            )
+        else:
+            _, x, y, radius = obstacle
+            ax.add_patch(
+                plt.Circle(
+                    (x, y),
+                    radius,
+                    facecolor="dimgray",
+                    edgecolor="black",
+                    linewidth=1.5,
+                    alpha=0.75,
+                    zorder=3,
+                )
+            )
+
+    # Delivery boxes share collision geometry with ordinary obstacles, so
+    # overlay them with their actual SDF colors after drawing the gray layer.
+    for x, y, sx, sy, yaw, color in delivery_boxes:
+        ax.add_patch(
+            plt.Polygon(
+                rect_corners(x, y, sx, sy, yaw),
+                closed=True,
+                facecolor=color,
+                edgecolor="black",
+                linewidth=2.0,
+                alpha=0.9,
+                zorder=5,
+            )
+        )
 
     for x, y, radius, color in target_circles:
         ax.add_patch(plt.Circle(
@@ -656,13 +759,23 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
     cells = build_cells(ENV_MIN, ENV_MAX)
     world_sdf = world_sdf_for_run(run_dir)
     obstacles = load_obstacle_rectangles(world_sdf)
+    delivery_boxes = load_colored_delivery_boxes(world_sdf)
     target_circles = load_colored_target_circles(world_sdf)
     blocked = compute_blocked_cells(
         cells, obstacles, GRID_SIZE, OBSTACLE_OCCUPANCY_THRESHOLD
     )
 
     map_out = run_dir / "coverage_map_offline.png"
-    plot_coverage_map(cells, visited, blocked, paths, target_circles, map_out)
+    plot_coverage_map(
+        cells,
+        visited,
+        blocked,
+        paths,
+        obstacles,
+        delivery_boxes,
+        target_circles,
+        map_out,
+    )
 
     cov_csv = run_dir / "coverage_timeseries.csv"
     if not cov_csv.exists():

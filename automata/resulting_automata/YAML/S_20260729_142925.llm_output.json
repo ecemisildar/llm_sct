@@ -1,0 +1,40 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "exploration_diversity_specification",
+      "states": [
+        "last_move_forward",
+        "last_rotate_clockwise",
+        "last_rotate_counterclockwise"
+      ],
+      "initial_state": "last_move_forward",
+      "marked_states": [
+        "last_move_forward",
+        "last_rotate_clockwise",
+        "last_rotate_counterclockwise"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"last_move_forward\", \"task_move_forward\", \"last_move_forward\")",
+        "(\"last_move_forward\", \"task_rotate_clockwise\", \"last_rotate_clockwise\")",
+        "(\"last_move_forward\", \"task_rotate_counterclockwise\", \"last_rotate_counterclockwise\")",
+        "(\"last_rotate_clockwise\", \"task_move_forward\", \"last_move_forward\")",
+        "(\"last_rotate_clockwise\", \"task_rotate_counterclockwise\", \"last_rotate_counterclockwise\")",
+        "(\"last_rotate_clockwise\", \"task_rotate_clockwise\", \"last_rotate_clockwise\")",
+        "(\"last_rotate_counterclockwise\", \"task_move_forward\", \"last_move_forward\")",
+        "(\"last_rotate_counterclockwise\", \"task_rotate_clockwise\", \"last_rotate_clockwise\")",
+        "(\"last_rotate_counterclockwise\", \"task_rotate_counterclockwise\", \"last_rotate_counterclockwise\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only motion-related events ('task_move_forward', 'task_rotate_clockwise', 'task_rotate_counterclockwise') are selected, as the control objective is to explore new cells by varying movement. No target, communication, skip, or color-specific events are included since they are irrelevant to pure exploration and diversity of movement.",
+    "transition_design": "The automaton explicitly tracks the most recent action type to encourage alternation of moves. Staying in 'last_move_forward' on consecutive forward moves enables extended straight segments for efficient exploration. Either rotation switches to its own state, and from there, the system enables immediate forward movement (to promote entering new cells), or further rotation if needed to avoid obstacles or adjust heading. This structure avoids long rotation-only loops and ensures frequent forward progress, supporting the objective of moving into new cells and not getting stuck rotating in place.",
+    "feedback_response": "The previous run showed excessive and nearly equal usage of forward and rotation events, indicating inefficient local exploration and low total area coverage (58.75%). This revised design prefers straight-line movement and only allows rotation sequences if necessary for maneuvering, thereby increasing the likelihood of entering new, unexplored cells with each forward move. By minimizing unnecessary turning, the specification directly addresses feedback, aiming to boost total exploration coverage while leaving collision-avoidance and other safety constraints unchanged."
+  }
+}

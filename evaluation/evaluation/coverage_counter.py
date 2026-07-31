@@ -45,6 +45,9 @@ class CoverageCounter(Node):
         ).strip()
         self.prompt_file_path = Path(self.prompt_file_path_raw) if self.prompt_file_path_raw else None
         self.prompt_text = str(self.declare_parameter("prompt_text", "").value)
+        self.mission = str(
+            self.declare_parameter("mission", "unknown").value
+        ).strip().casefold()
         self.run_duration = float(self.declare_parameter("run_duration", 200.0).value)
         self.shutdown_on_task_complete = bool(
             self.declare_parameter("shutdown_on_task_complete", False).value
@@ -132,6 +135,13 @@ class CoverageCounter(Node):
             robot_index: {"red": None, "green": None, "blue": None}
             for robot_index in range(self.total_robots)
         }
+        self.team_completed_colors = set()
+        self.delivery_color_robot = {
+            color: None for color in ("red", "green", "blue")
+        }
+        self.delivery_color_times = {
+            color: None for color in ("red", "green", "blue")
+        }
         self.task_completion_duration = None
         self._nominal_timeout_reported = False
         # grid
@@ -139,8 +149,14 @@ class CoverageCounter(Node):
         self.env_max = 5
         self.grid_size = 1.0
         self.num_cells_y = int((self.env_max - self.env_min) / self.grid_size)
-        self.cells = [(x, y) for x in range(self.env_min, self.env_max)
-                              for y in range(self.env_min, self.env_max)]
+        self.cells = [
+            (
+                self.env_min + ix * self.grid_size,
+                self.env_min + iy * self.grid_size,
+            )
+            for ix in range(self.num_cells_y)
+            for iy in range(self.num_cells_y)
+        ]
         self.visited = set()
         self.blocked = self._compute_blocked_cells()
 
@@ -246,6 +262,10 @@ class CoverageCounter(Node):
 
     # timers
     def _task_progress_callback(self, robot_index: int, msg: Int32):
+        if self.mission == "delivery":
+            self._write_task_progress()
+            self._write_task_result()
+            return
         progress = min(
             self.total_task_targets, max(0, int(msg.data))
         )
@@ -259,12 +279,39 @@ class CoverageCounter(Node):
         color = msg.data.strip().lower()
         if color not in ("red", "green", "blue"):
             return
+        if self.mission == "delivery":
+            if color not in self.team_completed_colors:
+                elapsed = time.time() - self._wall_start
+                self.team_completed_colors.add(color)
+                self.delivery_color_robot[color] = robot_index
+                self.delivery_color_times[color] = elapsed
+                self.robot_task_progress[robot_index] += 1
+                self.robot_color_reached_times[robot_index][color] = elapsed
+                self._write_status(
+                    f"robot_{robot_index} delivered {color} at "
+                    f"{elapsed:.3f}s.\n"
+                )
+                if len(self.team_completed_colors) == len(
+                    self.delivery_color_times
+                ):
+                    self._complete_delivery_task(elapsed)
+            self._write_task_progress()
+            self._write_task_result()
+            return
         reached_times = self.robot_color_reached_times[robot_index]
         if reached_times[color] is None:
             reached_times[color] = time.time() - self._wall_start
         self._write_task_progress()
 
     def _task_complete_callback(self, robot_index: int, msg: Bool):
+        if self.mission == "delivery":
+            if msg.data and len(self.team_completed_colors) == len(
+                self.delivery_color_times
+            ):
+                self._complete_delivery_task(
+                    time.time() - self._wall_start
+                )
+            return
         if not msg.data or robot_index in self.completed_robots:
             return
         self.completed_robots.add(robot_index)
@@ -280,6 +327,22 @@ class CoverageCounter(Node):
             self._write_task_result()
             if self.shutdown_on_task_complete:
                 self.shutdown_and_save()
+
+    def _complete_delivery_task(self, elapsed: float):
+        if self.task_completion_duration is not None:
+            return
+        self.task_completion_duration = elapsed
+        self.completed_robots = set(range(self.total_robots))
+        for robot_index in range(self.total_robots):
+            self.robot_completion_times[robot_index] = elapsed
+        self._write_status(
+            "Delivery task success: true\n"
+            f"Task duration: {elapsed:.3f}s\n"
+        )
+        self._write_task_result()
+        self._write_task_progress()
+        if self.shutdown_on_task_complete:
+            self.shutdown_and_save()
 
     def _on_metrics_timer(self):
         if self._saving_now:
@@ -361,7 +424,22 @@ class CoverageCounter(Node):
                 w.writerow([f"{t:.3f}", f"{cov:.3f}"])
 
     def _write_task_result(self):
-        success = len(self.completed_robots) == self.total_robots
+        if self.mission == "delivery":
+            completed_targets = len(self.team_completed_colors)
+            total_targets = len(self.delivery_color_times)
+            success = completed_targets == total_targets
+            contributing_robots = len(
+                {
+                    robot
+                    for robot in self.delivery_color_robot.values()
+                    if robot is not None
+                }
+            )
+        else:
+            completed_targets = sum(self.robot_task_progress.values())
+            total_targets = self.total_robots * self.total_task_targets
+            success = len(self.completed_robots) == self.total_robots
+            contributing_robots = len(self.completed_robots)
         duration = (
             self.task_completion_duration
             if self.task_completion_duration is not None
@@ -369,8 +447,6 @@ class CoverageCounter(Node):
         )
         with self.task_result_path.open("w", newline="") as f:
             writer = csv.writer(f)
-            completed_targets = sum(self.robot_task_progress.values())
-            total_targets = self.total_robots * self.total_task_targets
             progress_pct = 100.0 * completed_targets / total_targets
             writer.writerow(
                 [
@@ -387,7 +463,7 @@ class CoverageCounter(Node):
                 [
                     str(success).lower(),
                     f"{duration:.3f}",
-                    len(self.completed_robots),
+                    contributing_robots,
                     self.total_robots,
                     completed_targets,
                     total_targets,
@@ -396,6 +472,9 @@ class CoverageCounter(Node):
             )
 
     def _write_task_progress(self):
+        if self.mission == "delivery":
+            self._write_delivery_progress()
+            return
         with self.task_progress_path.open("w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(
@@ -423,6 +502,50 @@ class CoverageCounter(Node):
                         str(completed == self.total_task_targets).lower(),
                         self._format_optional_time(
                             self.robot_completion_times[robot_index]
+                        ),
+                        self._format_optional_time(reached_times["red"]),
+                        self._format_optional_time(reached_times["green"]),
+                        self._format_optional_time(reached_times["blue"]),
+                    ]
+                )
+
+    def _write_delivery_progress(self):
+        with self.task_progress_path.open("w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                [
+                    "robot",
+                    "delivered_colors",
+                    "delivered_count",
+                    "team_total_colors",
+                    "contribution_pct",
+                    "team_complete",
+                    "completion_s",
+                    "red_delivered_s",
+                    "green_delivered_s",
+                    "blue_delivered_s",
+                ]
+            )
+            team_complete = (
+                len(self.team_completed_colors) == len(self.delivery_color_times)
+            )
+            for robot_index in range(self.total_robots):
+                colors = [
+                    color
+                    for color, owner in self.delivery_color_robot.items()
+                    if owner == robot_index
+                ]
+                reached_times = self.robot_color_reached_times[robot_index]
+                writer.writerow(
+                    [
+                        f"robot_{robot_index}",
+                        "|".join(colors),
+                        len(colors),
+                        len(self.delivery_color_times),
+                        f"{100.0 * len(colors) / len(self.delivery_color_times):.3f}",
+                        str(team_complete).lower(),
+                        self._format_optional_time(
+                            self.task_completion_duration
                         ),
                         self._format_optional_time(reached_times["red"]),
                         self._format_optional_time(reached_times["green"]),

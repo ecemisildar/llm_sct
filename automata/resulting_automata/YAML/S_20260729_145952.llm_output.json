@@ -1,0 +1,35 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "explore_area_specification",
+      "states": [
+        "init_or_post_turn",
+        "forwarding"
+      ],
+      "initial_state": "init_or_post_turn",
+      "marked_states": [
+        "init_or_post_turn",
+        "forwarding"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"init_or_post_turn\", \"task_move_forward\", \"forwarding\")",
+        "(\"init_or_post_turn\", \"task_rotate_clockwise\", \"init_or_post_turn\")",
+        "(\"init_or_post_turn\", \"task_rotate_counterclockwise\", \"init_or_post_turn\")",
+        "(\"forwarding\", \"task_move_forward\", \"forwarding\")",
+        "(\"forwarding\", \"task_rotate_clockwise\", \"init_or_post_turn\")",
+        "(\"forwarding\", \"task_rotate_counterclockwise\", \"init_or_post_turn\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The control objective is to maximize area explored in a mapless environment, so only the high-level mobility events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included. Color, communication, and skip events are omitted because the mission has no goal-seeking, patrolling, or delivery tasks.",
+    "transition_design": "The automaton distinguishes between ongoing forward progress ('forwarding') and states where a turn has just occurred or at mission start ('init_or_post_turn'). After a rotation, the controller may opt to continue rotating or move forward. Once moving forward, it prioritizes chained forward movement, only returning to the post-turn state on a rotation. This enforces a preference for long forward stretches, minimizing excessive turning, and thereby incentivizing broader area coverage.",
+    "feedback_response": "The previous design allowed nearly equal proportions of forward and rotational actions, resulting in low coverage (25%). The specification is revised to focus on maximizing consecutive forward moves, with forward progress always following a rotation and continued forward movement directly allowed. By reducing alternation and unnecessary turning, the design encourages more area to be covered in the available time while preserving the required underlying collision avoidance already modeled in the fixed specifications."
+  }
+}

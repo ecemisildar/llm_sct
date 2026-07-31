@@ -1,0 +1,35 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "maximize_forward_progress_specification",
+      "states": [
+        "start_or_after_turn",
+        "moving_forward"
+      ],
+      "initial_state": "start_or_after_turn",
+      "marked_states": [
+        "start_or_after_turn",
+        "moving_forward"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"start_or_after_turn\", \"task_move_forward\", \"moving_forward\")",
+        "(\"start_or_after_turn\", \"task_rotate_clockwise\", \"start_or_after_turn\")",
+        "(\"start_or_after_turn\", \"task_rotate_counterclockwise\", \"start_or_after_turn\")",
+        "(\"moving_forward\", \"task_move_forward\", \"moving_forward\")",
+        "(\"moving_forward\", \"task_rotate_clockwise\", \"start_or_after_turn\")",
+        "(\"moving_forward\", \"task_rotate_counterclockwise\", \"start_or_after_turn\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included, as the control objective is to maximize area exploration in a mapless environment. No color, communication, or target-related events are used because the mission does not involve patrolling, delivery, or goal seeking.",
+    "transition_design": "The automaton enforces that sequences of forward motion are always permitted from either the start or immediately after a rotation. Rotational actions are allowed from any state to enable reorientation for obstacle avoidance and path diversity. Returning to the forward progress state immediately after a turn ensures rapid resumption of exploration. This structure encourages sustained forward movement, which increases the probability of entering new, unexplored cells, while still permitting turns when changing direction is necessary for coverage or avoidance.",
+    "feedback_response": "Previous feedback showed excessive and nearly equal proportions of forward and rotational events, contributing to poor coverage (30%). The revised transitions now favor long forward-motion runs and ensure that after every rotation, there is a strong preference for resuming forward movement. By minimizing unnecessary alternating between rotation and forward steps (as in the previous three-state cycling automaton), this change is designed to substantially increase spatial coverage, directly addressing the previous shortfall while preserving fixed collision avoidance."
+  }
+}

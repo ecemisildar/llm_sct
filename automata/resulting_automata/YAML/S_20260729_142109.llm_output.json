@@ -1,0 +1,33 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "directed_exploration_specification",
+      "states": [
+        "move_forward_state",
+        "rotate_state"
+      ],
+      "initial_state": "move_forward_state",
+      "marked_states": [
+        "move_forward_state",
+        "rotate_state"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"move_forward_state\", \"task_move_forward\", \"move_forward_state\")",
+        "(\"move_forward_state\", \"task_rotate_clockwise\", \"rotate_state\")",
+        "(\"move_forward_state\", \"task_rotate_counterclockwise\", \"rotate_state\")",
+        "(\"rotate_state\", \"task_move_forward\", \"move_forward_state\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The selected events—'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise'—are the only controllable motion events appropriate for maximizing exploration coverage under the control objective. Other available event families (color, delivery, communication, skip) are omitted because they do not contribute to unstructured area exploration.",
+    "transition_design": "The automaton ensures straight-line exploration is favored. In 'move_forward_state', only one move or rotation is allowed per step; a rotation always transitions to 'rotate_state', and the sole action permitted from there is a forward move, returning to 'move_forward_state'. This design prevents uniform random-walk behavior and enforces at least one straight advance between turns, extending explored segments and reducing redundant reorientation.",
+    "feedback_response": "Previously, the distribution of actions by the robots (near-equal frequencies for move and rotates) suggested inefficient random movement, leading to suboptimal coverage (63.75%). The revised specification enforces longer straight runs, only permitting a single rotation before mandatory forward progress. This expectedly reduces unnecessary turning and promotes broad, continuous exploration paths, which should directly improve total coverage while preserving the fixed collision avoidance constraints."
+  }
+}

@@ -28,6 +28,7 @@ Publishes:
 Logs CSV to the configured run directory as bumps_<label>.csv.
 """
 
+from builtins import AttributeError
 import csv
 import math
 import re

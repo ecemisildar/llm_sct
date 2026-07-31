@@ -1,0 +1,71 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "sequential_rgb_patrolling_specification",
+      "states": [
+        "sr",
+        "ar",
+        "nr",
+        "sg",
+        "ag",
+        "ng",
+        "sb",
+        "ab",
+        "nb"
+      ],
+      "initial_state": "sr",
+      "marked_states": [
+        "nb"
+      ],
+      "events": [
+        "search_red",
+        "approach_red",
+        "red_visible",
+        "red_not_visible",
+        "red_reached",
+        "search_green",
+        "approach_green",
+        "green_visible",
+        "green_not_visible",
+        "green_reached",
+        "search_blue",
+        "approach_blue",
+        "blue_visible",
+        "blue_not_visible",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"sr\", \"search_red\", \"sr\")",
+        "(\"sr\", \"red_visible\", \"ar\")",
+        "(\"sr\", \"red_reached\", \"nr\")",
+        "(\"ar\", \"approach_red\", \"ar\")",
+        "(\"ar\", \"red_not_visible\", \"sr\")",
+        "(\"ar\", \"red_reached\", \"nr\")",
+        "(\"nr\", \"search_green\", \"sg\")",
+        "(\"nr\", \"green_visible\", \"ag\")",
+        "(\"nr\", \"green_reached\", \"ng\")",
+        "(\"sg\", \"search_green\", \"sg\")",
+        "(\"sg\", \"green_visible\", \"ag\")",
+        "(\"sg\", \"green_reached\", \"ng\")",
+        "(\"ag\", \"approach_green\", \"ag\")",
+        "(\"ag\", \"green_not_visible\", \"sg\")",
+        "(\"ag\", \"green_reached\", \"ng\")",
+        "(\"ng\", \"search_blue\", \"sb\")",
+        "(\"ng\", \"blue_visible\", \"ab\")",
+        "(\"ng\", \"blue_reached\", \"nb\")",
+        "(\"sb\", \"search_blue\", \"sb\")",
+        "(\"sb\", \"blue_visible\", \"ab\")",
+        "(\"sb\", \"blue_reached\", \"nb\")",
+        "(\"ab\", \"approach_blue\", \"ab\")",
+        "(\"ab\", \"blue_not_visible\", \"sb\")",
+        "(\"ab\", \"blue_reached\", \"nb\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The selected events are the essential controllable patrolling commands (search_red, approach_red, search_green, approach_green, search_blue, approach_blue) for mission decisions, and the uncontrollable color visibility and reached observations (red_visible, red_not_visible, red_reached, green_visible, green_not_visible, green_reached, blue_visible, blue_not_visible, blue_reached) that signal search/approach progression and target accomplishment. No other controllable or observation events (e.g., generic search_color, approach_color, or obstacle/communication/skip events) are required to enforce this ordered patrolling objective.",
+    "transition_design": "Transitions encode a strict sequence: search_red/ar/approach_red/ar/red_reached must complete before green is sought in a similar search-approach sequence, followed by blue. Each color phase begins in 'search', progresses to 'approach' on <color>_visible, and advances to the next occurrence or finish on <color>_reached from either search or approach. Loss of target visibility during approach returns to search for that color. All valid search/approach transitions are controllable. Only the final state (nb) is marked, signifying all ordered goals are completed and no further obligation remains.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

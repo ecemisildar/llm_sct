@@ -172,10 +172,6 @@
           "controllable": true
         },
         {
-          "name": "task_move_backward",
-          "controllable": true
-        },
-        {
           "name": "task_rotate_clockwise",
           "controllable": true
         },
@@ -184,27 +180,27 @@
           "controllable": true
         },
         {
-          "name": "task_search_red",
+          "name": "search_red",
           "controllable": true
         },
         {
-          "name": "task_search_green",
+          "name": "search_green",
           "controllable": true
         },
         {
-          "name": "task_search_blue",
+          "name": "search_blue",
           "controllable": true
         },
         {
-          "name": "task_approach_red",
+          "name": "approach_red",
           "controllable": true
         },
         {
-          "name": "task_approach_green",
+          "name": "approach_green",
           "controllable": true
         },
         {
-          "name": "task_approach_blue",
+          "name": "approach_blue",
           "controllable": true
         }
       ],
@@ -251,11 +247,6 @@
         },
         {
           "source": "ready",
-          "event": "task_move_backward",
-          "target": "ready"
-        },
-        {
-          "source": "ready",
           "event": "task_rotate_clockwise",
           "target": "ready"
         },
@@ -266,32 +257,32 @@
         },
         {
           "source": "ready",
-          "event": "task_search_red",
+          "event": "search_red",
           "target": "ready"
         },
         {
           "source": "ready",
-          "event": "task_search_green",
+          "event": "search_green",
           "target": "ready"
         },
         {
           "source": "ready",
-          "event": "task_search_blue",
+          "event": "search_blue",
           "target": "ready"
         },
         {
           "source": "ready",
-          "event": "task_approach_red",
+          "event": "approach_red",
           "target": "ready"
         },
         {
           "source": "ready",
-          "event": "task_approach_green",
+          "event": "approach_green",
           "target": "ready"
         },
         {
           "source": "ready",
-          "event": "task_approach_blue",
+          "event": "approach_blue",
           "target": "ready"
         }
       ]
@@ -496,45 +487,5 @@
         }
       ]
     }
-  ],
-  "llm_allowed_events": {
-    "controllable": [
-      "approach_color",
-      "search_color",
-      "task_approach_blue",
-      "task_approach_green",
-      "task_approach_red",
-      "task_move_backward",
-      "task_move_forward",
-      "task_pub_going_blue",
-      "task_pub_going_green",
-      "task_pub_going_red",
-      "task_rotate_clockwise",
-      "task_rotate_counterclockwise",
-      "task_search_blue",
-      "task_search_green",
-      "task_search_red",
-      "task_skip_blue",
-      "task_skip_green",
-      "task_skip_red"
-    ],
-    "uncontrollable": [
-      "blue_not_visible",
-      "blue_reached",
-      "blue_visible",
-      "green_not_visible",
-      "green_reached",
-      "green_visible",
-      "obstacle_front",
-      "obstacle_left",
-      "obstacle_right",
-      "path_clear",
-      "received_going_blue",
-      "received_going_green",
-      "received_going_red",
-      "red_not_visible",
-      "red_reached",
-      "red_visible"
-    ]
-  }
+  ]
 }

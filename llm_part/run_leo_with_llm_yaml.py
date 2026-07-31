@@ -27,10 +27,11 @@ MISSIONS = {
         "package": "leo_patrolling",
         "results": "results_patrolling",
     },
-    "delivery": {
-        "package": "leo_delivery",
-        "results": "results_delivery",
-    },
+    # Delivery is temporarily disabled; keep this launcher profile for later.
+    # "delivery": {
+    #     "package": "leo_delivery",
+    #     "results": "results_delivery",
+    # },
 }
 
 
@@ -96,6 +97,7 @@ def build_launch_command(args: argparse.Namespace) -> tuple[list[str], Path, Pat
         f"run_duration:={args.run_duration}",
         f"headless:={'true' if args.headless else 'false'}",
         f"random_seed:={args.random_seed}",
+        f"forward_probability:={args.forward_probability}",
     ]
     if args.mission == "patrolling":
         command.append(
@@ -137,7 +139,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--total-robots", type=int, default=3)
     parser.add_argument("--run-duration", type=float, default=300.0)
-    parser.add_argument("--random-seed", default="auto")
+    parser.add_argument(
+        "--random-seed",
+        default="12345",
+        help="Fixed base seed for reproducible comparisons (default: 12345)",
+    )
+    parser.add_argument(
+        "--forward-probability",
+        type=float,
+        default=0.90,
+        help="Forward-selection weight when multiple actions are enabled (default: 0.90)",
+    )
     parser.add_argument(
         "--color-order",
         help=(
@@ -160,6 +172,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     if args.run_duration <= 0:
         print("error: --run-duration must be positive", file=sys.stderr)
+        return 2
+    if not 0.0 <= args.forward_probability <= 1.0:
+        print("error: --forward-probability must be between 0 and 1", file=sys.stderr)
         return 2
     try:
         command, yaml_path, results_dir = build_launch_command(args)

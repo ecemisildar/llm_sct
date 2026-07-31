@@ -20,21 +20,20 @@ ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
     "search_color",
     "approach_color",
     "task_move_forward",
-    "task_search_red",
-    "task_search_green",
-    "task_search_blue",
-    "task_approach_red",
-    "task_approach_green",
-    "task_approach_blue",
-    "task_move_backward",
+    "search_red",
+    "search_green",
+    "search_blue",
+    "approach_red",
+    "approach_green",
+    "approach_blue",
     "task_rotate_clockwise",
     "task_rotate_counterclockwise",
-    "task_pub_going_red",
-    "task_pub_going_green",
-    "task_pub_going_blue",
-    "task_skip_red",
-    "task_skip_green",
-    "task_skip_blue",
+    "pub_going_red",
+    "pub_going_green",
+    "pub_going_blue",
+    "skip_red",
+    "skip_green",
+    "skip_blue",
 }
 
 
@@ -167,7 +166,7 @@ def validate_sct_rules(
     if forbidden_events:
         raise ValueError(
             "Generated specifications use protected low-level controllable events. "
-            "Use only task_* controllable events; forbidden events: "
+            "Use only authoritative high-level controllable events; forbidden events: "
             f"{sorted(forbidden_events)}"
         )
     unknown_events = used_events - allowed_events

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="0.0" type="FSA" id="delivery_communication_plant">
+<data>
+
+    <state
+        id="0"
+        name="comm_ready"
+        initial="True"
+        marked="True"
+        x="500"
+        y="350"
+    />
+
+    <!-- Outgoing controllable messages -->
+
+    <event id="0"
+           name="claim_red"
+           controllable="True"
+           observable="True"/>
+
+    <event id="1"
+           name="claim_green"
+           controllable="True"
+           observable="True"/>
+
+    <event id="2"
+           name="claim_blue"
+           controllable="True"
+           observable="True"/>
+
+    <event id="3"
+           name="release_red"
+           controllable="True"
+           observable="True"/>
+
+    <event id="4"
+           name="release_green"
+           controllable="True"
+           observable="True"/>
+
+    <event id="5"
+           name="release_blue"
+           controllable="True"
+           observable="True"/>
+
+    <event id="6"
+           name="publish_delivered_red"
+           controllable="True"
+           observable="True"/>
+
+    <event id="7"
+           name="publish_delivered_green"
+           controllable="True"
+           observable="True"/>
+
+    <event id="8"
+           name="publish_delivered_blue"
+           controllable="True"
+           observable="True"/>
+
+    <!-- Incoming uncontrollable messages -->
+
+    <event id="9"
+           name="received_claim_red"
+           controllable="False"
+           observable="True"/>
+
+    <event id="10"
+           name="received_claim_green"
+           controllable="False"
+           observable="True"/>
+
+    <event id="11"
+           name="received_claim_blue"
+           controllable="False"
+           observable="True"/>
+
+    <event id="12"
+           name="received_release_red"
+           controllable="False"
+           observable="True"/>
+
+    <event id="13"
+           name="received_release_green"
+           controllable="False"
+           observable="True"/>
+
+    <event id="14"
+           name="received_release_blue"
+           controllable="False"
+           observable="True"/>
+
+    <event id="15"
+           name="received_delivered_red"
+           controllable="False"
+           observable="True"/>
+
+    <event id="16"
+           name="received_delivered_green"
+           controllable="False"
+           observable="True"/>
+
+    <event id="17"
+           name="received_delivered_blue"
+           controllable="False"
+           observable="True"/>
+
+    <!-- All messages are available whenever communication is ready -->
+
+    <transition source="0" target="0" event="0"/>
+    <transition source="0" target="0" event="1"/>
+    <transition source="0" target="0" event="2"/>
+
+    <transition source="0" target="0" event="3"/>
+    <transition source="0" target="0" event="4"/>
+    <transition source="0" target="0" event="5"/>
+
+    <transition source="0" target="0" event="6"/>
+    <transition source="0" target="0" event="7"/>
+    <transition source="0" target="0" event="8"/>
+
+    <transition source="0" target="0" event="9"/>
+    <transition source="0" target="0" event="10"/>
+    <transition source="0" target="0" event="11"/>
+
+    <transition source="0" target="0" event="12"/>
+    <transition source="0" target="0" event="13"/>
+    <transition source="0" target="0" event="14"/>
+
+    <transition source="0" target="0" event="15"/>
+    <transition source="0" target="0" event="16"/>
+    <transition source="0" target="0" event="17"/>
+
+</data>
+</model>

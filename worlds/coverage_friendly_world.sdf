@@ -1,0 +1,133 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <!--
+    Coverage-friendly example for evaluation/coverage_counter.py.
+
+    The evaluator uses 100 one-metre cells over [-5, 5) on each axis and
+    marks a rectangular-obstacle cell blocked at >= 40% overlap. Each perimeter
+    block below is 1 x 1 m and aligned exactly to one grid cell. The 36
+    perimeter cells and four interior obstacle cells are blocked, making the
+    denominator 60 free cells while preserving connected navigation space.
+    Keeping blocks separate also works with the launcher's conservative
+    circle-based spawn clearance calculation.
+  -->
+  <world name="random_world">
+    <scene>
+      <ambient>0.65 0.65 0.65 1</ambient>
+      <background>0.82 0.88 0.95 1</background>
+      <shadows>true</shadows>
+    </scene>
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.01</max_step_size>
+      <real_time_update_rate>400</real_time_update_rate>
+    </physics>
+
+    <plugin filename="ignition-gazebo-physics-system" name="ignition::gazebo::systems::Physics">
+      <include_entity_names>true</include_entity_names>
+    </plugin>
+    <plugin filename="ignition-gazebo-sensors-system" name="ignition::gazebo::systems::Sensors">
+      <render_engine>ogre</render_engine>
+    </plugin>
+    <plugin filename="ignition-gazebo-user-commands-system" name="ignition::gazebo::systems::UserCommands"/>
+    <plugin filename="libignition-gazebo-contact-system.so" name="ignition::gazebo::systems::Contact">
+      <topic>/world/random_world/physics/contacts</topic>
+    </plugin>
+    <plugin filename="ignition-gazebo-scene-broadcaster-system" name="ignition::gazebo::systems::SceneBroadcaster"/>
+
+    <light name="sun" type="directional">
+      <pose>0 0 10 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>-0.5 0.5 -1</direction>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation><range>20</range><linear>0.1</linear><constant>0.9</constant><quadratic>0.01</quadratic></attenuation>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision"><geometry><plane><normal>0 0 1</normal><size>50 50</size></plane></geometry></collision>
+        <visual name="visual"><geometry><plane><normal>0 0 1</normal><size>50 50</size></plane></geometry><material><ambient>0.45 0.45 0.45 1</ambient><diffuse>0.45 0.45 0.45 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- Physical boundary walls are outside the evaluated grid and ignored by the coverage denominator. -->
+    <model name="north_wall"><static>true</static><pose>0 5.25 1 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>10 0.5 2</size></box></geometry></collision><visual name="visual"><geometry><box><size>10 0.5 2</size></box></geometry><material><ambient>0.38 0.42 0.48 1</ambient><diffuse>0.38 0.42 0.48 1</diffuse></material></visual></link></model>
+    <model name="south_wall"><static>true</static><pose>0 -5.25 1 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>10 0.5 2</size></box></geometry></collision><visual name="visual"><geometry><box><size>10 0.5 2</size></box></geometry><material><ambient>0.38 0.42 0.48 1</ambient><diffuse>0.38 0.42 0.48 1</diffuse></material></visual></link></model>
+    <model name="east_wall"><static>true</static><pose>5.25 0 1 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.5 10 2</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.5 10 2</size></box></geometry><material><ambient>0.38 0.42 0.48 1</ambient><diffuse>0.38 0.42 0.48 1</diffuse></material></visual></link></model>
+    <model name="west_wall"><static>true</static><pose>-5.25 0 1 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.5 10 2</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.5 10 2</size></box></geometry><material><ambient>0.38 0.42 0.48 1</ambient><diffuse>0.38 0.42 0.48 1</diffuse></material></visual></link></model>
+
+    <!-- Bottom row: y in [-5, -4]. -->
+    <model name="coverage_s_0"><static>true</static><pose>-4.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_1"><static>true</static><pose>-3.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_2"><static>true</static><pose>-2.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_3"><static>true</static><pose>-1.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_4"><static>true</static><pose>-0.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_5"><static>true</static><pose>0.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_6"><static>true</static><pose>1.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_7"><static>true</static><pose>2.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_8"><static>true</static><pose>3.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_s_9"><static>true</static><pose>4.5 -4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+
+    <!-- Top row: y in [4, 5]. -->
+    <model name="coverage_n_0"><static>true</static><pose>-4.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_1"><static>true</static><pose>-3.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_2"><static>true</static><pose>-2.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_3"><static>true</static><pose>-1.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_4"><static>true</static><pose>-0.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_5"><static>true</static><pose>0.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_6"><static>true</static><pose>1.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_7"><static>true</static><pose>2.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_8"><static>true</static><pose>3.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_n_9"><static>true</static><pose>4.5 4.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+
+    <!-- Left and right columns, excluding corners already covered above. -->
+    <model name="coverage_w_1"><static>true</static><pose>-4.5 -3.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_1"><static>true</static><pose>4.5 -3.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_w_2"><static>true</static><pose>-4.5 -2.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_2"><static>true</static><pose>4.5 -2.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_w_3"><static>true</static><pose>-4.5 -1.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_3"><static>true</static><pose>4.5 -1.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_w_4"><static>true</static><pose>-4.5 -0.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_4"><static>true</static><pose>4.5 -0.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_w_5"><static>true</static><pose>-4.5 0.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_5"><static>true</static><pose>4.5 0.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_w_6"><static>true</static><pose>-4.5 1.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_6"><static>true</static><pose>4.5 1.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_w_7"><static>true</static><pose>-4.5 2.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_7"><static>true</static><pose>4.5 2.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_w_8"><static>true</static><pose>-4.5 3.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+    <model name="coverage_e_8"><static>true</static><pose>4.5 3.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>1 1 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>1 1 1</size></box></geometry><material><ambient>0.62 0.66 0.72 1</ambient><diffuse>0.62 0.66 0.72 1</diffuse><specular>0.12 0.12 0.12 1</specular></material></visual></link></model>
+
+    <!-- Four visible interior landmarks. Each occupies exactly one evaluated cell. -->
+    <model name="interior_red">
+      <static>true</static><pose>-2.5 -2.5 0.75 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1 1 1.5</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1 1 1.5</size></box></geometry><material><ambient>0.8 0.1 0.1 1</ambient><diffuse>0.8 0.1 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="interior_blue">
+      <static>true</static><pose>2.5 -2.5 0.75 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1 1 1.5</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1 1 1.5</size></box></geometry><material><ambient>0.1 0.25 0.9 1</ambient><diffuse>0.1 0.25 0.9 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="interior_green">
+      <static>true</static><pose>-2.5 2.5 0.75 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1 1 1.5</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1 1 1.5</size></box></geometry><material><ambient>0.1 0.75 0.2 1</ambient><diffuse>0.1 0.75 0.2 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="interior_yellow">
+      <static>true</static><pose>2.5 2.5 0.75 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1 1 1.5</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1 1 1.5</size></box></geometry><material><ambient>0.9 0.75 0.1 1</ambient><diffuse>0.9 0.75 0.1 1</diffuse></material></visual>
+      </link>
+    </model>
+  </world>
+</sdf>

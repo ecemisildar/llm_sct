@@ -198,11 +198,5 @@ def generate_launch_description():
                     on_shutdown=[OpaqueFunction(function=_kill_gazebo_processes)],
                 )
             ),
-            TimerAction(
-                period=LaunchConfiguration("run_duration"),
-                actions=[
-                    Shutdown(reason="Run duration reached"),
-                ],
-            ),
         ]
     )

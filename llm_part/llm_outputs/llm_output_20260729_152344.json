@@ -1,0 +1,39 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "wall_following_exploration_specification",
+      "states": [
+        "start",
+        "move_forward",
+        "just_rotated"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "move_forward",
+        "just_rotated"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"start\", \"task_move_forward\", \"move_forward\")",
+        "(\"start\", \"task_rotate_clockwise\", \"just_rotated\")",
+        "(\"start\", \"task_rotate_counterclockwise\", \"just_rotated\")",
+        "(\"just_rotated\", \"task_move_forward\", \"move_forward\")",
+        "(\"just_rotated\", \"task_rotate_clockwise\", \"just_rotated\")",
+        "(\"just_rotated\", \"task_rotate_counterclockwise\", \"just_rotated\")",
+        "(\"move_forward\", \"task_rotate_clockwise\", \"just_rotated\")",
+        "(\"move_forward\", \"task_rotate_counterclockwise\", \"just_rotated\")",
+        "(\"move_forward\", \"task_move_forward\", \"move_forward\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the controllable events \"task_move_forward\", \"task_rotate_clockwise\", and \"task_rotate_counterclockwise\" are included. These govern the robot's motion and allow regulation of its wall-following exploratory behavior. No obstacle or color events are included because obstacle avoidance is enforced by the fixed specification and there are no color-based objectives.",
+    "transition_design": "The automaton enables a simple but effective wall-following pattern. After startup, the robot can either move forward or rotate. If it has just rotated, it is allowed to move forward (to continue following a wall contour after maneuvering around a corner) or may rotate again (supporting the need for multiple consecutive rotations if required to maintain wall-following, e.g., at an inner corner). After any move forward, the supervisor may command another move forward (allowing straight advancement along a wall), or a rotation in either direction (to follow wall turns or avoid obstacles). All non-start states are marked to support continuous allowable exploration behaviors. This structure prevents robots from being stuck in excessive rotations or straight lines, balancing wall-following with necessary turns.",
+    "feedback_response": "Building on the previous design and recent feedback, this revision employs a tighter loop between moving forward and permitting rotations, closely supporting wall-following exploration. By allowing consecutive moves only until a rotation is needed, and always permitting either direction of rotation, the supervisor can more readily contour along walls and corners. This explicitly structures the control so as to support improved area coverage (beyond the 63.75% previously observed), while still avoiding unnecessary cell revisits and supporting the dynamic turns required for real-world wall-following."
+  }
+}

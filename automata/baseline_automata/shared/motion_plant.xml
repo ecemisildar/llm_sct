@@ -10,15 +10,14 @@
 	<event id="5" name="search_color" controllable="True" observable="True"/>
 	<event id="6" name="approach_color" controllable="True" observable="True"/>
 	<event id="7" name="task_move_forward" controllable="True" observable="True"/>
-	<event id="8" name="task_move_backward" controllable="True" observable="True"/>
 	<event id="9" name="task_rotate_clockwise" controllable="True" observable="True"/>
 	<event id="10" name="task_rotate_counterclockwise" controllable="True" observable="True"/>
-	<event id="11" name="task_search_red" controllable="True" observable="True"/>
-	<event id="12" name="task_search_green" controllable="True" observable="True"/>
-	<event id="13" name="task_search_blue" controllable="True" observable="True"/>
-	<event id="14" name="task_approach_red" controllable="True" observable="True"/>
-	<event id="15" name="task_approach_green" controllable="True" observable="True"/>
-	<event id="16" name="task_approach_blue" controllable="True" observable="True"/>
+	<event id="11" name="search_red" controllable="True" observable="True"/>
+	<event id="12" name="search_green" controllable="True" observable="True"/>
+	<event id="13" name="search_blue" controllable="True" observable="True"/>
+	<event id="14" name="approach_red" controllable="True" observable="True"/>
+	<event id="15" name="approach_green" controllable="True" observable="True"/>
+	<event id="16" name="approach_blue" controllable="True" observable="True"/>
 	<transition source="0" target="0" event="0"/>
 	<transition source="0" target="0" event="1"/>
 	<transition source="0" target="0" event="2"/>
@@ -27,7 +26,6 @@
 	<transition source="0" target="0" event="5"/>
 	<transition source="0" target="0" event="6"/>
 	<transition source="0" target="0" event="7"/>
-	<transition source="0" target="0" event="8"/>
 	<transition source="0" target="0" event="9"/>
 	<transition source="0" target="0" event="10"/>
 	<transition source="0" target="0" event="11"/>

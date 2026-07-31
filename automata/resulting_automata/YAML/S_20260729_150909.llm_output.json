@@ -1,0 +1,39 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "effective_coverage_specification",
+      "states": [
+        "start",
+        "moving",
+        "rotating"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "moving",
+        "rotating"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"start\", \"task_move_forward\", \"moving\")",
+        "(\"start\", \"task_rotate_clockwise\", \"rotating\")",
+        "(\"start\", \"task_rotate_counterclockwise\", \"rotating\")",
+        "(\"moving\", \"task_rotate_clockwise\", \"rotating\")",
+        "(\"moving\", \"task_rotate_counterclockwise\", \"rotating\")",
+        "(\"rotating\", \"task_move_forward\", \"moving\")",
+        "(\"rotating\", \"task_rotate_clockwise\", \"rotating\")",
+        "(\"rotating\", \"task_rotate_counterclockwise\", \"rotating\")",
+        "(\"moving\", \"task_move_forward\", \"moving\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the controllable events \"task_move_forward\", \"task_rotate_clockwise\", and \"task_rotate_counterclockwise\" are selected, as they represent the authoritative movement commands available for exploration/coverage. No observation events are required to enforce maximal coverage itself; obstacle avoidance is handled by the fixed specification.",
+    "transition_design": "The automaton enables continuous alternation and repetition of all available motion primitives at any time, ensuring the robot is never artificially blocked from exploring new areas with forward moves or changes in direction. Any sequence and frequency of motion commands is allowed, enabling flexible coverage. All states except 'start' are marked, signifying active exploration. There are no restrictions that prohibit any controllable movement, supporting maximum area coverage. The transitions ensure the system is nonblocking and completes exploration phases as needed by always offering at least one move from every state.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

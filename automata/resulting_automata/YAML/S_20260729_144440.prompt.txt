@@ -1,0 +1,1 @@
+apply bug algortihm to explore the environment

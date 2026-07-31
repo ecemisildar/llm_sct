@@ -894,22 +894,25 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
                 return ActionSpec()
             target_color = self.target_color_order[self.reached_color_index]
             if ev_name == "EV_search_color":
-                ev_name = f"EV_task_search_{target_color}"
+                ev_name = f"EV_search_{target_color}"
             else:
-                ev_name = f"EV_task_approach_{target_color}"
-        if not ev_name.startswith("EV_task_"):
+                ev_name = f"EV_approach_{target_color}"
+        if not (
+            ev_name.startswith("EV_task_")
+            or ev_name.startswith("EV_search_")
+            or ev_name.startswith("EV_approach_")
+        ):
             return None
         motion_requests = {
             "EV_task_move_forward",
-            "EV_task_move_backward",
             "EV_task_rotate_clockwise",
             "EV_task_rotate_counterclockwise",
-            "EV_task_search_red",
-            "EV_task_search_green",
-            "EV_task_search_blue",
-            "EV_task_approach_red",
-            "EV_task_approach_green",
-            "EV_task_approach_blue",
+            "EV_search_red",
+            "EV_search_green",
+            "EV_search_blue",
+            "EV_approach_red",
+            "EV_approach_green",
+            "EV_approach_blue",
         }
         if ev_name not in motion_requests:
             return ActionSpec()
@@ -928,23 +931,17 @@ class RobotSupervisor(TargetApproachMixin, ZoneLivelockEscapeMixin, Node):
                 angular_z=self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             )
-        if ev_name.startswith("EV_task_search_"):
+        if ev_name.startswith("EV_search_"):
             search_sign = 1.0 if self.robot_index % 2 == 0 else -1.0
             return ActionSpec(
                 angular_z=search_sign * self.short_rotation_omega,
                 hold_s=self.supervisor_period,
             )
-        if ev_name.startswith("EV_task_approach_"):
+        if ev_name.startswith("EV_approach_"):
             linear_x, angular_z = self._target_approach_components(ev_name)
             return ActionSpec(
                 linear_x=linear_x,
                 angular_z=angular_z,
-            )
-        if ev_name == "EV_task_move_backward":
-            if "BACK" in zones:
-                return ActionSpec()
-            return ActionSpec(
-                linear_x=-0.2, hold_s=self.recovery_back_hold_s
             )
         if ev_name == "EV_task_rotate_clockwise":
             return ActionSpec(

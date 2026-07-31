@@ -39,7 +39,7 @@ class TargetApproachMixin:
         self.color_horizontal_offsets[color] = float(message.data)
 
     def _target_approach_components(self, event_name: str):
-        color = event_name.removeprefix("EV_task_approach_")
+        color = event_name.removeprefix("EV_approach_")
         offset = self.color_horizontal_offsets.get(color, float("nan"))
         angular_z = (
             -self.approach_steering_gain * offset
