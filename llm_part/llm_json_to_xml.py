@@ -15,25 +15,39 @@ from typing import Any, Iterable, Sequence
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_JSON_DIR = SCRIPT_DIR / "llm_outputs"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR.parent / "automata" / "llm_generated_automata"
-DEFAULT_BASELINE_DIR = SCRIPT_DIR.parent / "automata" / "baseline_automata"
+DEFAULT_BASELINE_DIR = SCRIPT_DIR.parent / "automata" / "llm_automata"
 ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
+    # Exploration task-level commands.
+    "task_move_forward",
+    "task_rotate_clockwise",
+    "task_rotate_counterclockwise",
+
+    # Patrolling task-level commands and coordination.
     "search_color",
     "approach_color",
-    "task_move_forward",
     "search_red",
     "search_green",
     "search_blue",
     "approach_red",
     "approach_green",
     "approach_blue",
-    "task_rotate_clockwise",
-    "task_rotate_counterclockwise",
     "pub_going_red",
     "pub_going_green",
     "pub_going_blue",
     "skip_red",
     "skip_green",
     "skip_blue",
+
+    # Delivery task-level commands and box allocation.
+    "search_object",
+    "approach_object",
+    "pick_up_object",
+    "search_zone",
+    "approach_zone",
+    "drop_object",
+    "claim_red",
+    "claim_green",
+    "claim_blue",
 }
 
 
@@ -262,6 +276,19 @@ def build_xml(
         )
         for event in declared_events
     }
+    transition_events = {event for _, event, _ in transitions}
+    unused_declared_controllables = {
+        event
+        for event in originally_declared_events
+        if baseline_events.get(event) is True
+        and event not in transition_events
+    }
+    if unused_declared_controllables:
+        raise ValueError(
+            "Generated specification declares controllable events but never "
+            "uses them in transitions; this can deadlock the supervisor: "
+            f"{sorted(unused_declared_controllables)}"
+        )
     automaton_type = str(payload.get("type", "specification")).casefold()
     if automaton_type not in {"spec", "specification", "control_specification"}:
         raise ValueError(

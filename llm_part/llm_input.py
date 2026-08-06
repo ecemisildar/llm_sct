@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
@@ -24,6 +25,37 @@ COLOR_EVENTS = {
     f"{color}_{suffix}": False
     for color in ("red", "green", "blue")
     for suffix in ("visible", "not_visible", "reached")
+}
+
+DELIVERY_EVENTS = {
+    **{
+        event: True
+        for event in (
+            "search_object",
+            "approach_object",
+            "search_zone",
+            "approach_zone",
+            "task_move_forward",
+            "task_rotate_clockwise",
+            "task_rotate_counterclockwise",
+            "pick_up_object",
+            "drop_object",
+            "claim_red",
+            "claim_green",
+            "claim_blue",
+        )
+    },
+    **OBSTACLE_EVENTS,
+    **{
+        f"{color}_{target}_{observation}": False
+        for color in ("red", "green", "blue")
+        for target in ("object", "zone")
+        for observation in ("visible", "not_visible", "reached")
+    },
+    **{
+        f"received_claim_{color}": False
+        for color in ("red", "green", "blue")
+    },
 }
 
 ALL_EVENTS = {
@@ -55,22 +87,65 @@ ALL_EVENTS = {
     },
 }
 
+# One authoritative LLM vocabulary. Mission selection filters this vocabulary
+# against the events actually provided by that mission's plants.
+LLM_EVENTS = {**ALL_EVENTS, **DELIVERY_EVENTS}
+
 
 def all_events() -> dict[str, bool]:
     """Return the complete event alphabet available for every LLM request."""
-    return dict(ALL_EVENTS)
+    return dict(LLM_EVENTS)
 
 
 def events_for_mission(mission: str) -> dict[str, bool]:
-    """Return the authoritative LLM event alphabet for a mission profile."""
+    """Select the relevant subset of the one global LLM vocabulary."""
+    task_motion = {
+        event: True
+        for event in (
+            "task_move_forward",
+            "task_rotate_clockwise",
+            "task_rotate_counterclockwise",
+        )
+    }
     if mission == "exploration":
-        return {
-            "task_move_forward": True,
-            "task_rotate_clockwise": True,
-            "task_rotate_counterclockwise": True,
+        names = {**task_motion, **OBSTACLE_EVENTS}
+    elif mission == "delivery":
+        names = dict(DELIVERY_EVENTS)
+    elif mission == "patrolling":
+        names = {
+            **task_motion,
+            **{
+                event: ALL_EVENTS[event]
+                for event in ALL_EVENTS
+                if event.startswith(
+                    ("search_", "approach_", "pub_going_", "skip_", "received_going_")
+                )
+            },
             **OBSTACLE_EVENTS,
+            **COLOR_EVENTS,
         }
-    return all_events()
+    else:
+        names = all_events()
+    return {event: LLM_EVENTS[event] for event in names}
+
+
+def events_available_in_automata(
+    allowed_events: dict[str, bool], xml_paths: Sequence[Path]
+) -> dict[str, bool]:
+    """Restrict the LLM vocabulary to events supplied by selected automata."""
+    available: set[str] = set()
+    for xml_path in xml_paths:
+        data = ET.parse(xml_path).getroot().find("data")
+        if data is None:
+            raise ValueError(f"Baseline XML has no data element: {xml_path}")
+        available.update(
+            event.attrib["name"] for event in data.findall("event")
+        )
+    return {
+        event: controllable
+        for event, controllable in allowed_events.items()
+        if event in available
+    }
 
 
 def add_allowed_event_list(
@@ -92,6 +167,163 @@ def add_allowed_event_list(
         f"Controllable events: {json.dumps(controllable)}\n"
         f"Uncontrollable observation events: {json.dumps(uncontrollable)}"
     )
+
+
+def add_mission_requirements(prompt: str, mission: str) -> str:
+    """Add runtime constraints that cannot be inferred from event names alone."""
+    if mission != "delivery":
+        return prompt
+    return (
+        f"{prompt}\n\nDELIVERY RUNTIME REQUIREMENTS\n"
+        "Each robot delivers exactly one box and is retired after dropping it. "
+        "Generate the delivery task specification; the fixed automata describe "
+        "plants and collision avoidance but do not contain the delivery solution.\n"
+        "Output structure requirements:\n"
+        "- Return exactly ONE unified specification automaton named "
+        "delivery_task_specification. Do not return separate red, green, and blue "
+        "specifications. The one automaton must branch by observed color.\n"
+        "- Use observation, claim, pickup, and drop events to CHANGE protocol states. "
+        "Never use a repeatable motion command to enter another state.\n"
+        "- A repeatable motion command appears only as a SELF-LOOP in the state "
+        "where that motion is active. For example, claim_red enters a red-object "
+        "approach state, and approach_object self-loops in that approach state. "
+        "Likewise, pick_up_object enters a red-zone search state, search_zone "
+        "self-loops there, red_zone_visible enters a red-zone approach state, and "
+        "approach_zone self-loops there.\n"
+        "Runtime event contract:\n"
+        "- search_object is repeatable rotation and must self-loop while searching "
+        "for an unclaimed object.\n"
+        "- A <color>_object_visible observation starts an attempt to claim that "
+        "visible color. claim_<color> must not occur before this observation.\n"
+        "- In the claim-attempt state, claim_<color> commits this robot to the "
+        "color, while received_claim_<color> means another robot won and must "
+        "return this robot to unclaimed object search.\n"
+        "- approach_object is forward/steering motion. Enable it only after a "
+        "successful claim and while pursuing that object, and make it a self-loop.\n"
+        "- <color>_object_not_visible returns the claimed branch to an object-search "
+        "state; <color>_object_visible returns it to approach. Both object search "
+        "and approach must advance on <color>_object_reached because reached may "
+        "arrive without visible.\n"
+        "- pick_up_object is valid only after the claimed object is reached.\n"
+        "- search_zone is repeatable rotation and must self-loop while searching "
+        "for the matching zone. <color>_zone_visible enters zone approach.\n"
+        "- approach_zone is forward/steering motion, is valid only while pursuing "
+        "the matching visible zone, and must self-loop. <color>_zone_not_visible "
+        "returns to zone search. Both zone states advance on <color>_zone_reached.\n"
+        "- drop_object is valid only after the matching zone is reached.\n"
+        "For every selectable color, provide a complete path through search, claim "
+        "arbitration, object approach/reacquisition, pickup, matching-zone "
+        "search/approach, and drop. Do not create a single-robot sequence that "
+        "delivers multiple colors. Every listed controllable event must appear on "
+        "at least one transition."
+    )
+
+
+TRANSITION_RE = re.compile(
+    r'^\(\s*"([^"\r\n]+)"\s*,\s*"([^"\r\n]+)"\s*,\s*'
+    r'"([^"\r\n]+)"\s*\)$'
+)
+
+
+def delivery_semantic_errors(payload: object) -> list[str]:
+    """Return runtime-contract violations in an LLM delivery specification."""
+    if not isinstance(payload, dict) or not isinstance(payload.get("automata"), list):
+        return ["The response must contain an automata array."]
+
+    errors: list[str] = []
+    parsed: list[tuple[str, list[tuple[str, str, str]]]] = []
+    for index, automaton in enumerate(payload["automata"]):
+        if not isinstance(automaton, dict):
+            errors.append(f"automata[{index}] is not an object")
+            continue
+        name = str(automaton.get("name", f"automata[{index}]"))
+        transitions: list[tuple[str, str, str]] = []
+        for raw in automaton.get("transitions", []):
+            match = TRANSITION_RE.fullmatch(raw) if isinstance(raw, str) else None
+            if match:
+                transitions.append(match.groups())
+        parsed.append((name, transitions))
+
+    all_events = {event for _, transitions in parsed for _, event, _ in transitions}
+    required_actions = {
+        "search_object", "approach_object", "pick_up_object",
+        "search_zone", "approach_zone", "drop_object",
+    }
+    missing_actions = required_actions - all_events
+    if missing_actions:
+        errors.append(f"Missing required delivery actions: {sorted(missing_actions)}")
+
+    protocol_automata = [
+        name
+        for name, transitions in parsed
+        if {event for _, event, _ in transitions} & required_actions
+    ]
+    if len(protocol_automata) != 1:
+        errors.append(
+            "Return exactly one unified delivery protocol specification containing "
+            "all red, green, and blue branches; found protocol automata: "
+            f"{protocol_automata}"
+        )
+
+    for name, transitions in parsed:
+        local_events = {event for _, event, _ in transitions}
+        # Auxiliary policy specifications may restrict only claims. Validate the
+        # complete protocol automaton(s), identified by their delivery actions.
+        if not (local_events & required_actions):
+            continue
+        incoming: dict[str, set[str]] = {}
+        outgoing: dict[str, list[tuple[str, str]]] = {}
+        for source, event, target in transitions:
+            incoming.setdefault(target, set()).add(event)
+            outgoing.setdefault(source, []).append((event, target))
+            if event in {"search_object", "approach_object", "search_zone", "approach_zone"} and source != target:
+                errors.append(
+                    f"{name}: repeatable motion event {event!r} must self-loop, "
+                    f"but has {source!r} -> {target!r}"
+                )
+
+        for color in ("red", "green", "blue"):
+            claim = f"claim_{color}"
+            claims = [(source, target) for source, event, target in transitions if event == claim]
+            if not claims:
+                errors.append(f"{name}: missing {claim} branch")
+                continue
+            for source, target in claims:
+                if f"{color}_object_visible" not in incoming.get(source, set()):
+                    errors.append(
+                        f"{name}: {claim} at {source!r} is not preceded by "
+                        f"{color}_object_visible"
+                    )
+                source_events = {event for event, _ in outgoing.get(source, [])}
+                if f"received_claim_{color}" not in source_events:
+                    errors.append(
+                        f"{name}: claim-attempt state {source!r} must handle "
+                        f"received_claim_{color}"
+                    )
+                target_events = {event for event, _ in outgoing.get(target, [])}
+                if "approach_object" not in target_events:
+                    errors.append(
+                        f"{name}: state {target!r} after {claim} must enable "
+                        "approach_object"
+                    )
+
+        for source, event, _target in transitions:
+            prior = incoming.get(source, set())
+            if event == "pick_up_object" and not any(
+                item.endswith("_object_reached") for item in prior
+            ):
+                errors.append(
+                    f"{name}: pick_up_object at {source!r} is not preceded by an "
+                    "object_reached observation"
+                )
+            if event == "drop_object" and not any(
+                item.endswith("_zone_reached") for item in prior
+            ):
+                errors.append(
+                    f"{name}: drop_object at {source!r} is not preceded by a "
+                    "zone_reached observation"
+                )
+    return list(dict.fromkeys(errors))
 DEFAULT_MODEL = "gpt-4.1"
 
 
@@ -158,6 +390,70 @@ def validate_response_explanation(payload: object) -> None:
         value = explanation[field]
         if not isinstance(value, str) or not value.strip():
             raise RuntimeError(f"Explanation field '{field}' must be a non-empty string")
+
+
+def authoritative_event_errors(
+    payload: object, allowed_events: dict[str, bool]
+) -> list[str]:
+    """Report event names that are not in the mission's fixed-automata alphabet."""
+    if not isinstance(payload, dict) or not isinstance(payload.get("automata"), list):
+        return ["The response must contain an 'automata' list."]
+
+    allowed = set(allowed_events)
+    errors: list[str] = []
+    for index, automaton in enumerate(payload["automata"]):
+        if not isinstance(automaton, dict):
+            errors.append(f"Automaton {index + 1} must be a JSON object.")
+            continue
+        name = str(automaton.get("name") or f"automaton_{index + 1}")
+        declared = automaton.get("events", [])
+        if isinstance(declared, list):
+            unknown_declared = sorted(
+                {str(event) for event in declared} - allowed
+            )
+            if unknown_declared:
+                errors.append(
+                    f"{name} declares events outside the authoritative event list: "
+                    f"{unknown_declared}."
+                )
+
+        states = {
+            str(state) for state in automaton.get("states", [])
+        } if isinstance(automaton.get("states", []), list) else set()
+        unknown_transition_events: set[str] = set()
+        state_names_used_as_events: set[str] = set()
+        transitions = automaton.get("transitions", [])
+        if not isinstance(transitions, list):
+            continue
+        for transition in transitions:
+            if not isinstance(transition, str):
+                continue
+            match = re.fullmatch(
+                r'\(\s*"([^"\r\n]+)"\s*,\s*"([^"\r\n]+)"\s*,\s*'
+                r'"([^"\r\n]+)"\s*\)',
+                transition,
+            )
+            if not match:
+                continue
+            event = match.group(2)
+            if event not in allowed:
+                unknown_transition_events.add(event)
+                if event in states:
+                    state_names_used_as_events.add(event)
+        if unknown_transition_events:
+            detail = (
+                " These names are states, not events: "
+                f"{sorted(state_names_used_as_events)}."
+                if state_names_used_as_events
+                else ""
+            )
+            errors.append(
+                f"{name} uses transition events outside the authoritative event "
+                f"list: {sorted(unknown_transition_events)}.{detail} Use only exact "
+                "event names from the provided list; do not invent an event to move "
+                "between task phases."
+            )
+    return errors
 
 
 def default_output_path(output_dir: Path) -> Path:
@@ -312,20 +608,48 @@ def generate_json(
     output_path: Path | None = None,
     context_mission: str = "patrolling",
     feedback: object | None = None,
+    max_repair_attempts: int = 2,
 ) -> tuple[object, Path]:
     base_prompt = read_required_text(prompt_path, "Prompt")
     api_key = read_required_text(api_key_path, "API key")
     context = automata_files_as_json(context_files, context_mission)
-    allowed_events = events_for_mission(context_mission)
+    allowed_events = events_available_in_automata(
+        events_for_mission(context_mission), context_files
+    )
     prompt = add_existing_automata_context(
         combine_prompt(base_prompt, task, feedback), context
     )
+    prompt = add_mission_requirements(prompt, context_mission)
     prompt = add_allowed_event_list(prompt, allowed_events)
     destination = output_path or default_output_path(DEFAULT_OUTPUT_DIR)
     save_task_prompt(task, destination)
     if feedback is not None:
         save_json(feedback, destination.with_suffix(".feedback.json"))
-    payload = request_json(prompt, api_key, model)
-    validate_response_explanation(payload)
+    request_prompt = prompt
+    for attempt in range(max_repair_attempts + 1):
+        payload = request_json(request_prompt, api_key, model)
+        validate_response_explanation(payload)
+        semantic_errors = authoritative_event_errors(payload, allowed_events)
+        if context_mission == "delivery":
+            semantic_errors.extend(delivery_semantic_errors(payload))
+        if not semantic_errors:
+            break
+        if attempt == max_repair_attempts:
+            raise RuntimeError(
+                f"Generated {context_mission} specification failed semantic "
+                "validation after "
+                f"{max_repair_attempts + 1} attempts:\n- "
+                + "\n- ".join(semantic_errors)
+            )
+        request_prompt = (
+            prompt
+            + "\n\nSEMANTIC VALIDATION FAILURE\n"
+            + "The previous candidate cannot be synthesized for execution. Repair "
+            + "the automata while preserving the objective. Return the complete "
+            + "replacement JSON, not a patch. Errors:\n- "
+            + "\n- ".join(semantic_errors)
+            + "\n\nPREVIOUS INVALID CANDIDATE\n"
+            + json.dumps(payload, indent=2, ensure_ascii=False)
+        )
     save_json(payload, destination)
     return payload, destination

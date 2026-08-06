@@ -1,1 +1,0 @@
-visit red, green and blue objects sequentially but as fast as possible

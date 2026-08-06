@@ -1,0 +1,15 @@
+#Local Modular Supervisors
+
+# 1) Synchronize free behavior models
+
+Gloc1 = Sync(obstacle_sensor, motion_plant, task_motion_plant, color_sensor, red_availability, green_availability, blue_availability, communication_plant, pickup_and_drop_plant)
+
+
+# 2) Synchronize specifications
+
+Kloc1 = Sync(Gloc1, collision_avoidance, task_collision_avoidance, delivery_task_specification)
+
+
+# 3) Remove bad states
+
+Sloc1 = SupC(Gloc1, Kloc1)

@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "continuous_exploration_specification",
+      "states": [
+        "exploring"
+      ],
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the controllable events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included, as these are essential for enabling continuous exploration motion while respecting area coverage. All uncontrollable obstacle and path observation events are already handled by the existing plants and fixed specification and are not required to be modeled here.",
+    "transition_design": "All transitions are self-loops in a single persistent 'exploring' state, ensuring the system always allows at least one controllable motion event (forward or rotation) for continuous movement. This supports nonblocking, persistent exploration by never marking a transient or terminal state and never disabling exploration actions. Exclusion of other events, such as obstacle or low-level move events, ensures adherence to only the mission-level control requirements without overconstraining behavior already enforced by the fixed collision avoidance specification.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

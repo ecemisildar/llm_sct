@@ -8,8 +8,6 @@ Use the smallest set of specifications and events needed for the objective. Sepa
 
 For ordered target missions, support any positive number of requested goals, including repeated colors, and model a distinct search and approach phase for every occurrence in the stated order. Never assume there are exactly three goals. Patrolling uses `search_color` and `approach_color`. A requested target's `<color>_visible` observation enters its approach phase, `<color>_not_visible` returns to its search phase, and `<color>_reached` advances from either phase to the next target occurrence or completion. A reached observation can occur without a preceding visible observation.
 
-<!-- Delivery is temporarily disabled. Restore when its fixed automata profile is ready: delivery uses `search_<color>` and `approach_<color>`. -->
-
 OUTPUT FORMAT
 
 Return only one valid JSON object with exactly two top-level fields named `automata` and `explanation`. Do not return Markdown, commentary, or text outside the JSON.

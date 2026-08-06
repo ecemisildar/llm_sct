@@ -21,6 +21,7 @@ from llm_input import (
     DEFAULT_MODEL,
     DEFAULT_PROMPT_PATH,
     events_for_mission,
+    events_available_in_automata,
     generate_json,
     read_required_text,
     save_json,
@@ -45,6 +46,15 @@ DEFAULT_PATROLLING_RESULTS_DIR = (
     / "results"
     / "llm"
     / "results_patrolling"
+)
+DEFAULT_DELIVERY_FEEDBACK_PATH = (
+    Path(__file__).resolve().parent / "delivery_feedback.json"
+)
+DEFAULT_DELIVERY_RESULTS_DIR = (
+    Path(__file__).resolve().parent.parent
+    / "results"
+    / "llm"
+    / "results_delivery"
 )
 
 
@@ -110,6 +120,28 @@ def latest_completed_patrolling_run(
     )
 
 
+def latest_completed_delivery_run(
+    results_dir: Path = DEFAULT_DELIVERY_RESULTS_DIR,
+) -> Path | None:
+    """Return the newest finalized LLM delivery run."""
+    candidates = [
+        path
+        for path in results_dir.glob("S_*/robots_*/run_*")
+        if (path / "SAVE_STATUS.txt").is_file()
+        and "Saving OK" in (path / "SAVE_STATUS.txt").read_text(encoding="utf-8")
+        and _csv_rows(path / "task_result.csv")
+    ]
+    if not candidates:
+        return None
+    return max(
+        candidates,
+        key=lambda path: (
+            (path / "task_result.csv").stat().st_mtime,
+            path.name,
+        ),
+    )
+
+
 def _saved_launch_value(status: str, name: str) -> str | None:
     match = re.search(rf"^\s*{re.escape(name)}:\s*(.*?)\s*$", status, re.MULTILINE)
     return match.group(1) if match else None
@@ -120,17 +152,17 @@ def _matching_previous_llm_output(
     objective: str,
 ) -> object | None:
     yaml_dir = supervisor_xml_to_yaml.DEFAULT_YAML_DIR
-    saved_output = yaml_dir / f"{supervisor_name}.llm_output.json"
-    if saved_output.is_file():
-        return json.loads(saved_output.read_text(encoding="utf-8"))
+    saved_outputs = list(yaml_dir.rglob(f"{supervisor_name}.llm_output.json"))
+    if saved_outputs:
+        return json.loads(saved_outputs[0].read_text(encoding="utf-8"))
 
-    yaml_path = yaml_dir / f"{supervisor_name}.yaml"
+    yaml_paths = list(yaml_dir.rglob(f"{supervisor_name}.yaml"))
     candidates = sorted(
         llm_json_to_xml.DEFAULT_JSON_DIR.glob("llm_output_*.json"),
         key=lambda path: path.stat().st_mtime,
         reverse=True,
     )
-    if yaml_path.is_file():
+    if yaml_paths:
         candidates = [
             path
             for path in candidates
@@ -329,24 +361,145 @@ def build_latest_patrolling_feedback(
     return feedback
 
 
+def build_latest_delivery_feedback(
+    results_dir: Path = DEFAULT_DELIVERY_RESULTS_DIR,
+) -> dict[str, object] | None:
+    """Extract feedback from the newest completed LLM delivery run."""
+    run_dir = latest_completed_delivery_run(results_dir)
+    if run_dir is None:
+        return None
+
+    task = _csv_rows(run_dir / "task_result.csv")[-1]
+    coverage_rows = _csv_rows(run_dir / "coverage_timeseries.csv")
+    status = (run_dir / "SAVE_STATUS.txt").read_text(encoding="utf-8")
+    objective_path = run_dir / "prompt.txt"
+    objective = (
+        objective_path.read_text(encoding="utf-8").strip()
+        if objective_path.is_file()
+        else ""
+    )
+    supervisor_name = run_dir.parent.parent.name
+    success = task.get("success", "").casefold() == "true"
+    duration = float(task["duration_s"]) if task.get("duration_s") else None
+    progress = float(task["progress_pct"]) if task.get("progress_pct") else 0.0
+
+    robot_progress: dict[str, object] = {}
+    for row in _csv_rows(run_dir / "task_progress.csv"):
+        robot = row.get("robot")
+        if not robot:
+            continue
+        robot_progress[robot] = {
+            "delivered_colors": [
+                color for color in row.get("delivered_colors", "").split("|")
+                if color
+            ],
+            "delivered_count": int(row.get("delivered_count", 0) or 0),
+            "contribution_percent": float(
+                row.get("contribution_pct", 0) or 0
+            ),
+            "team_complete": row.get("team_complete", "").casefold() == "true",
+            "red_delivered_seconds": (
+                float(row["red_delivered_s"]) if row.get("red_delivered_s") else None
+            ),
+            "green_delivered_seconds": (
+                float(row["green_delivered_s"])
+                if row.get("green_delivered_s") else None
+            ),
+            "blue_delivered_seconds": (
+                float(row["blue_delivered_s"])
+                if row.get("blue_delivered_s") else None
+            ),
+        }
+
+    event_statistics: dict[str, object] = {}
+    for path in sorted(run_dir.glob("event_percentages_robot_*.csv")):
+        rows = [
+            row for row in _csv_rows(path)
+            if row.get("selected_event") != "TOTAL"
+        ]
+        if rows:
+            event_statistics[rows[0]["robot"]] = {
+                row["selected_event"].removeprefix("EV_"): {
+                    "count": int(row["count"]),
+                    "percentage": float(row["percentage"]),
+                }
+                for row in rows
+            }
+
+    feedback: dict[str, object] = {
+        "source": {
+            "mission": "delivery",
+            "supervisor": supervisor_name,
+            "run_id": run_dir.name,
+            "results_directory": str(run_dir),
+            "objective": objective,
+        },
+        "evaluation": {
+            "task_success": success,
+            "task_duration_seconds": duration,
+            "completed_robots": int(task["completed_robots"]),
+            "total_robots": int(task["total_robots"]),
+            "completed_boxes": int(task["completed_targets"]),
+            "total_boxes": int(task["total_targets"]),
+            "delivery_progress_percent": progress,
+            "total_coverage_percent": (
+                float(coverage_rows[-1]["coverage_pct"])
+                if coverage_rows else None
+            ),
+            "random_seed": _saved_launch_value(status, "random_seed"),
+            "recorded_bump_count": len(_csv_rows(run_dir / "bumps_global.csv")),
+        },
+        "per_robot_delivery_progress": robot_progress,
+        "selected_event_statistics": event_statistics,
+        "refinement_request": (
+            (
+                "Preserve successful one-box-per-robot delivery while reducing "
+                f"team completion time below {duration:g} seconds."
+            )
+            if success and duration is not None
+            else (
+                "Revise the delivery specification so three robots claim unique "
+                "colors and each completes claim, object search/approach, pickup, "
+                f"zone search/approach, and drop. Previous progress was {progress:g}%."
+            )
+        )
+        + " Preserve fixed collision avoidance and use per-robot event statistics "
+        "to address stalled stages.",
+    }
+    previous_output = _matching_previous_llm_output(supervisor_name, objective)
+    if previous_output is not None:
+        feedback["previous_llm_output"] = previous_output
+    return feedback
+
+
 def select_profile(
     task: str, mission: str = "auto", exploration_mode: str = "auto"
 ) -> tuple[str, list[Path], list[Path]]:
     """Return mission name, fixed plants, and fixed specifications."""
     text = task.casefold()
-    if mission == "delivery" or (
-        mission == "auto" and ("delivery" in text or "deliver" in text)
-    ):
-        raise ValueError(
-            "Delivery generation is temporarily disabled until its fixed "
-            "automata profile is re-enabled."
-        )
     if mission == "auto":
-        # Delivery is temporarily disabled until its fixed automata profile is ready.
-        # if "delivery" in text or "deliver" in text:
-        #     mission = "delivery"
-        # elif any(
-        if any(
+        delivery_keywords = (
+            "delivery",
+            "deliver",
+            "pick up",
+            "pickup",
+            "pick and drop",
+            "drop off",
+            "drop-off",
+            "transport a box",
+            "transport the box",
+        )
+        describes_box_to_zone = (
+            ("box" in text or "boxes" in text)
+            and ("zone" in text or "zones" in text)
+        )
+        if (
+            any(keyword in text for keyword in delivery_keywords)
+            or describes_box_to_zone
+        ):
+            mission = "delivery"
+        elif any(
+        # if any(
             keyword in text
             for keyword in (
                 "explor",
@@ -364,47 +517,62 @@ def select_profile(
         else:
             mission = "patrolling"
 
-    baseline = nadzoru_sync.AUTOMATA_DIR / "baseline_automata"
-    shared_motion_plant = baseline / "shared" / "motion_plant.xml"
-    shared_obstacle_sensor = baseline / "shared" / "obstacle_sensor.xml"
-    shared_collision_avoidance = baseline / "shared" / "collision_avoidance.xml"
+    llm_automata = nadzoru_sync.AUTOMATA_DIR / "llm_automata"
+    shared_motion_plant = llm_automata / "shared" / "motion_plant.xml"
+    shared_obstacle_sensor = llm_automata / "shared" / "obstacle_sensor.xml"
+    shared_collision_avoidance = llm_automata / "shared" / "collision_avoidance.xml"
+    shared_task_motion_safety = (
+        llm_automata / "shared" / "task_motion_safety.xml"
+    )
     if mission == "exploration":
         return (
             mission,
             [shared_obstacle_sensor, shared_motion_plant],
-            [shared_collision_avoidance],
+            [shared_collision_avoidance, shared_task_motion_safety],
         )
-    # Delivery is temporarily disabled; keep this profile for later reactivation.
-    # if mission == "delivery":
-    #     directory = baseline / "delivery"
-    #     plants = [
-    #         directory / name
-    #         for name in (
-    #             "obstacle_sensor.xml",
-    #             "color_sensor.xml",
-    #             "motion_plant.xml",
-    #             "comm_plant.xml",
-    #             "red_availability.xml",
-    #             "green_availability.xml",
-    #             "blue_availability.xml",
-    #         )
-    #     ]
-    #     return (
-    #         mission,
-    #         plants,
-    #         [directory / "collision_avoidance.xml"],
-    #     )
+    if mission == "delivery":
+        directory = llm_automata / "delivery"
+        plants = [
+            shared_obstacle_sensor,
+            shared_motion_plant,
+            directory / "task_motion_plant.xml",
+            *(
+                directory / name
+                for name in (
+                "pickup_and_drop_plant.xml",
+                "color_sensor.xml",
+                "communication_plant.xml",
+                "red_availability.xml",
+                "green_availability.xml",
+                "blue_availability.xml",
+                )
+            ),
+        ]
+        return (
+            mission,
+            plants,
+            [
+                shared_collision_avoidance,
+                shared_task_motion_safety,
+                directory / "task_collision_avoidance.xml",
+            ],
+        )
 
-    directory = baseline / "patrolling"
+    directory = llm_automata / "patrolling"
     plants = [
         shared_obstacle_sensor,
         directory / "color_sensor.xml",
         shared_motion_plant,
+        directory / "task_motion_plant.xml",
     ]
     return (
         mission,
         plants,
-        [shared_collision_avoidance],
+        [
+            shared_collision_avoidance,
+            shared_task_motion_safety,
+            directory / "task_collision_avoidance.xml",
+        ],
     )
 
 
@@ -417,18 +585,24 @@ def run_pipeline(
     mission: str = "auto",
     exploration_mode: str = "auto",
     feedback: object | None = None,
+    auto_feedback: bool = True,
 ) -> PipelineResult:
     report = status or (lambda _message: None)
     selected_mission, fixed_plants, fixed_specs = select_profile(
         task, mission, exploration_mode
     )
-    if feedback is None and selected_mission in {"exploration", "patrolling"}:
+    if auto_feedback and feedback is None and selected_mission in {
+        "exploration", "patrolling", "delivery"
+    }:
         if selected_mission == "exploration":
             feedback = build_latest_exploration_feedback()
             feedback_path = DEFAULT_EXPLORATION_FEEDBACK_PATH
-        else:
+        elif selected_mission == "patrolling":
             feedback = build_latest_patrolling_feedback()
             feedback_path = DEFAULT_PATROLLING_FEEDBACK_PATH
+        else:
+            feedback = build_latest_delivery_feedback()
+            feedback_path = DEFAULT_DELIVERY_FEEDBACK_PATH
         if feedback is not None:
             save_json(feedback, feedback_path)
             source = feedback["source"]
@@ -445,7 +619,9 @@ def run_pipeline(
         f"Selected {selected_mission} fixed automata: "
         + ", ".join(path.stem for path in [*fixed_plants, *fixed_specs])
     )
-    allowed_events = events_for_mission(selected_mission)
+    allowed_events = events_available_in_automata(
+        events_for_mission(selected_mission), fixed_plants
+    )
 
     report("Requesting JSON automata from OpenAI…")
     payload, json_path = generate_json(
@@ -496,7 +672,11 @@ def run_pipeline(
     g_xml, k_xml, s_xml = nadzoru_sync.run(sync_args)
 
     report("Encoding the synthesized supervisor as runtime YAML…")
-    yaml_path = supervisor_xml_to_yaml.DEFAULT_YAML_DIR / s_xml.with_suffix(".yaml").name
+    yaml_path = (
+        supervisor_xml_to_yaml.DEFAULT_YAML_DIR
+        / selected_mission
+        / s_xml.with_suffix(".yaml").name
+    )
     supervisor_xml_to_yaml.convert(s_xml, yaml_path)
     source_prompt_path = json_path.with_suffix(".prompt.txt")
     yaml_prompt_path = yaml_path.with_suffix(".prompt.txt")
@@ -533,8 +713,7 @@ def build_parser() -> argparse.ArgumentParser:
     task_group.add_argument("--task-file", help="Text file containing the control task")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument(
-        # Add "delivery" back when the delivery profile above is re-enabled.
-        "--mission", choices=("auto", "exploration", "patrolling"),
+        "--mission", choices=("auto", "exploration", "patrolling", "delivery"),
         default="auto",
     )
     parser.add_argument(
@@ -547,12 +726,19 @@ def build_parser() -> argparse.ArgumentParser:
         "--feedback-file",
         help="Optional JSON file containing previous-run metrics and design feedback",
     )
+    parser.add_argument(
+        "--no-feedback",
+        action="store_true",
+        help="Generate independently without automatic or file-based feedback",
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        if args.no_feedback and args.feedback_file:
+            raise ValueError("--no-feedback cannot be combined with --feedback-file")
         task = (
             read_required_text(Path(args.task_file).expanduser().resolve(), "Task")
             if args.task_file
@@ -576,6 +762,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             mission=args.mission,
             exploration_mode=args.exploration_mode,
             feedback=feedback,
+            auto_feedback=not args.no_feedback,
             status=print,
         )
     except Exception as error:

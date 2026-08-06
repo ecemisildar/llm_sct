@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "continuous_exploration_specification",
+      "states": [
+        "explore"
+      ],
+      "initial_state": "explore",
+      "marked_states": [
+        "explore"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"explore\", \"task_move_forward\", \"explore\")",
+        "(\"explore\", \"task_rotate_clockwise\", \"explore\")",
+        "(\"explore\", \"task_rotate_counterclockwise\", \"explore\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the high-level controllable movement events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included. These allow for all fundamental robot actions to explore and increase environment coverage. Obstacle and path observation events are not needed here since obstacle avoidance is already enforced by the supplied 'collision_avoidance' specification; they do not influence exploration strategy within this automaton.",
+    "transition_design": "A single-state self-loop structure is used to ensure at all times that the supervisor may always issue any combination of movement commands ('task_move_forward', 'task_rotate_clockwise', 'task_rotate_counterclockwise'). This guarantees that exploration can continue indefinitely—maximizing area coverage—without enforcing any premature stopping condition or restricting sequencing, while independently allowing the provided collision avoidance to prevent unsafe moves.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

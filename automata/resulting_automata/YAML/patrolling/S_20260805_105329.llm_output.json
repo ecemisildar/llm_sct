@@ -1,0 +1,59 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "patrol_ordered_rgb_specification",
+      "states": [
+        "S_red_search",
+        "S_red_approach",
+        "S_green_search",
+        "S_green_approach",
+        "S_blue_search",
+        "S_blue_approach",
+        "S_done"
+      ],
+      "initial_state": "S_red_search",
+      "marked_states": [
+        "S_done"
+      ],
+      "events": [
+        "search_color",
+        "approach_color",
+        "red_visible",
+        "red_not_visible",
+        "red_reached",
+        "green_visible",
+        "green_not_visible",
+        "green_reached",
+        "blue_visible",
+        "blue_not_visible",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"S_red_search\", \"search_color\", \"S_red_search\")",
+        "(\"S_red_search\", \"red_visible\", \"S_red_approach\")",
+        "(\"S_red_search\", \"red_reached\", \"S_green_search\")",
+        "(\"S_red_approach\", \"approach_color\", \"S_red_approach\")",
+        "(\"S_red_approach\", \"red_not_visible\", \"S_red_search\")",
+        "(\"S_red_approach\", \"red_reached\", \"S_green_search\")",
+        "(\"S_green_search\", \"search_color\", \"S_green_search\")",
+        "(\"S_green_search\", \"green_visible\", \"S_green_approach\")",
+        "(\"S_green_search\", \"green_reached\", \"S_blue_search\")",
+        "(\"S_green_approach\", \"approach_color\", \"S_green_approach\")",
+        "(\"S_green_approach\", \"green_not_visible\", \"S_green_search\")",
+        "(\"S_green_approach\", \"green_reached\", \"S_blue_search\")",
+        "(\"S_blue_search\", \"search_color\", \"S_blue_search\")",
+        "(\"S_blue_search\", \"blue_visible\", \"S_blue_approach\")",
+        "(\"S_blue_search\", \"blue_reached\", \"S_done\")",
+        "(\"S_blue_approach\", \"approach_color\", \"S_blue_approach\")",
+        "(\"S_blue_approach\", \"blue_not_visible\", \"S_blue_search\")",
+        "(\"S_blue_approach\", \"blue_reached\", \"S_done\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Selected only approach_color, search_color (controllable) and _visible, _not_visible, _reached observations for each required color. These map directly to the target locations and mission progress. Omitted specific-color approach/search events and unrelated controllable/intermediate actions, as only task-general mission transitions are needed for the objective.",
+    "transition_design": "The transitions enforce strict red→green→blue order: for each color, search phase uses search_color and transitions on <color>_visible to the approach phase, which uses approach_color. If the zone is lost (<color>_not_visible), transition back to search. Either search or approach phase can complete the target on <color>_reached, advancing to the next in sequence. After blue_reached, transition to S_done, the sole marked state. Observation events not relevant to the current phase are inert by default (self-loops). All allowed transitions are state-changing and are explicitly included as required by SCT rules.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

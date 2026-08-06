@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "exploration_area_coverage_specification",
+      "states": [
+        "exploring"
+      ],
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the controllable events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included, as they directly command the robot's movement and enable ongoing exploration. All these events are required for area coverage since forward movement and both rotation directions enable continuous and diverse environment traversal. No uncontrollable observation events are added, as obstacle avoidance is already handled by the fixed 'collision_avoidance' specification, and no other event categories are relevant to maximizing area coverage.",
+    "transition_design": "A single-state automaton uses self-loops on all included controllable events, allowing any combination, sequence, and repetition of movement commands essential for continuous exploration. No sequencing or exclusion is imposed, ensuring maximal flexibility in issuing movement commands. The automaton is nonblocking and always marked, reflecting the perpetual nature of area coverage.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

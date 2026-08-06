@@ -27,18 +27,20 @@ MISSIONS = {
         "package": "leo_patrolling",
         "results": "results_patrolling",
     },
-    # Delivery is temporarily disabled; keep this launcher profile for later.
-    # "delivery": {
-    #     "package": "leo_delivery",
-    #     "results": "results_delivery",
-    # },
+    "delivery": {
+        "package": "leo_delivery",
+        "results": "results_delivery",
+    },
 }
 
 
-def newest_yaml(directory: Path = DEFAULT_YAML_DIR) -> Path:
-    candidates = sorted(directory.glob("S_[0-9]*_[0-9]*.yaml"))
+def newest_yaml(mission: str, directory: Path = DEFAULT_YAML_DIR) -> Path:
+    mission_directory = directory / mission
+    candidates = sorted(mission_directory.glob("S_[0-9]*_[0-9]*.yaml"))
     if not candidates:
-        raise FileNotFoundError(f"No generated S_<timestamp>.yaml found in {directory}")
+        raise FileNotFoundError(
+            f"No generated S_<timestamp>.yaml found in {mission_directory}"
+        )
     return candidates[-1]
 
 
@@ -75,7 +77,9 @@ def color_order_for_run(args: argparse.Namespace, yaml_path: Path) -> tuple[str,
 def build_launch_command(args: argparse.Namespace) -> tuple[list[str], Path, Path]:
     mission = MISSIONS[args.mission]
     yaml_path = (
-        Path(args.yaml).expanduser().resolve() if args.yaml else newest_yaml().resolve()
+        Path(args.yaml).expanduser().resolve()
+        if args.yaml
+        else newest_yaml(args.mission).resolve()
     )
     if not yaml_path.is_file():
         raise FileNotFoundError(f"Supervisor YAML does not exist: {yaml_path}")
@@ -135,7 +139,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("mission", choices=sorted(MISSIONS))
     parser.add_argument(
         "--yaml",
-        help="Generated supervisor YAML (default: newest resulting_automata/YAML/S_*.yaml)",
+        help="Generated supervisor YAML (default: newest YAML/<mission>/S_*.yaml)",
     )
     parser.add_argument("--total-robots", type=int, default=3)
     parser.add_argument("--run-duration", type=float, default=300.0)

@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "continuous_explore_specification",
+      "states": [
+        "exploring"
+      ],
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the controllable events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included because these are the authoritative task-level motion events required for continuous exploration and maximizing area coverage. Low-level motion primitives and all obstacle observation events are omitted, as obstacle avoidance is already enforced by the fixed collision_avoidance specification.",
+    "transition_design": "A single persistent state 'exploring' allows any of the included motion events at any time, ensuring the robot is always permitted to move and can continually explore the environment. All transitions are self-loops, maximizing permissible motion and guaranteeing nonblocking behavior. No sequencing or observation events are needed, as the objective is continuous area coverage without further mission phases.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

@@ -18,5 +18,5 @@ def generate_launch_description():
         enable_color_detector=True,
         enable_color_order=True,
         shutdown_on_task_complete=True,
-        wait_for_all_task_completion=True,
+        wait_for_all_task_completion=False,
     )

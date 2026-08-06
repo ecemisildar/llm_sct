@@ -1,0 +1,22 @@
+Node started
+run_id: run_20260806_105328
+results_dir: /home/ecem/sct_ws/src/llm_sct/results/baseline/results_patrolling/sup_patrolling/robots_3/run_20260806_105328
+metadata_yaml: /home/ecem/sct_ws/install/leo_patrolling/share/leo_patrolling/config/sup_patrolling.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /home/ecem/sct_ws/install/leo_patrolling/share/leo_patrolling/worlds/random_world_rgb.sdf
+  headless: true
+  auto_start: true
+  run_duration: 600
+  total_robots: 3
+  random_seed: 1002
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/results/baseline/results_patrolling
+  metadata_yaml_path: /home/ecem/sct_ws/install/leo_patrolling/share/leo_patrolling/config/sup_patrolling.yaml
+robot_2 completed the patrolling task.
+robot_0 completed the patrolling task.
+robot_1 completed the patrolling task.
+Task success: true
+Task duration: 202.842s
+Saving started...
+Saving OK

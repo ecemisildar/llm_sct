@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "exploration_activity_specification",
+      "states": [
+        "exploring"
+      ],
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the high-level controllable motion events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included, as these are required to enable continuous exploration and maximize area coverage. No low-level controllable events or obstacle observation events are included, as obstacle avoidance is already enforced by the fixed 'collision_avoidance' specification and low-level acts are forbidden.",
+    "transition_design": "The automaton uses a single state 'exploring' with marked status, covering all trios of task-level motion commands self-looped on the state, thus never halting exploration. No ordering or observation handling is required beyond those already ensured by the included plants/fixed specification. This guarantees nonblocking persistent motion and leaves all environment-based adaptation and collision avoidance to the fixed logic.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

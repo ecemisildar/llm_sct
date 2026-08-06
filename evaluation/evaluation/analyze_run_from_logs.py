@@ -119,7 +119,7 @@ def read_bump_rows(path: Path):
     return rows
 
 
-def read_coverage_timeseries(path: Path):
+def read_coverage_timeseries(path: Path, max_time: float | None = None):
     times, covs = [], []
     with path.open("r", newline="") as f:
         r = csv.DictReader(f)
@@ -129,18 +129,34 @@ def read_coverage_timeseries(path: Path):
             if not t or not c:
                 continue
             try:
-                times.append(float(t))
+                elapsed = float(t)
+                if max_time is not None and elapsed > max_time:
+                    continue
+                times.append(elapsed)
                 covs.append(float(c))
             except ValueError:
                 continue
     return times, covs
 
 
-def read_visited_cells(path: Path):
+def read_visited_cells(
+    path: Path,
+    max_time: float | None = None,
+    time_origin: float | None = None,
+):
     visited = set()
     with path.open("r", newline="") as f:
         r = csv.DictReader(f)
         for row in r:
+            if max_time is not None and time_origin is not None:
+                try:
+                    stamp = float(row.get("stamp_sec", "")) + (
+                        float(row.get("stamp_nsec", "0")) * 1e-9
+                    )
+                except (TypeError, ValueError):
+                    continue
+                if stamp - time_origin > max_time:
+                    continue
             idx = row.get("cell_index", "")
             if idx == "":
                 continue
@@ -184,7 +200,12 @@ def run_start_timestamp(run_id: str):
         return None
 
 
-def read_robot_paths(path: Path, completion_times=None, run_id=""):
+def read_robot_paths(
+    path: Path,
+    completion_times=None,
+    run_id="",
+    max_time: float | None = None,
+):
     completion_times = completion_times or {}
     paths = {}
     rows = []
@@ -231,8 +252,28 @@ def read_robot_paths(path: Path, completion_times=None, run_id=""):
             and path_elapsed > completion
         ):
             continue
+        if max_time is not None and path_elapsed is not None and path_elapsed > max_time:
+            continue
         paths.setdefault(robot, []).append((px, py))
     return paths
+
+
+def path_time_origin(path: Path) -> float | None:
+    """Infer the wall-clock origin used by elapsed_s in a path log."""
+    if not path.exists():
+        return None
+    origins = []
+    with path.open("r", newline="") as f:
+        for row in csv.DictReader(f):
+            try:
+                stamp = float(row.get("stamp_sec", "")) + (
+                    float(row.get("stamp_nsec", "0")) * 1e-9
+                )
+                elapsed = float(row.get("elapsed_s", ""))
+            except (TypeError, ValueError):
+                continue
+            origins.append(stamp - elapsed)
+    return min(origins) if origins else None
 
 
 def build_cells(env_min, env_max, grid_size=GRID_SIZE):
@@ -732,7 +773,12 @@ def plot_collisions(rows, cov_times, covs, out_png: Path):
     return True
 
 
-def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
+def analyze_run(
+    run_id: str,
+    run_dir: Path,
+    root_dir: Path,
+    max_time: float | None = None,
+) -> bool:
     visited_csv = run_dir / "coverage_visited_cells.csv"
     if not visited_csv.exists():
         visited_csv = root_dir / f"{run_id}_coverage_visited_cells.csv"
@@ -740,18 +786,18 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
         print(f"[WARN] Missing {visited_csv}")
         return False
 
-    visited = read_visited_cells(visited_csv)
-    if not visited:
-        print(f"[WARN] Empty visited cells in {visited_csv}")
-        return False
-
     paths_csv = run_dir / "coverage_paths.csv"
     if not paths_csv.exists():
         paths_csv = root_dir / f"{run_id}_coverage_paths.csv"
     task_progress_csv = run_dir / "task_progress.csv"
     completion_times = read_task_completion_times(task_progress_csv)
+    origin = path_time_origin(paths_csv)
+    visited = read_visited_cells(visited_csv, max_time, origin)
+    if not visited:
+        print(f"[WARN] Empty visited cells in {visited_csv}")
+        return False
     paths = (
-        read_robot_paths(paths_csv, completion_times, run_id)
+        read_robot_paths(paths_csv, completion_times, run_id, max_time)
         if paths_csv.exists()
         else {}
     )
@@ -765,7 +811,8 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
         cells, obstacles, GRID_SIZE, OBSTACLE_OCCUPANCY_THRESHOLD
     )
 
-    map_out = run_dir / "coverage_map_offline.png"
+    suffix = f"_{max_time:g}s" if max_time is not None else ""
+    map_out = run_dir / f"coverage_map_offline{suffix}.png"
     plot_coverage_map(
         cells,
         visited,
@@ -782,7 +829,7 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
         cov_csv = root_dir / f"{run_id}_coverage_timeseries.csv"
     cov_times, covs = ([], [])
     if cov_csv.exists():
-        cov_times, covs = read_coverage_timeseries(cov_csv)
+        cov_times, covs = read_coverage_timeseries(cov_csv, max_time)
 
     bump_file = pick_matching_bump_file(run_dir, run_id)
     if bump_file is None:
@@ -790,10 +837,15 @@ def analyze_run(run_id: str, run_dir: Path, root_dir: Path) -> bool:
         rows = []
     else:
         rows = read_bump_rows(bump_file)
+        if max_time is not None:
+            rows = [
+                row for row in rows
+                if float(row.get("stamp_sec", "inf")) <= max_time
+            ]
         if not rows:
             print(f"[WARN] Bump file empty: {bump_file}. Plotting zeros.")
 
-    out_png = run_dir / "collisions_vs_time_offline.png"
+    out_png = run_dir / f"collisions_vs_time_offline{suffix}.png"
     if not plot_collisions(rows, cov_times, covs, out_png):
         print(f"[WARN] Could not plot collisions for {run_id}")
         return False
@@ -819,11 +871,18 @@ def parse_args():
         action="store_true",
         help="Analyze every run_* folder found under the given results dirs.",
     )
+    parser.add_argument(
+        "--max-time",
+        type=float,
+        help="Reconstruct each analysis using log data up to this many seconds",
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+    if args.max_time is not None and args.max_time <= 0:
+        raise SystemExit("--max-time must be positive")
     results_dirs = [Path(p).resolve() for p in args.results_dirs] if args.results_dirs else RESULTS_DIRS
 
     if args.all:
@@ -834,13 +893,13 @@ def main():
 
         ok = 0
         for run_dir in run_dirs:
-            if analyze_run(run_dir.name, run_dir, run_dir.parent):
+            if analyze_run(run_dir.name, run_dir, run_dir.parent, args.max_time):
                 ok += 1
         print(f"[DONE] analyzed {ok}/{len(run_dirs)} runs")
         return
 
     run_id, run_dir, root_dir = pick_latest_run_dir(results_dirs)
-    analyze_run(run_id, run_dir, root_dir)
+    analyze_run(run_id, run_dir, root_dir, args.max_time)
 
 
 if __name__ == "__main__":

@@ -140,18 +140,6 @@ class SCT:
             if self.choice_mode == "first":
                 return True, enabled[0]
 
-            forward = self.EV.get("EV_move_forward")
-            if forward in enabled and len(enabled) > 1:
-                # Prefer exploration motion and share the remaining probability
-                # equally among the other enabled controllable events.
-                other_probability = 1.0 - self.forward_probability
-                other_weight = other_probability / (len(enabled) - 1)
-                weights = [
-                    self.forward_probability if event == forward else other_weight
-                    for event in enabled
-                ]
-                return True, self.rng.choices(enabled, weights=weights, k=1)[0]
-
             return True, self.rng.choice(enabled)
 
         return False, None

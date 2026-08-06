@@ -1,0 +1,59 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "patrol_ordered_rgb_specification",
+      "states": [
+        "s_red_search",
+        "s_red_approach",
+        "s_green_search",
+        "s_green_approach",
+        "s_blue_search",
+        "s_blue_approach",
+        "done"
+      ],
+      "initial_state": "s_red_search",
+      "marked_states": [
+        "done"
+      ],
+      "events": [
+        "search_color",
+        "approach_color",
+        "red_visible",
+        "red_not_visible",
+        "red_reached",
+        "green_visible",
+        "green_not_visible",
+        "green_reached",
+        "blue_visible",
+        "blue_not_visible",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"s_red_search\", \"search_color\", \"s_red_search\")",
+        "(\"s_red_search\", \"red_visible\", \"s_red_approach\")",
+        "(\"s_red_search\", \"red_reached\", \"s_green_search\")",
+        "(\"s_red_approach\", \"approach_color\", \"s_red_approach\")",
+        "(\"s_red_approach\", \"red_not_visible\", \"s_red_search\")",
+        "(\"s_red_approach\", \"red_reached\", \"s_green_search\")",
+        "(\"s_green_search\", \"search_color\", \"s_green_search\")",
+        "(\"s_green_search\", \"green_visible\", \"s_green_approach\")",
+        "(\"s_green_search\", \"green_reached\", \"s_blue_search\")",
+        "(\"s_green_approach\", \"approach_color\", \"s_green_approach\")",
+        "(\"s_green_approach\", \"green_not_visible\", \"s_green_search\")",
+        "(\"s_green_approach\", \"green_reached\", \"s_blue_search\")",
+        "(\"s_blue_search\", \"search_color\", \"s_blue_search\")",
+        "(\"s_blue_search\", \"blue_visible\", \"s_blue_approach\")",
+        "(\"s_blue_search\", \"blue_reached\", \"done\")",
+        "(\"s_blue_approach\", \"approach_color\", \"s_blue_approach\")",
+        "(\"s_blue_approach\", \"blue_not_visible\", \"s_blue_search\")",
+        "(\"s_blue_approach\", \"blue_reached\", \"done\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the events 'search_color', 'approach_color' (controllable for mission-phase progression) and the uncontrollable observations 'red_visible', 'red_not_visible', 'red_reached', 'green_visible', 'green_not_visible', 'green_reached', 'blue_visible', 'blue_not_visible', 'blue_reached' are used. These directly represent the necessary progressions for sequencing and recognizing phase changes in patrolling the ordered red, green, blue zones. Other available events, such as low-level movements and explicit color-specific search/approach commands, are omitted as they are unnecessary for enforcing the ordered patrol logic and are handled by the plants or fixed specifications.",
+    "transition_design": "Each color phase contains two states: a search state and an approach state. The automaton begins in the 'search' state for red. Upon 'red_visible', it transitions to red's approach state. From both search and approach, 'red_reached' moves to green's search; 'red_not_visible' from approach returns to search. This sequence is repeated for green and blue. 'search_color' and 'approach_color' are permitted as long as the current phase is active, supporting any valid underlying implementation, but are not strictly required to progress the phases. Only after blue is reached does the automaton mark 'done', enforcing completion of the patrol in precisely the required order.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

@@ -136,45 +136,9 @@ class SCT:
         actives = self.get_active_controllable_events()
 
         enabled = [i for i, active in enumerate(actives) if active]
-        def is_generated_request(name):
-            return name.startswith(
-                (
-                    "EV_task_",
-                    "EV_search_",
-                    "EV_approach_",
-                    "EV_pub_going_",
-                    "EV_skip_",
-                )
-            ) or name in {"EV_search_color", "EV_approach_color"}
-
-        task_interface_present = any(
-            name.startswith(("EV_task_", "EV_search_", "EV_approach_"))
-            and name not in {"EV_search_color", "EV_approach_color"}
-            for name in self.EV
-        )
-        if task_interface_present:
-            enabled = [
-                event
-                for event in enabled
-                if is_generated_request(
-                    next(name for name, index in self.EV.items() if index == event)
-                )
-            ]
         if enabled:
             if self.choice_mode == "first":
                 return True, enabled[0]
-
-            forward = self.EV.get("EV_move_forward")
-            if forward in enabled and len(enabled) > 1:
-                # Prefer exploration motion and share the remaining probability
-                # equally among the other enabled controllable events.
-                other_probability = 1.0 - self.forward_probability
-                other_weight = other_probability / (len(enabled) - 1)
-                weights = [
-                    self.forward_probability if event == forward else other_weight
-                    for event in enabled
-                ]
-                return True, self.rng.choices(enabled, weights=weights, k=1)[0]
 
             return True, self.rng.choice(enabled)
 

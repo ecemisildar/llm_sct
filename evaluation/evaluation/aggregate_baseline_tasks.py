@@ -160,6 +160,7 @@ def aggregate_task_completion(
     run_dirs: list[Path],
     run_rows: list[dict[str, object]],
 ) -> None:
+    is_delivery = task_dir.name == "results_delivery"
     rows = []
     run_result_by_name = {str(row["run"]): row for row in run_rows}
     for run_dir in run_dirs:
@@ -169,11 +170,28 @@ def aggregate_task_completion(
         run_result = run_result_by_name[run_dir.name]
         with progress_path.open(newline="") as stream:
             for progress in csv.DictReader(stream):
-                complete = str(progress.get("complete", "")).casefold() == "true"
-                try:
-                    completion_s = float(progress.get("completion_s", ""))
-                except (TypeError, ValueError):
-                    completion_s = ""
+                if is_delivery:
+                    try:
+                        complete = int(progress.get("delivered_count", 0)) > 0
+                    except (TypeError, ValueError):
+                        complete = False
+                    delivery_times = []
+                    for color in ("red", "green", "blue"):
+                        try:
+                            delivery_times.append(
+                                float(progress.get(f"{color}_delivered_s", ""))
+                            )
+                        except (TypeError, ValueError):
+                            pass
+                    completion_s = max(delivery_times) if delivery_times else ""
+                else:
+                    complete = (
+                        str(progress.get("complete", "")).casefold() == "true"
+                    )
+                    try:
+                        completion_s = float(progress.get("completion_s", ""))
+                    except (TypeError, ValueError):
+                        completion_s = ""
                 rows.append(
                     {
                         "run": run_dir.name,
