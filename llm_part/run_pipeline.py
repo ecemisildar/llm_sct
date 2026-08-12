@@ -586,7 +586,11 @@ def run_pipeline(
     exploration_mode: str = "auto",
     feedback: object | None = None,
     auto_feedback: bool = True,
+    prompt_number: int = 1,
+    generation_number: int = 1,
 ) -> PipelineResult:
+    if prompt_number < 1 or generation_number < 1:
+        raise ValueError("Prompt and generation numbers must be positive integers")
     report = status or (lambda _message: None)
     selected_mission, fixed_plants, fixed_specs = select_profile(
         task, mission, exploration_mode
@@ -675,6 +679,8 @@ def run_pipeline(
     yaml_path = (
         supervisor_xml_to_yaml.DEFAULT_YAML_DIR
         / selected_mission
+        / f"prompt_{prompt_number}"
+        / f"generation_{generation_number}"
         / s_xml.with_suffix(".yaml").name
     )
     supervisor_xml_to_yaml.convert(s_xml, yaml_path)
@@ -731,6 +737,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Generate independently without automatic or file-based feedback",
     )
+    parser.add_argument("--prompt-number", type=int, default=1)
+    parser.add_argument("--generation-number", type=int, default=1)
     return parser
 
 
@@ -763,6 +771,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             exploration_mode=args.exploration_mode,
             feedback=feedback,
             auto_feedback=not args.no_feedback,
+            prompt_number=args.prompt_number,
+            generation_number=args.generation_number,
             status=print,
         )
     except Exception as error:

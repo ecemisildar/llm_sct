@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "exploration_motion_specification",
+      "states": [
+        "exploring"
+      ],
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the high-level controllable motion events (\"task_move_forward\", \"task_rotate_clockwise\", \"task_rotate_counterclockwise\") are included to allow unrestricted robot movement necessary for area coverage. No uncontrollable observation events are included because the control objective does not require limiting, tracking, or responding to obstacle observations itself—obstacle-safe behavior is already enforced by the fixed specifications.",
+    "transition_design": "All controllable motion actions are always enabled, supporting maximal area coverage. Every event loops the single nonblocking state \"exploring\" to itself, enforcing no sequencing or exclusion that could restrict coverage. All motion choices remain possible at all times for the supervisor.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

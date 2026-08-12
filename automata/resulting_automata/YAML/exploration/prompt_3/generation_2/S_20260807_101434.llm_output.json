@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "explore_motion_specification",
+      "states": [
+        "active"
+      ],
+      "initial_state": "active",
+      "marked_states": [
+        "active"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"active\", \"task_move_forward\", \"active\")",
+        "(\"active\", \"task_rotate_clockwise\", \"active\")",
+        "(\"active\", \"task_rotate_counterclockwise\", \"active\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The controllable events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included because they fully enable all supported robot motion, allowing the robot to traverse the environment, turn, and thus maximize exploration. No uncontrollable events were included, as the objective is not to restrict observation-based transitions. Forbidden low-level controllable events and unrelated observation events are omitted to keep the specification minimal and focused on authorized exploration movements.",
+    "transition_design": "The single-state design allows all included controllable motion events as self-loops, permitting any sequence or repetition of motion and rotations. This guarantees that task-level movement is always available whenever physically feasible, fulfilling the objective to explore as much as possible without imposing completion, waypoint, or path constraints. The marked state ensures nonblocking behavior.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

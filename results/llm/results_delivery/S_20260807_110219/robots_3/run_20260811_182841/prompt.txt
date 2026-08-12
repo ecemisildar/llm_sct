@@ -1,0 +1,1 @@
+Claim a box that is not claimed by another robot, approach to it and pick it up. Then search the delivery zone with the same color, approach it and drop the box there. Each robot should deliver only one box.

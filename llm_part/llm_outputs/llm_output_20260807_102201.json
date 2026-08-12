@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "explore_motion_specification",
+      "states": [
+        "searching"
+      ],
+      "initial_state": "searching",
+      "marked_states": [
+        "searching"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"searching\", \"task_move_forward\", \"searching\")",
+        "(\"searching\", \"task_rotate_clockwise\", \"searching\")",
+        "(\"searching\", \"task_rotate_counterclockwise\", \"searching\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the controllable motion events 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise' are included, as they enable continuous movement and area coverage. Uncontrollable events are omitted because the objective does not require any specific reaction to sensor observations—these are already handled for safety in the fixed automata.",
+    "transition_design": "A single-state automaton with controllable transitions permits any sequence of enabled motion directives at all times. This design permits all allowed movement actions and never restricts them, maximizing freedom to traverse all accessible areas—thus maximizing coverage. No sequencing or exclusion is imposed beyond global safety, ensuring nonblocking exploration.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "explore_environment_specification",
+      "states": [
+        "start",
+        "exploring"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"start\", \"task_move_forward\", \"exploring\")",
+        "(\"start\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"start\", \"task_rotate_counterclockwise\", \"exploring\")",
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The only events included are the controllable exploration actions: 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise.' These are directly related to exploration by enabling the robots to move and reorient, which fulfills the exploration control objective. All other available uncontrollable events and low-level controllable events are omitted, as they relate to obstacle sensing (already enforced by plants or fixed safety specs) or do not represent mission-level exploration decisions.",
+    "transition_design": "The design enables the robot to start exploring by issuing any of the three exploration actions from the 'start' state, after which it remains in the 'exploring' state. All enabled exploration actions keep the system in 'exploring,' ensuring ongoing exploration. There are no obligations for order, coverage, or restrictions beyond permitting exploration, keeping the specification minimal and nonblocking as required. The only marked state is 'exploring' to capture ongoing exploration activity.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

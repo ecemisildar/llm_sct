@@ -407,9 +407,17 @@ def authoritative_event_errors(
             continue
         name = str(automaton.get("name") or f"automaton_{index + 1}")
         declared = automaton.get("events", [])
+        declared_names: set[str] = set()
         if isinstance(declared, list):
+            for event in declared:
+                if isinstance(event, dict):
+                    value = event.get("name", event.get("id"))
+                    if value is not None:
+                        declared_names.add(str(value))
+                else:
+                    declared_names.add(str(event))
             unknown_declared = sorted(
-                {str(event) for event in declared} - allowed
+                declared_names - allowed
             )
             if unknown_declared:
                 errors.append(
@@ -422,6 +430,7 @@ def authoritative_event_errors(
         } if isinstance(automaton.get("states", []), list) else set()
         unknown_transition_events: set[str] = set()
         state_names_used_as_events: set[str] = set()
+        used_transition_events: set[str] = set()
         transitions = automaton.get("transitions", [])
         if not isinstance(transitions, list):
             continue
@@ -436,6 +445,7 @@ def authoritative_event_errors(
             if not match:
                 continue
             event = match.group(2)
+            used_transition_events.add(event)
             if event not in allowed:
                 unknown_transition_events.add(event)
                 if event in states:
@@ -452,6 +462,18 @@ def authoritative_event_errors(
                 f"list: {sorted(unknown_transition_events)}.{detail} Use only exact "
                 "event names from the provided list; do not invent an event to move "
                 "between task phases."
+            )
+        unused_declared_controllables = sorted(
+            event
+            for event in declared_names - used_transition_events
+            if allowed_events.get(event) is True
+        )
+        if unused_declared_controllables:
+            errors.append(
+                f"{name} declares controllable events but never uses them in "
+                f"transitions: {unused_declared_controllables}. Remove each unused "
+                "event from the automaton's events list or add a valid transition "
+                "that implements it."
             )
     return errors
 

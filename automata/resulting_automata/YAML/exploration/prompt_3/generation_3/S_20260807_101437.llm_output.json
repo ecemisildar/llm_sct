@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "explore_area_specification",
+      "states": [
+        "searching"
+      ],
+      "initial_state": "searching",
+      "marked_states": [
+        "searching"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"searching\", \"task_move_forward\", \"searching\")",
+        "(\"searching\", \"task_rotate_clockwise\", \"searching\")",
+        "(\"searching\", \"task_rotate_counterclockwise\", \"searching\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the authoritative controllable movement events—task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise—are included because the objective is to enable as much exploration as possible. No exclusion or restriction of controllable movement events is relevant, and no other event categories (such as observations) impose mission-level restrictions for exploration coverage.",
+    "transition_design": "The automaton consists of a single persistent state ('searching'), with all controllable movement events self-looping on this state. This design permits any combination and frequency of these actions, directly supporting maximal area exploration. There are no sequencing, completion, or exclusion restrictions: the robot remains free to continuously explore as much as possible without deadlock or blocking, and all restrictions on safety and obstacles are already enforced by fixed specifications.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "exploration_motion_specification",
+      "states": [
+        "exploring"
+      ],
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The only events included are the controllable exploration movement events: 'task_move_forward', 'task_rotate_clockwise', and 'task_rotate_counterclockwise'. These provide choices for sequencing robot movement to maximize area coverage, which is the core of the exploration objective. No observation or low-level events are required here as collision safety and sensor integration are already enforced by the included fixed plants and fixed specification.",
+    "transition_design": "The automaton is a single-state self-loop on all relevant movement choices, enabling free interleaving of forward and turning behaviors at any moment. This structure ensures no restrictions on movement order, thus allowing the area to be thoroughly explored with maximal coverage. No transient or blocking conditions exist, and exploration can proceed indefinitely. Marked state includes the entire reachable behavior, as the mission is ongoing.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

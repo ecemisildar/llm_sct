@@ -36,12 +36,12 @@ MISSIONS = {
 
 def newest_yaml(mission: str, directory: Path = DEFAULT_YAML_DIR) -> Path:
     mission_directory = directory / mission
-    candidates = sorted(mission_directory.glob("S_[0-9]*_[0-9]*.yaml"))
+    candidates = list(mission_directory.rglob("S_[0-9]*_[0-9]*.yaml"))
     if not candidates:
         raise FileNotFoundError(
             f"No generated S_<timestamp>.yaml found in {mission_directory}"
         )
-    return candidates[-1]
+    return max(candidates, key=lambda path: path.stat().st_mtime)
 
 
 def color_order_for_run(args: argparse.Namespace, yaml_path: Path) -> tuple[str, ...]:

@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "persistent_movement_specification",
+      "states": [
+        "exploring"
+      ],
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exploring\", \"task_move_forward\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_clockwise\", \"exploring\")",
+        "(\"exploring\", \"task_rotate_counterclockwise\", \"exploring\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the high-level controllable exploration motion events task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise are included, as they drive robot movement necessary for continuous area exploration and maximizing coverage. All obstacle-related events are already handled by fixed safety and collision avoidance specifications. No low-level or non-motion events are relevant to the high-level exploration objective.",
+    "transition_design": "The automaton consists of a single persistent 'exploring' state. All controllable motion events are self-looped in this state, allowing the robot to freely alternate and combine forward and rotational exploration maneuvers without restriction, maximizing possible coverage. There are no marked completion or stop states, so movement is never halted due to this specification. All states remain enabled for continued exploration, ensuring nonblocking behavior.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

@@ -75,7 +75,12 @@ def completion_by_robot(run: Path, task: str) -> dict[str, float]:
 
 def normalized_event(name: str) -> str:
     name = name.removeprefix("EV_")
-    return name.removeprefix("task_")
+    name = name.removeprefix("task_")
+    if name in {"search_red", "search_green", "search_blue"}:
+        return "search_color"
+    if name in {"approach_red", "approach_green", "approach_blue"}:
+        return "approach_color"
+    return name
 
 
 def event_percentages(run: Path) -> dict[str, float]:

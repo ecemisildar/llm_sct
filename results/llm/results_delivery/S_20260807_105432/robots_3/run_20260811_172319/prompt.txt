@@ -1,0 +1,1 @@
+Choose a box, approach to it, pick it up and drop it to its matching delivery zone. The robot and the delivery zone should be same color. Each robot should deliver one box.

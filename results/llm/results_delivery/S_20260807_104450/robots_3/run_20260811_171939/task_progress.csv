@@ -1,0 +1,4 @@
+robot,delivered_colors,delivered_count,team_total_colors,contribution_pct,team_complete,completion_s,red_delivered_s,green_delivered_s,blue_delivered_s
+robot_0,green,1,3,33.333,true,73.902,,73.902,
+robot_1,blue,1,3,33.333,true,73.902,,,54.922
+robot_2,red,1,3,33.333,true,73.902,59.463,,

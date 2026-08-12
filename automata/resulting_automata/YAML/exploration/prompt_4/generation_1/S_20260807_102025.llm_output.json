@@ -1,0 +1,30 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "explore_environment_specification",
+      "states": [
+        "start"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "start"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"start\", \"task_move_forward\", \"start\")",
+        "(\"start\", \"task_rotate_clockwise\", \"start\")",
+        "(\"start\", \"task_rotate_counterclockwise\", \"start\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only the controllable events task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise are included, as these are exclusively required to enable robot motion that constitutes exploration. No uncontrollable obstacle events are required here, since no explicit observation-driven sequencing or exclusion is stated by the control objective. Low-level or fixed events present only in other automata are omitted.",
+    "transition_design": "All transitions are self-loops in a single state. This structure allows the team to issue any of the authorized motion commands at any time. This guarantees that no restriction except arbitrary exploring is imposed, staying true to the general control objective (environment exploration by a team of robots) and allowing as much freedom as possible within the mission's scope. There is no marking of completion or further sequencing, as such semantics are not defined by the objective.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

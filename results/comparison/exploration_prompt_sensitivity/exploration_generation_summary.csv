@@ -1,0 +1,16 @@
+prompt,prompt_text,generation,runs,successes,success_rate_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
+1,Explore the environment continuously to maximize area coverage while avoiding obstacles.,1,5,0,0.0,300.0948,0.007138627319027356,,,66.75,3.409545424246464,,,1,0.2,0.4
+1,Explore the environment continuously to maximize area coverage while avoiding obstacles.,2,5,0,0.0,300.1312,0.02524598978055484,,,60.0,6.174544517614234,,,0,0.0,0.0
+1,Explore the environment continuously to maximize area coverage while avoiding obstacles.,3,5,0,0.0,300.1362,0.022868318696404703,,,65.0,5.4198708471697,,,1,0.2,0.4
+2,Explore the area while maximizing the coverage,1,5,0,0.0,300.1326,0.009931767214347685,,,60.5,5.2796780204857185,,,4,0.8,1.1661903789690602
+2,Explore the area while maximizing the coverage,2,5,0,0.0,300.1226,0.022817537115111232,,,57.0,8.276472678623424,,,0,0.0,0.0
+2,Explore the area while maximizing the coverage,3,5,0,0.0,300.11220000000003,0.00556417109729702,,,63.0,4.650268809434569,,,3,0.6,0.8
+3,Explore the area as much as possible,1,5,0,0.0,300.1192,0.01733666634622546,,,62.0,11.335784048754634,,,2,0.4,0.4898979485566356
+3,Explore the area as much as possible,2,5,0,0.0,300.1232,0.0230165158092997,,,63.5,7.044501401802686,,,3,0.6,1.2
+3,Explore the area as much as possible,3,5,0,0.0,300.1158,0.022292599668939015,,,63.0,5.2796780204857185,,,3,0.6,0.8
+4,Explore the environment in a team of 3 robots,1,5,0,0.0,300.1248,0.02379411691994625,,,63.5,7.516648189186454,,,6,1.2,1.9390719429665315
+4,Explore the environment in a team of 3 robots,2,5,0,0.0,300.1098,0.02430144028653223,,,66.0,5.830951894845301,,,3,0.6,0.8
+4,Explore the environment in a team of 3 robots,3,5,0,0.0,300.1214,0.024303086223765466,,,68.75,6.274950199005566,,,3,0.6,0.4898979485566356
+5,Maximize the covered area,1,5,0,0.0,300.118,0.024915858403838972,,,63.25,4.782781617427248,,,1,0.2,0.4
+5,Maximize the covered area,2,5,0,0.0,300.1342,0.021122499852053597,,,70.0,4.401704215414752,,,4,0.8,1.1661903789690602
+5,Maximize the covered area,3,5,0,0.0,300.1248,0.028568514137059405,,,67.0,5.0373604199024715,,,5,1.0,1.0954451150103321

@@ -1,0 +1,99 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "patrol_red_specification",
+      "states": [
+        "start",
+        "searching_red",
+        "approaching_red",
+        "red_patrolled"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "red_patrolled"
+      ],
+      "events": [
+        "search_red",
+        "approach_red",
+        "red_visible",
+        "red_not_visible",
+        "red_reached"
+      ],
+      "transitions": [
+        "(\"start\", \"search_red\", \"searching_red\")",
+        "(\"searching_red\", \"red_visible\", \"approaching_red\")",
+        "(\"searching_red\", \"red_reached\", \"red_patrolled\")",
+        "(\"approaching_red\", \"red_not_visible\", \"searching_red\")",
+        "(\"approaching_red\", \"red_reached\", \"red_patrolled\")",
+        "(\"approaching_red\", \"approach_red\", \"approaching_red\")",
+        "(\"searching_red\", \"search_red\", \"searching_red\")"
+      ]
+    },
+    {
+      "type": "specification",
+      "name": "patrol_green_specification",
+      "states": [
+        "start",
+        "searching_green",
+        "approaching_green",
+        "green_patrolled"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "green_patrolled"
+      ],
+      "events": [
+        "search_green",
+        "approach_green",
+        "green_visible",
+        "green_not_visible",
+        "green_reached"
+      ],
+      "transitions": [
+        "(\"start\", \"search_green\", \"searching_green\")",
+        "(\"searching_green\", \"green_visible\", \"approaching_green\")",
+        "(\"searching_green\", \"green_reached\", \"green_patrolled\")",
+        "(\"approaching_green\", \"green_not_visible\", \"searching_green\")",
+        "(\"approaching_green\", \"green_reached\", \"green_patrolled\")",
+        "(\"approaching_green\", \"approach_green\", \"approaching_green\")",
+        "(\"searching_green\", \"search_green\", \"searching_green\")"
+      ]
+    },
+    {
+      "type": "specification",
+      "name": "patrol_blue_specification",
+      "states": [
+        "start",
+        "searching_blue",
+        "approaching_blue",
+        "blue_patrolled"
+      ],
+      "initial_state": "start",
+      "marked_states": [
+        "blue_patrolled"
+      ],
+      "events": [
+        "search_blue",
+        "approach_blue",
+        "blue_visible",
+        "blue_not_visible",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"start\", \"search_blue\", \"searching_blue\")",
+        "(\"searching_blue\", \"blue_visible\", \"approaching_blue\")",
+        "(\"searching_blue\", \"blue_reached\", \"blue_patrolled\")",
+        "(\"approaching_blue\", \"blue_not_visible\", \"searching_blue\")",
+        "(\"approaching_blue\", \"blue_reached\", \"blue_patrolled\")",
+        "(\"approaching_blue\", \"approach_blue\", \"approaching_blue\")",
+        "(\"searching_blue\", \"search_blue\", \"searching_blue\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Only patrol-related target events are included: search_<color>, approach_<color> (controllable for mission state switching), and relevant observations (<color>_visible, <color>_not_visible, <color>_reached) for each color to precisely model the initiation, progress, and completion of patrolling the corresponding zone. Other controllable events (task_move_forward, search_color, approach_color, etc.) are omitted because the objective demands only color-specific patrol actions.",
+    "transition_design": "Each specification models a patrol for its respective color. 'searching_<color>' is entered via search_<color>, switches to 'approaching_<color>' on <color>_visible, and either phase can end patrolling on <color>_reached (including the case where <color>_reached occurs without <color>_visible). The approach phase can revert to search on <color>_not_visible. Marked states correspond to successful patrol completion for the zone. Self-loops for allowed repeated search_<color> and approach_<color> enable continued searching/approaching as required for patrolling.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

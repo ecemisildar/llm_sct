@@ -1,0 +1,6 @@
+prompt,prompt_text,runs,successes,success_rate_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
+1,Explore the environment continuously to maximize area coverage while avoiding obstacles.,15,0,0.0,300.1207333333333,0.027279947865705752,,,63.916666666666664,5.878397362849466,,,2,0.13333333333333333,0.339934634239519
+2,Explore the area while maximizing the coverage,15,0,0.0,300.1224666666667,0.016914950651876596,,,60.166666666666664,6.7371276438025784,,,7,0.4666666666666667,0.8844332774281066
+3,Explore the area as much as possible,15,0,0.0,300.1194,0.0212502549004298,,,62.833333333333336,8.309967241545273,,,8,0.5333333333333333,0.8844332774281066
+4,Explore the environment in a team of 3 robots,15,0,0.0,300.1186666666667,0.024973764011234106,,,66.08333333333333,6.920179830675565,,,12,0.8,1.2754084313139327
+5,Maximize the covered area,15,0,0.0,300.12566666666663,0.02591953360348422,,,66.75,5.49241901776136,,,10,0.6666666666666666,1.0110500592068734

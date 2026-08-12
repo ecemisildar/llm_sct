@@ -1,0 +1,64 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "visit_rgb_specification",
+      "states": [
+        "s0",
+        "search_red",
+        "approach_red",
+        "red_reached",
+        "search_green",
+        "approach_green",
+        "green_reached",
+        "search_blue",
+        "approach_blue",
+        "blue_reached"
+      ],
+      "initial_state": "s0",
+      "marked_states": [
+        "red_reached",
+        "green_reached",
+        "blue_reached"
+      ],
+      "events": [
+        "search_color",
+        "approach_color",
+        "red_visible",
+        "red_not_visible",
+        "red_reached",
+        "green_visible",
+        "green_not_visible",
+        "green_reached",
+        "blue_visible",
+        "blue_not_visible",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"s0\", \"search_color\", \"search_red\")",
+        "(\"search_red\", \"red_visible\", \"approach_red\")",
+        "(\"search_red\", \"red_reached\", \"red_reached\")",
+        "(\"approach_red\", \"red_not_visible\", \"search_red\")",
+        "(\"approach_red\", \"red_reached\", \"red_reached\")",
+        "(\"approach_red\", \"red_visible\", \"approach_red\")",
+        "(\"red_reached\", \"search_color\", \"search_green\")",
+        "(\"search_green\", \"green_visible\", \"approach_green\")",
+        "(\"search_green\", \"green_reached\", \"green_reached\")",
+        "(\"approach_green\", \"green_not_visible\", \"search_green\")",
+        "(\"approach_green\", \"green_reached\", \"green_reached\")",
+        "(\"approach_green\", \"green_visible\", \"approach_green\")",
+        "(\"green_reached\", \"search_color\", \"search_blue\")",
+        "(\"search_blue\", \"blue_visible\", \"approach_blue\")",
+        "(\"search_blue\", \"blue_reached\", \"blue_reached\")",
+        "(\"approach_blue\", \"blue_not_visible\", \"search_blue\")",
+        "(\"approach_blue\", \"blue_reached\", \"blue_reached\")",
+        "(\"approach_blue\", \"blue_visible\", \"approach_blue\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "Selected events are 'search_color' and 'approach_color' for control of search and approach phases; relevant uncontrollable observations for red, green, and blue (visible, not_visible, reached) to track phase transitions as required by the visit-all-colors objective. Excluded all other controllable events and observations as they are unrelated to color visitation and patrolling progress.",
+    "transition_design": "The specification enforces the requirement to visit each color once in a strict sequence: red, then green, then blue. Each color phase consists of a search phase (using 'search_color'), transition to approach on '<color>_visible', and handling '<color>_reached' from either phase, marking completion of that color. Approach can be exited if the object is lost (returns to search). Only after each color is reached does the mission advance to the next color. All required uncontrollable observations are explicitly handled for state progress.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}
