@@ -11,21 +11,19 @@ class ZoneLivelockEscapeMixin:
 
     def _initialize_zone_escape(self):
         parameter_defaults = {
-            "zone_livelock_window_s": 2.5,
+            "livelock_timeout_s": 4.0,
             "zone_livelock_switches": 4,
             "zone_livelock_max_displacement_m": 0.12,
-            "motion_livelock_window_s": 3.0,
             "motion_livelock_switches": 4,
-            "motion_stuck_timeout_s": 4.0,
             "escape_reverse_s": 0.6,
             "escape_turn_s": 1.8,
             "escape_linear_x": -0.2,
             "escape_angular_z": 1.2,
-            "escape_cooldown_s": 3.0,
         }
         for name, default in parameter_defaults.items():
             value = self.declare_parameter(name, default).value
             setattr(self, name, type(default)(value))
+        self.escape_cooldown_s = self.escape_reverse_s + self.escape_turn_s
         self.zone_switch_history = deque()
         self.turn_switch_history = deque()
         self.motion_progress_started_at = None
@@ -57,7 +55,7 @@ class ZoneLivelockEscapeMixin:
         if self.zone_switch_history and self.zone_switch_history[-1][1] == zone:
             return
         self.zone_switch_history.append((now, zone, self.x, self.y))
-        cutoff = now - self.zone_livelock_window_s
+        cutoff = now - self.livelock_timeout_s
         while self.zone_switch_history and self.zone_switch_history[0][0] < cutoff:
             self.zone_switch_history.popleft()
         if len(self.zone_switch_history) < self.zone_livelock_switches + 1:
@@ -96,7 +94,7 @@ class ZoneLivelockEscapeMixin:
         stalled_for = now - self.motion_progress_started_at
         is_motion = abs(linear_x) > 0.05 or abs(angular_z) > 0.05
         sign = 1.0 if angular_z > 0.0 else -1.0
-        if side_blocked and is_motion and stalled_for >= self.motion_stuck_timeout_s:
+        if side_blocked and is_motion and stalled_for >= self.livelock_timeout_s:
             self._start_livelock_escape(
                 now, sign, f"no translation for {stalled_for:.1f}s"
             )
@@ -107,7 +105,7 @@ class ZoneLivelockEscapeMixin:
         if self.turn_switch_history and self.turn_switch_history[-1][1] == sign:
             return False
         self.turn_switch_history.append((now, sign, self.x, self.y))
-        cutoff = now - self.motion_livelock_window_s
+        cutoff = now - self.livelock_timeout_s
         while self.turn_switch_history and self.turn_switch_history[0][0] < cutoff:
             self.turn_switch_history.popleft()
         if len(self.turn_switch_history) < self.motion_livelock_switches + 1:

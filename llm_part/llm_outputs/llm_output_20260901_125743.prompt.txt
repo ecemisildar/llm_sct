@@ -1,0 +1,1 @@
+Collect and deliver all three boxes of every color without adding events or behavior plants. Robots may batch one red, two green, or three blue boxes before visiting the corresponding delivery zone.

@@ -5,11 +5,13 @@ from __future__ import annotations
 
 import argparse
 import csv
-import math
 import shutil
 from pathlib import Path
 
-from evaluation.coverage_counter import CoverageCounter
+from evaluation.coverage_counter import (
+    DEFAULT_ROBOT_FOOTPRINT_RADIUS,
+    CoverageCounter,
+)
 
 
 def blocked_cells(world: Path, grid_size: float) -> tuple[set[int], int]:
@@ -41,6 +43,7 @@ def recompute_run(
     grid_size: float,
     blocked: set[int],
     cells_per_axis: int,
+    robot_footprint_radius: float,
 ) -> None:
     paths_path = run_dir / "coverage_paths.csv"
     visited_path = run_dir / "coverage_visited_cells.csv"
@@ -57,32 +60,34 @@ def recompute_run(
     visits: list[list[object]] = []
     coverage: list[list[object]] = []
     path_index = 0
+    footprint_counter = CoverageCounter.__new__(CoverageCounter)
+    footprint_counter.env_min = -5.0
+    footprint_counter.grid_size = grid_size
+    footprint_counter.num_cells_y = cells_per_axis
+    footprint_counter.robot_footprint_radius = robot_footprint_radius
 
     def consume(row: dict[str, str]) -> None:
         x = float(row["x"])
         y = float(row["y"])
-        ix = math.floor((x + 5.0) / grid_size)
-        iy = math.floor((y + 5.0) / grid_size)
-        if not (0 <= ix < cells_per_axis and 0 <= iy < cells_per_axis):
-            return
-        index = ix * cells_per_axis + iy
-        if index in blocked or index in visited:
-            return
-        visited.add(index)
-        cell_min_x = -5.0 + ix * grid_size
-        cell_min_y = -5.0 + iy * grid_size
-        visits.append(
-            [
-                row["stamp_sec"],
-                row["stamp_nsec"],
-                row["robot"],
-                index,
-                f"{cell_min_x:.3f}",
-                f"{cell_min_y:.3f}",
-                f"{cell_min_x + grid_size / 2.0:.3f}",
-                f"{cell_min_y + grid_size / 2.0:.3f}",
-            ]
-        )
+        for ix, iy in footprint_counter._footprint_cells(x, y):
+            index = ix * cells_per_axis + iy
+            if index in blocked or index in visited:
+                continue
+            visited.add(index)
+            cell_min_x = -5.0 + ix * grid_size
+            cell_min_y = -5.0 + iy * grid_size
+            visits.append(
+                [
+                    row["stamp_sec"],
+                    row["stamp_nsec"],
+                    row["robot"],
+                    index,
+                    f"{cell_min_x:.3f}",
+                    f"{cell_min_y:.3f}",
+                    f"{cell_min_x + grid_size / 2.0:.3f}",
+                    f"{cell_min_y + grid_size / 2.0:.3f}",
+                ]
+            )
 
     for sample_time in sample_times:
         while (
@@ -132,12 +137,21 @@ def main() -> None:
     parser.add_argument("results_root", type=Path)
     parser.add_argument("world", type=Path)
     parser.add_argument("--grid-size", type=float, default=1.0)
+    parser.add_argument(
+        "--robot-footprint-radius",
+        type=float,
+        default=DEFAULT_ROBOT_FOOTPRINT_RADIUS,
+    )
     args = parser.parse_args()
     blocked, cells_per_axis = blocked_cells(args.world, args.grid_size)
     runs = sorted({path.parent for path in args.results_root.rglob("coverage_paths.csv")})
     for run_dir in runs:
         recompute_run(
-            run_dir, args.grid_size, blocked, cells_per_axis
+            run_dir,
+            args.grid_size,
+            blocked,
+            cells_per_axis,
+            max(0.0, args.robot_footprint_radius),
         )
     print(
         f"Updated {len(runs)} runs at {args.grid_size:g} m resolution "

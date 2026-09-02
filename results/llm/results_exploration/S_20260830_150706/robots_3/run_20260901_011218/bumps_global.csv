@@ -1,0 +1,4 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+69,"('robot_0', 'robot_1')",back,back,EV_task_move_forward,EV_task_move_forward
+125,"('robot_0', 'robot_1')",back,right,EV_task_move_forward,EV_task_move_forward
+132,"('robot_0', 'robot_1')",back,right,EV_task_move_forward,EV_task_move_forward

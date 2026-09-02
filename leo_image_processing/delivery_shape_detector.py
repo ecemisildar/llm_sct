@@ -30,6 +30,10 @@ class DeliveryShapeDetector(ColorDetector):
         self.declare_parameter("green_zone_pose", [-1.8, 2.6, 0.0])
         self.declare_parameter("blue_zone_pose", [2.4, -2.7, 0.0])
         self.declare_parameter("object_half_extent", 0.125)
+        # Half-width of the complete pickup footprint along the world X axis.
+        # It equals object_half_extent for the original single-box task and is
+        # widened by the complex-task launch for its three-box row.
+        self.declare_parameter("object_cluster_half_width", 0.125)
         self.declare_parameter("zone_half_extent", 0.125)
         self.shape_offset_publishers = {
             (color, kind): self.create_publisher(
@@ -104,12 +108,21 @@ class DeliveryShapeDetector(ColorDetector):
         target = list(self.get_parameter(parameter).value)
         dx = self.robot_xy[0] - float(target[0])
         dy = self.robot_xy[1] - float(target[1])
-        half_extent = (
-            float(self.get_parameter("object_half_extent").value)
-            if kind == "object"
-            else float(self.get_parameter("zone_half_extent").value)
-        )
-        return max(0.0, math.hypot(dx, dy) - half_extent)
+        if kind == "object":
+            half_x = float(
+                self.get_parameter("object_cluster_half_width").value
+            )
+            half_y = float(self.get_parameter("object_half_extent").value)
+        else:
+            half_x = half_y = float(
+                self.get_parameter("zone_half_extent").value
+            )
+        # Distance to the nearest point of the axis-aligned target footprint.
+        # Unlike subtracting one radius from the center distance, this covers
+        # every box in the complex task's horizontal three-box cluster.
+        outside_x = max(abs(dx) - half_x, 0.0)
+        outside_y = max(abs(dy) - half_y, 0.0)
+        return math.hypot(outside_x, outside_y)
 
     def _update_shape_visibility(
         self, color: str, kind: str, detected: bool

@@ -15,28 +15,21 @@ from typing import Any, Iterable, Sequence
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_JSON_DIR = SCRIPT_DIR / "llm_outputs"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR.parent / "automata" / "llm_generated_automata"
-DEFAULT_BASELINE_DIR = SCRIPT_DIR.parent / "automata" / "llm_automata"
+BASELINE_ROOT = SCRIPT_DIR.parent / "automata" / "baseline_automata"
 ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
-    # Exploration task-level commands.
+    # Exploration motion commands from the with-backward baseline.
+    "move_forward",
+    "move_backward",
+    "rotate_clockwise",
+    "rotate_counterclockwise",
+    "full_rotate",
     "task_move_forward",
     "task_rotate_clockwise",
     "task_rotate_counterclockwise",
 
-    # Patrolling task-level commands and coordination.
+    # Patrolling task-level commands from the mission baseline.
     "search_color",
     "approach_color",
-    "search_red",
-    "search_green",
-    "search_blue",
-    "approach_red",
-    "approach_green",
-    "approach_blue",
-    "pub_going_red",
-    "pub_going_green",
-    "pub_going_blue",
-    "skip_red",
-    "skip_green",
-    "skip_blue",
 
     # Delivery task-level commands and box allocation.
     "search_object",
@@ -49,6 +42,16 @@ ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
     "claim_green",
     "claim_blue",
 }
+
+
+def baseline_dir_for_mission(mission: str) -> Path:
+    """Return the authoritative baseline directory for a mission."""
+    mission_key = str(mission).strip().casefold()
+    if mission_key == "complex_task":
+        mission_key = "delivery"
+    if mission_key not in {"exploration", "patrolling", "delivery"}:
+        raise ValueError(f"Unsupported mission: {mission!r}")
+    return BASELINE_ROOT / mission_key
 
 
 def newest_json(directory: Path = DEFAULT_JSON_DIR) -> Path:
@@ -124,7 +127,9 @@ def ordered_unique(values: Iterable[str]) -> list[str]:
 
 def baseline_event_map(baseline_dir: Path) -> dict[str, bool]:
     """Return event controllability collected from all baseline XML files."""
-    xml_paths = sorted(baseline_dir.rglob("*.xml"))
+    # Only direct mission inputs are authoritative. Generated G/K/S artifacts
+    # in subdirectories may contain obsolete event alphabets.
+    xml_paths = sorted(baseline_dir.glob("*.xml"))
     if not xml_paths:
         raise FileNotFoundError(f"No baseline XML files found in {baseline_dir}")
 
@@ -541,9 +546,10 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"XML destination directory (default: {DEFAULT_OUTPUT_DIR})",
     )
     parser.add_argument(
-        "--baseline-dir",
-        default=str(DEFAULT_BASELINE_DIR),
-        help=f"Baseline XML directory used for event definitions (default: {DEFAULT_BASELINE_DIR})",
+        "--mission",
+        required=True,
+        choices=("exploration", "patrolling", "delivery", "complex_task"),
+        help="Mission whose automata/baseline_automata/<mission> event definitions are used.",
     )
     return parser
 
@@ -553,7 +559,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         json_path = Path(args.json).expanduser().resolve() if args.json else newest_json().resolve()
         output_dir = Path(args.output_dir).expanduser().resolve()
-        baseline_dir = Path(args.baseline_dir).expanduser().resolve()
+        baseline_dir = baseline_dir_for_mission(args.mission).resolve()
         convert(json_path, output_dir, baseline_dir)
     except (FileNotFoundError, OSError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)

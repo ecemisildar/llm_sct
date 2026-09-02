@@ -1,0 +1,59 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "red_green_blue_patrol_specification",
+      "states": [
+        "search_red",
+        "approach_red",
+        "search_green",
+        "approach_green",
+        "search_blue",
+        "approach_blue",
+        "completed"
+      ],
+      "initial_state": "search_red",
+      "marked_states": [
+        "completed"
+      ],
+      "events": [
+        "search_color",
+        "approach_color",
+        "red_visible",
+        "red_not_visible",
+        "red_reached",
+        "green_visible",
+        "green_not_visible",
+        "green_reached",
+        "blue_visible",
+        "blue_not_visible",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"search_red\", \"search_color\", \"search_red\")",
+        "(\"search_red\", \"red_visible\", \"approach_red\")",
+        "(\"search_red\", \"red_reached\", \"search_green\")",
+        "(\"approach_red\", \"approach_color\", \"approach_red\")",
+        "(\"approach_red\", \"red_not_visible\", \"search_red\")",
+        "(\"approach_red\", \"red_reached\", \"search_green\")",
+        "(\"search_green\", \"search_color\", \"search_green\")",
+        "(\"search_green\", \"green_visible\", \"approach_green\")",
+        "(\"search_green\", \"green_reached\", \"search_blue\")",
+        "(\"approach_green\", \"approach_color\", \"approach_green\")",
+        "(\"approach_green\", \"green_not_visible\", \"search_green\")",
+        "(\"approach_green\", \"green_reached\", \"search_blue\")",
+        "(\"search_blue\", \"search_color\", \"search_blue\")",
+        "(\"search_blue\", \"blue_visible\", \"approach_blue\")",
+        "(\"search_blue\", \"blue_reached\", \"completed\")",
+        "(\"approach_blue\", \"approach_color\", \"approach_blue\")",
+        "(\"approach_blue\", \"blue_not_visible\", \"search_blue\")",
+        "(\"approach_blue\", \"blue_reached\", \"completed\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses only the task-level search_color and approach_color actions and the visibility, loss-of-visibility, and reached observations for the requested red, green, and blue zones. Obstacle observations and low-level movement actions are omitted because collision_avoidance already governs motion safety and the objective requires only the ordered patrol protocol.",
+    "transition_design": "Each requested zone has distinct search and approach states. search_color repeats in every search state, while approach_color repeats only in the corresponding approach state. A matching visible observation enters approach, a matching not-visible observation returns to search, and a matching reached observation advances from either phase. Only blue_reached reaches the marked completed state, enforcing the order red, green, then blue and disabling further patrol actions after completion.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'robot_supervisor = leo_delivery.robot_supervisor:main',
+            'complex_delivery_supervisor = leo_delivery.complex_delivery_supervisor:main',
         ],
     },
 )

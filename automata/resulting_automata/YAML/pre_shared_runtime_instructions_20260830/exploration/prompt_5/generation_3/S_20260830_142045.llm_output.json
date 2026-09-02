@@ -1,0 +1,54 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "area_coverage_specification",
+      "states": [
+        "explore_clear",
+        "avoid_front",
+        "avoid_right",
+        "avoid_left"
+      ],
+      "initial_state": "explore_clear",
+      "marked_states": [
+        "explore_clear",
+        "avoid_front",
+        "avoid_right",
+        "avoid_left"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise",
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left"
+      ],
+      "transitions": [
+        "(\"explore_clear\", \"task_move_forward\", \"explore_clear\")",
+        "(\"explore_clear\", \"obstacle_front\", \"avoid_front\")",
+        "(\"explore_clear\", \"obstacle_right\", \"avoid_right\")",
+        "(\"explore_clear\", \"obstacle_left\", \"avoid_left\")",
+        "(\"avoid_front\", \"task_rotate_clockwise\", \"avoid_front\")",
+        "(\"avoid_front\", \"task_rotate_counterclockwise\", \"avoid_front\")",
+        "(\"avoid_front\", \"path_clear\", \"explore_clear\")",
+        "(\"avoid_front\", \"obstacle_right\", \"avoid_right\")",
+        "(\"avoid_front\", \"obstacle_left\", \"avoid_left\")",
+        "(\"avoid_right\", \"task_rotate_counterclockwise\", \"avoid_right\")",
+        "(\"avoid_right\", \"path_clear\", \"explore_clear\")",
+        "(\"avoid_right\", \"obstacle_front\", \"avoid_front\")",
+        "(\"avoid_right\", \"obstacle_left\", \"avoid_left\")",
+        "(\"avoid_left\", \"task_rotate_clockwise\", \"avoid_left\")",
+        "(\"avoid_left\", \"path_clear\", \"explore_clear\")",
+        "(\"avoid_left\", \"obstacle_front\", \"avoid_front\")",
+        "(\"avoid_left\", \"obstacle_right\", \"avoid_right\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses obstacle observations to select task-level exploration actions. task_move_forward advances coverage when the path is clear, while task_rotate_clockwise and task_rotate_counterclockwise redirect exploration around obstacles. Low-level movement events are omitted because collision_avoidance already protects them and mission decisions must use task-level events.",
+    "transition_design": "explore_clear enables continued forward exploration. obstacle_front, obstacle_right, and obstacle_left enter corresponding avoidance states; front obstacles permit either task-level turn, while side obstacles permit turning away from the blocked side. path_clear returns avoidance states to explore_clear. All states are marked as stable, repeatable exploration conditions, and forward motion is excluded from obstacle states.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

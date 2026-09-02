@@ -290,7 +290,7 @@ def main() -> int:
     parser.add_argument(
         "--results-root",
         type=Path,
-        default=Path(__file__).resolve().parents[2] / "results",
+        default=Path(__file__).resolve().parents[2] / "new_results",
     )
     args = parser.parse_args()
     if args.seed is not None:

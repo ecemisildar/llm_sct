@@ -1,0 +1,1 @@
+There are three boxes of each red, green, and blue color. Each robot should claim a different color to carry, search for the boxes and pick them up. Deliver all nine boxes to their matching zones. Due to payload limits, a robot can carry one red, two green, or three blue boxes at a time. Use only existing events and free-behavior models and preserve fixed collision avoidance.

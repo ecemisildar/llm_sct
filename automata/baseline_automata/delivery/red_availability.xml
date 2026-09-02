@@ -1,98 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="0.0" type="FSA" id="red_availability_plant">
+<model version="0.0" type="FSA" id="red_availability">
 <data>
-
-    <state id="0"
-           name="red_free"
-           initial="True"
-           marked="True"
-           x="250"
-           y="300"/>
-
-    <state id="1"
-           name="red_claimed_by_me"
-           initial="False"
-           marked="True"
-           x="600"
-           y="150"/>
-
-    <state id="2"
-           name="red_claimed_by_other"
-           initial="False"
-           marked="True"
-           x="600"
-           y="450"/>
-
-    <state id="3"
-           name="red_delivered"
-           initial="False"
-           marked="True"
-           x="1000"
-           y="300"/>
-
-    <event id="0"
-           name="claim_red"
-           controllable="True"
-           observable="True"/>
-
-    <event id="1"
-           name="received_claim_red"
-           controllable="False"
-           observable="True"/>
-
-    <event id="2"
-           name="release_red"
-           controllable="True"
-           observable="True"/>
-
-    <event id="3"
-           name="received_release_red"
-           controllable="False"
-           observable="True"/>
-
-    <event id="4"
-           name="publish_delivered_red"
-           controllable="True"
-           observable="True"/>
-
-    <event id="5"
-           name="received_delivered_red"
-           controllable="False"
-           observable="True"/>
-
-    <!-- Free object can be claimed locally or remotely -->
-
-    <transition source="0" target="1" event="0"/>
-    <transition source="0" target="2" event="1"/>
-
-    <!-- Handle a delivered message even if the claim message was missed -->
-
-    <transition source="0" target="3" event="5"/>
-
-    <!-- This robot owns the object -->
-
-    <transition source="1" target="0" event="2"/>
-    <transition source="1" target="3" event="4"/>
-
-    <!-- Ignore later competing claims after local ownership -->
-
-    <transition source="1" target="1" event="1"/>
-
-    <!-- Another robot owns the object -->
-
-    <transition source="2" target="0" event="3"/>
-    <transition source="2" target="3" event="5"/>
-
-    <!-- Repeated messages do not change the state -->
-
-    <transition source="2" target="2" event="1"/>
-    <transition source="2" target="2" event="3"/>
-
-    <!-- Delivered is terminal for a one-delivery experiment -->
-
-    <transition source="3" target="3" event="1"/>
-    <transition source="3" target="3" event="3"/>
-    <transition source="3" target="3" event="5"/>
-
+	<state id="0" name="red_free" initial="True" marked="True" x="180" y="300" />
+	<state id="1" name="red_claimed_by_me" initial="False" marked="True" x="600" y="160" />
+	<state id="2" name="red_claimed_by_other" initial="False" marked="True" x="600" y="440" />
+	<event id="0" name="claim_red" controllable="True" observable="True" />
+	<event id="1" name="received_claim_red" controllable="False" observable="True" />
+	<transition source="0" target="1" event="0" />
+	<transition source="0" target="2" event="1" />
+	<transition source="1" target="2" event="1" />
+	<transition source="2" target="2" event="1" />
 </data>
 </model>

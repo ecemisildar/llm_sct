@@ -1,0 +1,1 @@
+Choose an object, pick it up, and deliver it to its matching delivery zone. To pick up the object, the robot must search for and approach it. To drop the object, search for and approach the matching delivery zone.

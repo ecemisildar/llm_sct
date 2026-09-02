@@ -1,0 +1,4 @@
+generation,runs,successes,success_rate_pct,duration_all_mean_s,duration_all_median_s,duration_success_mean_s,duration_success_median_s,duration_min_s,duration_max_s,progress_mean_pct,collisions_total,selected_events_total
+1,5,5,100.0,152.6512,166.313,152.6512,166.313,83.995,223.933,100.0,2,4116
+2,5,5,100.0,126.8968,109.429,126.8968,109.429,79.583,180.094,100.0,0,3871
+3,5,5,100.0,104.118,103.996,104.118,103.996,87.614,114.916,100.0,0,3426

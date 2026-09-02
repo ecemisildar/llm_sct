@@ -1,0 +1,54 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "area_exploration_specification",
+      "states": [
+        "clear_path",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "initial_state": "clear_path",
+      "marked_states": [
+        "clear_path",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise",
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left"
+      ],
+      "transitions": [
+        "(\"clear_path\", \"task_move_forward\", \"clear_path\")",
+        "(\"clear_path\", \"obstacle_front\", \"front_blocked\")",
+        "(\"clear_path\", \"obstacle_right\", \"right_blocked\")",
+        "(\"clear_path\", \"obstacle_left\", \"left_blocked\")",
+        "(\"front_blocked\", \"task_rotate_clockwise\", \"front_blocked\")",
+        "(\"front_blocked\", \"task_rotate_counterclockwise\", \"front_blocked\")",
+        "(\"front_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"front_blocked\", \"obstacle_right\", \"right_blocked\")",
+        "(\"front_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"right_blocked\", \"task_rotate_counterclockwise\", \"right_blocked\")",
+        "(\"right_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"right_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"right_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"left_blocked\", \"task_rotate_clockwise\", \"left_blocked\")",
+        "(\"left_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"left_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"left_blocked\", \"obstacle_right\", \"right_blocked\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise as the task-level exploration decisions. The four obstacle observations are required to adapt those decisions to current path conditions. Low-level movement events, move_backward, and full_rotate are omitted because they are not needed for the objective and low-level motion is reserved for the fixed safety layer.",
+    "transition_design": "In clear_path, exploration proceeds with task_move_forward. obstacle_front enters front_blocked, where either task-level rotation is allowed; obstacle_right enters right_blocked, where task_rotate_counterclockwise turns away from the obstacle; and obstacle_left enters left_blocked, where task_rotate_clockwise turns away. Every state-changing obstacle observation is explicit, while unchanged observations are left as inert completed self-loops. path_clear returns blocked states to clear_path. All states are marked because exploration is an indefinitely repeatable mission with each sensor-responsive condition serving as a stable checkpoint.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

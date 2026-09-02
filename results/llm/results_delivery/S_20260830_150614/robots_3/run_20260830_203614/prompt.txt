@@ -1,0 +1,1 @@
+Each robot should collect a box and take it to its corresponding matching colored dropping zone.

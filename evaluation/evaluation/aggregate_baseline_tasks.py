@@ -363,7 +363,7 @@ def main() -> int:
     parser.add_argument(
         "--baseline-root",
         default=str(
-            Path(__file__).resolve().parents[2] / "results" / "baseline"
+            Path(__file__).resolve().parents[2] / "new_results" / "baseline"
         ),
     )
     args = parser.parse_args()

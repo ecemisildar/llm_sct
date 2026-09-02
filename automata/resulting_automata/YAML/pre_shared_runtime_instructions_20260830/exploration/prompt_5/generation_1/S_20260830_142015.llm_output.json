@@ -1,0 +1,54 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "area_coverage_specification",
+      "states": [
+        "clear_path",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "initial_state": "clear_path",
+      "marked_states": [
+        "clear_path",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise",
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left"
+      ],
+      "transitions": [
+        "(\"clear_path\", \"task_move_forward\", \"clear_path\")",
+        "(\"clear_path\", \"obstacle_front\", \"front_blocked\")",
+        "(\"clear_path\", \"obstacle_right\", \"right_blocked\")",
+        "(\"clear_path\", \"obstacle_left\", \"left_blocked\")",
+        "(\"front_blocked\", \"task_rotate_clockwise\", \"front_blocked\")",
+        "(\"front_blocked\", \"task_rotate_counterclockwise\", \"front_blocked\")",
+        "(\"front_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"front_blocked\", \"obstacle_right\", \"right_blocked\")",
+        "(\"front_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"right_blocked\", \"task_rotate_counterclockwise\", \"right_blocked\")",
+        "(\"right_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"right_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"right_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"left_blocked\", \"task_rotate_clockwise\", \"left_blocked\")",
+        "(\"left_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"left_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"left_blocked\", \"obstacle_right\", \"right_blocked\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses the task-level movement events task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise together with all obstacle observations needed for reactive exploration. Low-level movement events are omitted because collision_avoidance already governs them, and no target, communication, or other mission events are relevant to area coverage.",
+    "transition_design": "In clear_path, forward exploration is enabled. obstacle_front enters front_blocked, where either task-level turn is permitted; obstacle_right enters right_blocked, where only a counterclockwise turn away from the obstacle is enabled; and obstacle_left enters left_blocked, where only a clockwise turn is enabled. path_clear returns every blocked condition to clear_path, while changing obstacle observations explicitly update the blocked condition. All states are marked as stable, repeatable exploration conditions, and unsafe task-level forward requests are excluded while an obstacle is reported.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

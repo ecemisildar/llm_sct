@@ -35,9 +35,6 @@ DELIVERY_EVENTS = {
             "approach_object",
             "search_zone",
             "approach_zone",
-            "task_move_forward",
-            "task_rotate_clockwise",
-            "task_rotate_counterclockwise",
             "pick_up_object",
             "drop_object",
             "claim_red",
@@ -64,14 +61,14 @@ ALL_EVENTS = {
         for event in (
             "search_color",
             "approach_color",
+            "move_forward",
+            "move_backward",
+            "rotate_clockwise",
+            "rotate_counterclockwise",
+            "full_rotate",
             "task_move_forward",
             "task_rotate_clockwise",
             "task_rotate_counterclockwise",
-            *(
-                f"{phase}_{color}"
-                for phase in ("search", "approach")
-                for color in ("red", "green", "blue")
-            ),
             *(
                 f"{action}_{color}"
                 for action in ("pub_going", "skip")
@@ -99,28 +96,27 @@ def all_events() -> dict[str, bool]:
 
 def events_for_mission(mission: str) -> dict[str, bool]:
     """Select the relevant subset of the one global LLM vocabulary."""
-    task_motion = {
+    exploration_motion = {
         event: True
         for event in (
+            "move_forward",
+            "move_backward",
+            "rotate_clockwise",
+            "rotate_counterclockwise",
+            "full_rotate",
             "task_move_forward",
             "task_rotate_clockwise",
             "task_rotate_counterclockwise",
         )
     }
     if mission == "exploration":
-        names = {**task_motion, **OBSTACLE_EVENTS}
-    elif mission == "delivery":
+        names = {**exploration_motion, **OBSTACLE_EVENTS}
+    elif mission in {"delivery", "complex_task"}:
         names = dict(DELIVERY_EVENTS)
     elif mission == "patrolling":
         names = {
-            **task_motion,
-            **{
-                event: ALL_EVENTS[event]
-                for event in ALL_EVENTS
-                if event.startswith(
-                    ("search_", "approach_", "pub_going_", "skip_", "received_going_")
-                )
-            },
+            "search_color": True,
+            "approach_color": True,
             **OBSTACLE_EVENTS,
             **COLOR_EVENTS,
         }
@@ -166,56 +162,6 @@ def add_allowed_event_list(
         "Select only the events relevant to the user's control objective.\n"
         f"Controllable events: {json.dumps(controllable)}\n"
         f"Uncontrollable observation events: {json.dumps(uncontrollable)}"
-    )
-
-
-def add_mission_requirements(prompt: str, mission: str) -> str:
-    """Add runtime constraints that cannot be inferred from event names alone."""
-    if mission != "delivery":
-        return prompt
-    return (
-        f"{prompt}\n\nDELIVERY RUNTIME REQUIREMENTS\n"
-        "Each robot delivers exactly one box and is retired after dropping it. "
-        "Generate the delivery task specification; the fixed automata describe "
-        "plants and collision avoidance but do not contain the delivery solution.\n"
-        "Output structure requirements:\n"
-        "- Return exactly ONE unified specification automaton named "
-        "delivery_task_specification. Do not return separate red, green, and blue "
-        "specifications. The one automaton must branch by observed color.\n"
-        "- Use observation, claim, pickup, and drop events to CHANGE protocol states. "
-        "Never use a repeatable motion command to enter another state.\n"
-        "- A repeatable motion command appears only as a SELF-LOOP in the state "
-        "where that motion is active. For example, claim_red enters a red-object "
-        "approach state, and approach_object self-loops in that approach state. "
-        "Likewise, pick_up_object enters a red-zone search state, search_zone "
-        "self-loops there, red_zone_visible enters a red-zone approach state, and "
-        "approach_zone self-loops there.\n"
-        "Runtime event contract:\n"
-        "- search_object is repeatable rotation and must self-loop while searching "
-        "for an unclaimed object.\n"
-        "- A <color>_object_visible observation starts an attempt to claim that "
-        "visible color. claim_<color> must not occur before this observation.\n"
-        "- In the claim-attempt state, claim_<color> commits this robot to the "
-        "color, while received_claim_<color> means another robot won and must "
-        "return this robot to unclaimed object search.\n"
-        "- approach_object is forward/steering motion. Enable it only after a "
-        "successful claim and while pursuing that object, and make it a self-loop.\n"
-        "- <color>_object_not_visible returns the claimed branch to an object-search "
-        "state; <color>_object_visible returns it to approach. Both object search "
-        "and approach must advance on <color>_object_reached because reached may "
-        "arrive without visible.\n"
-        "- pick_up_object is valid only after the claimed object is reached.\n"
-        "- search_zone is repeatable rotation and must self-loop while searching "
-        "for the matching zone. <color>_zone_visible enters zone approach.\n"
-        "- approach_zone is forward/steering motion, is valid only while pursuing "
-        "the matching visible zone, and must self-loop. <color>_zone_not_visible "
-        "returns to zone search. Both zone states advance on <color>_zone_reached.\n"
-        "- drop_object is valid only after the matching zone is reached.\n"
-        "For every selectable color, provide a complete path through search, claim "
-        "arbitration, object approach/reacquisition, pickup, matching-zone "
-        "search/approach, and drop. Do not create a single-robot sequence that "
-        "delivers multiple colors. Every listed controllable event must appear on "
-        "at least one transition."
     )
 
 
@@ -324,7 +270,7 @@ def delivery_semantic_errors(payload: object) -> list[str]:
                     "zone_reached observation"
                 )
     return list(dict.fromkeys(errors))
-DEFAULT_MODEL = "gpt-4.1"
+DEFAULT_MODEL = "gpt-5.6"
 
 
 def read_required_text(path: Path, description: str) -> str:
@@ -507,24 +453,28 @@ def save_task_prompt(task: str, output_path: Path) -> Path:
     return prompt_path
 
 
+def save_llm_prompt(prompt: str, output_path: Path) -> Path:
+    """Save the complete, exact input sent to the OpenAI Responses API."""
+    prompt_path = output_path.with_suffix(".llm_prompt.txt")
+    try:
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text(prompt.rstrip() + "\n", encoding="utf-8")
+    except OSError as error:
+        raise RuntimeError(
+            f"Could not save complete LLM prompt to {prompt_path}: {error}"
+        ) from error
+    return prompt_path
+
+
 def combine_prompt(
     base_prompt: str,
     task: str,
-    feedback: object | None = None,
 ) -> str:
+    """Combine the invariant instructions with the task-specific user objective."""
     task = task.strip()
     if not task:
         raise ValueError("The control task is empty")
-    sections = [f"CONTROL OBJECTIVE\n{task}"]
-    if feedback is not None:
-        sections.append(
-            "PREVIOUS RUN FEEDBACK\n"
-            "Use this evidence to revise the specification while preserving the "
-            "control objective and fixed safety constraints.\n"
-            f"{json.dumps(feedback, indent=2, ensure_ascii=False)}"
-        )
-    sections.append(base_prompt)
-    return "\n\n".join(sections)
+    return f"{base_prompt}\n\nUSER INPUT\n{task}"
 
 
 def automata_files_as_json(
@@ -632,27 +582,34 @@ def generate_json(
     feedback: object | None = None,
     max_repair_attempts: int = 2,
 ) -> tuple[object, Path]:
+    if feedback is not None:
+        raise ValueError(
+            "Previous-run feedback is no longer part of the LLM input. "
+            "Put any desired requirement in the user input instead."
+        )
     base_prompt = read_required_text(prompt_path, "Prompt")
     api_key = read_required_text(api_key_path, "API key")
     context = automata_files_as_json(context_files, context_mission)
     allowed_events = events_available_in_automata(
         events_for_mission(context_mission), context_files
     )
-    prompt = add_existing_automata_context(
-        combine_prompt(base_prompt, task, feedback), context
+    # Keep the composition identical across repeated generations. The user task,
+    # fixed-automata context, and mission-specific authoritative alphabet are the
+    # only task inputs that vary.
+    prompt = add_allowed_event_list(
+        add_existing_automata_context(combine_prompt(base_prompt, task), context),
+        allowed_events,
     )
-    prompt = add_mission_requirements(prompt, context_mission)
-    prompt = add_allowed_event_list(prompt, allowed_events)
     destination = output_path or default_output_path(DEFAULT_OUTPUT_DIR)
     save_task_prompt(task, destination)
-    if feedback is not None:
-        save_json(feedback, destination.with_suffix(".feedback.json"))
-    request_prompt = prompt
+    save_llm_prompt(prompt, destination)
     for attempt in range(max_repair_attempts + 1):
-        payload = request_json(request_prompt, api_key, model)
+        # Retries use the exact same input as the first request. Validation
+        # details and prior candidates must not make the LLM prompt task/run specific.
+        payload = request_json(prompt, api_key, model)
         validate_response_explanation(payload)
         semantic_errors = authoritative_event_errors(payload, allowed_events)
-        if context_mission == "delivery":
+        if context_mission in {"delivery", "complex_task"}:
             semantic_errors.extend(delivery_semantic_errors(payload))
         if not semantic_errors:
             break
@@ -663,15 +620,5 @@ def generate_json(
                 f"{max_repair_attempts + 1} attempts:\n- "
                 + "\n- ".join(semantic_errors)
             )
-        request_prompt = (
-            prompt
-            + "\n\nSEMANTIC VALIDATION FAILURE\n"
-            + "The previous candidate cannot be synthesized for execution. Repair "
-            + "the automata while preserving the objective. Return the complete "
-            + "replacement JSON, not a patch. Errors:\n- "
-            + "\n- ".join(semantic_errors)
-            + "\n\nPREVIOUS INVALID CANDIDATE\n"
-            + json.dumps(payload, indent=2, ensure_ascii=False)
-        )
     save_json(payload, destination)
     return payload, destination

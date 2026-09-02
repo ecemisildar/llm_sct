@@ -29,7 +29,8 @@ from typing import Iterable, Sequence
 SCRIPT_DIR = Path(__file__).resolve().parent
 AUTOMATA_DIR = SCRIPT_DIR.parent / "automata"
 DEFAULT_INPUT_DIRS = (
-    AUTOMATA_DIR / "baseline_automata" / "obstacle_avoidance",
+    AUTOMATA_DIR / "baseline_automata" / "exploration",
+    AUTOMATA_DIR / "baseline_automata",
     AUTOMATA_DIR / "llm_generated_automata",
 )
 DEFAULT_OUTPUT_DIR = AUTOMATA_DIR / "resulting_automata"

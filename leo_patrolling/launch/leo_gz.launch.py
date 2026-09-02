@@ -20,14 +20,14 @@
 
 
 import os
-import subprocess
 import sys
-import time
+import tempfile
+import xml.etree.ElementTree as ET
 
 from ament_index_python.packages import get_package_prefix, get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, SetLaunchConfiguration
 from launch.actions import IncludeLaunchDescription, RegisterEventHandler, OpaqueFunction
 from launch.event_handlers import OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -35,21 +35,42 @@ from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 
 
-def _kill_gazebo_processes(*_args, **_kwargs):
-    patterns = [
-        r"gz sim",
-        r"ign gazebo",
-        r"parameter_bridge",
-    ]
-    for signal in ("-INT", "-TERM", "-KILL"):
-        for pattern in patterns:
-            subprocess.run(
-                ["pkill", signal, "-f", pattern],
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-        time.sleep(0.3)
+_TEMP_WORLD_PATHS = []
+
+
+def _configure_overhead_camera(context):
+    world_path = LaunchConfiguration("sim_world").perform(context)
+    enabled = LaunchConfiguration("overhead_camera").perform(context).lower() in (
+        "1", "true", "yes", "on"
+    )
+    if enabled:
+        return [SetLaunchConfiguration("effective_sim_world", world_path)]
+
+    tree = ET.parse(world_path)
+    world = tree.getroot().find("world")
+    if world is None:
+        raise RuntimeError(f"No <world> element found in {world_path}")
+    for model in list(world.findall("model")):
+        if model.get("name") == "top_view_camera":
+            world.remove(model)
+
+    handle = tempfile.NamedTemporaryFile(
+        prefix="leo_patrolling_no_overhead_camera_", suffix=".sdf", delete=False
+    )
+    handle.close()
+    tree.write(handle.name, encoding="unicode", xml_declaration=True)
+    _TEMP_WORLD_PATHS.append(handle.name)
+    return [SetLaunchConfiguration("effective_sim_world", handle.name)]
+
+
+def _cleanup_temp_worlds(*_args, **_kwargs):
+    """Remove only temporary files created by this launch instance."""
+    for path in _TEMP_WORLD_PATHS:
+        try:
+            os.unlink(path)
+        except FileNotFoundError:
+            pass
+    _TEMP_WORLD_PATHS.clear()
     return []
 
 
@@ -76,13 +97,20 @@ def generate_launch_description():
 
     sim_world = DeclareLaunchArgument(
         "sim_world",
-        default_value=os.path.join(pkg_project_gazebo, "worlds", "random_world_rgb.sdf"),
+        default_value=os.path.join(
+            pkg_project_gazebo, "worlds", "common_walls_patrolling_world.sdf"
+        ),
         description="Path to the Gazebo world file",
     )
     headless = DeclareLaunchArgument(
         "headless",
         default_value="true",
         description="Run Gazebo headless (no GUI)",
+    )
+    overhead_camera = DeclareLaunchArgument(
+        "overhead_camera",
+        default_value="false",
+        description="Enable the fixed overhead camera sensor",
     )
     auto_start = DeclareLaunchArgument(
         "auto_start",
@@ -96,7 +124,7 @@ def generate_launch_description():
     )
     total_robots = DeclareLaunchArgument(
         "total_robots",
-        default_value="10",
+        default_value="3",
         description="Number of robots to spawn at safe, separated positions",
     )
     random_seed = DeclareLaunchArgument(
@@ -104,6 +132,7 @@ def generate_launch_description():
         default_value="auto",
         description="Base seed for per-robot supervisor random choices. Use 'auto' for a fresh seed each run.",
     )
+    record_video = DeclareLaunchArgument("record_video", default_value="false")
     
     results_dir = DeclareLaunchArgument(
         "results_dir",
@@ -112,7 +141,7 @@ def generate_launch_description():
             "sct_ws",
             "src",
             "llm_sct",
-            "results",
+            "new_results",
             "baseline",
             "results_patrolling",
         ),
@@ -123,7 +152,7 @@ def generate_launch_description():
         default_value=os.path.join(
             pkg_project_gazebo,
             "config",
-            "sup_patrolling.yaml",
+            "supervisor.yaml",
         ),
         description="YAML file to copy into each run folder",
     )
@@ -136,8 +165,8 @@ def generate_launch_description():
     # Setup to launch the simulator and Gazebo world
     gz_args = PythonExpression([
         "'",
-        LaunchConfiguration("sim_world"),
-        "' + (' -s' if '",
+        LaunchConfiguration("effective_sim_world"),
+        "' + (' -s --headless-rendering' if '",
         LaunchConfiguration("headless"),
         "' == 'true' else '') + (' -r' if '",
         LaunchConfiguration("auto_start"),
@@ -155,12 +184,13 @@ def generate_launch_description():
             os.path.join(pkg_project_gazebo, "launch", "spawn_multi_robots.launch.py")
         ),
         launch_arguments={
-            "sim_world": LaunchConfiguration("sim_world"),
+            "sim_world": LaunchConfiguration("effective_sim_world"),
             "headless": LaunchConfiguration("headless"),
             "auto_start": LaunchConfiguration("auto_start"),
             "run_duration": LaunchConfiguration("run_duration"),
             "total_robots": LaunchConfiguration("total_robots"),
             "random_seed": LaunchConfiguration("random_seed"),
+            "record_video": LaunchConfiguration("record_video"),
             "results_dir": LaunchConfiguration("results_dir"),
             "metadata_yaml_path": LaunchConfiguration("metadata_yaml_path"),
             "target_color_order": LaunchConfiguration("target_color_order"),
@@ -192,19 +222,22 @@ def generate_launch_description():
             SetEnvironmentVariable(name="PYTHONPATH", value=python_path),
             sim_world,
             headless,
+            overhead_camera,
             auto_start,
             run_duration,
             total_robots,
             random_seed,
+            record_video,
             results_dir,
             metadata_yaml_path,
             target_color_order,
+            OpaqueFunction(function=_configure_overhead_camera),
             gz_sim,
             spawn_robot,
             topic_bridge,
             RegisterEventHandler(
                 OnShutdown(
-                    on_shutdown=[OpaqueFunction(function=_kill_gazebo_processes)],
+                    on_shutdown=[OpaqueFunction(function=_cleanup_temp_worlds)],
                 )
             ),
         ]

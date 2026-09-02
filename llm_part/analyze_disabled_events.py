@@ -197,8 +197,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--mission",
-        # Add "delivery" back when its fixed automata profile is re-enabled.
-        choices=("exploration", "patrolling"),
+        choices=("exploration", "patrolling", "delivery"),
         default="exploration",
     )
     parser.add_argument(

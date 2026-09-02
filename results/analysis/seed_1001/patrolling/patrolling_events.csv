@@ -1,0 +1,8 @@
+event,count,percentage
+EV_move_forward,8631,46.91525792248736
+EV_search_color,4422,24.036527694732836
+EV_approach_color,4254,23.123335326411915
+EV_full_rotate,450,2.4460509865738977
+EV_rotate_counterclockwise,324,1.7611567103332064
+EV_rotate_clockwise,200,1.0871337718106213
+EV_move_backward,116,0.6305375876501603

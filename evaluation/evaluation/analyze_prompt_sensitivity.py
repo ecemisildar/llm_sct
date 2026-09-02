@@ -137,7 +137,7 @@ def main() -> int:
             yaml_index[yaml_path.stem] = (prompt, generation, yaml_path)
 
     newest: dict[tuple[str, int], Path] = {}
-    result_root = root / "results" / "llm" / f"results_{args.task}"
+    result_root = root / "new_results" / "llm" / f"results_{args.task}"
     for result_file in result_root.glob("S_*/robots_*/run_*/task_result.csv"):
         run = result_file.parent
         status = run / "SAVE_STATUS.txt"
@@ -222,7 +222,7 @@ def main() -> int:
     baseline_rows = []
     for seed in args.seeds:
         run = newest_completed_run_for_seed(
-            root / "results" / "baseline" / f"results_{args.task}", seed
+            root / "new_results" / "baseline" / f"results_{args.task}", seed
         )
         success, duration = read_result(run)
         baseline_rows.append(

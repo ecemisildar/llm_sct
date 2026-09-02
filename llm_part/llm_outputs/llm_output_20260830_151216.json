@@ -1,0 +1,59 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "ordered_red_green_blue_specification",
+      "states": [
+        "search_red",
+        "approach_red",
+        "search_green",
+        "approach_green",
+        "search_blue",
+        "approach_blue",
+        "complete"
+      ],
+      "initial_state": "search_red",
+      "marked_states": [
+        "complete"
+      ],
+      "events": [
+        "search_color",
+        "approach_color",
+        "red_visible",
+        "red_not_visible",
+        "red_reached",
+        "green_visible",
+        "green_not_visible",
+        "green_reached",
+        "blue_visible",
+        "blue_not_visible",
+        "blue_reached"
+      ],
+      "transitions": [
+        "(\"search_red\", \"search_color\", \"search_red\")",
+        "(\"search_red\", \"red_visible\", \"approach_red\")",
+        "(\"search_red\", \"red_reached\", \"search_green\")",
+        "(\"approach_red\", \"approach_color\", \"approach_red\")",
+        "(\"approach_red\", \"red_not_visible\", \"search_red\")",
+        "(\"approach_red\", \"red_reached\", \"search_green\")",
+        "(\"search_green\", \"search_color\", \"search_green\")",
+        "(\"search_green\", \"green_visible\", \"approach_green\")",
+        "(\"search_green\", \"green_reached\", \"search_blue\")",
+        "(\"approach_green\", \"approach_color\", \"approach_green\")",
+        "(\"approach_green\", \"green_not_visible\", \"search_green\")",
+        "(\"approach_green\", \"green_reached\", \"search_blue\")",
+        "(\"search_blue\", \"search_color\", \"search_blue\")",
+        "(\"search_blue\", \"blue_visible\", \"approach_blue\")",
+        "(\"search_blue\", \"blue_reached\", \"complete\")",
+        "(\"approach_blue\", \"approach_color\", \"approach_blue\")",
+        "(\"approach_blue\", \"blue_not_visible\", \"search_blue\")",
+        "(\"approach_blue\", \"blue_reached\", \"complete\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses only search_color and approach_color as task-level motion decisions, together with the visible, not-visible, and reached observations for red, green, and blue. Low-level movement and obstacle events are omitted because collision_avoidance already protects motion and the patrolling objective requires only color search and approach actions.",
+    "transition_design": "The protocol enforces the order red, green, then blue with distinct search and approach states for each location. search_color repeats in every search state, while approach_color repeats only in the corresponding approach state. Each visible observation enters approach, each not-visible observation returns to search, and each reached observation advances from either phase. Only complete is marked, and no task action is enabled there.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

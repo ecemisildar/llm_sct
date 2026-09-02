@@ -1,0 +1,56 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "obstacle_aware_exploration_specification",
+      "states": [
+        "clear",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "initial_state": "clear",
+      "marked_states": [
+        "clear",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "events": [
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left",
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"clear\", \"obstacle_front\", \"front_blocked\")",
+        "(\"clear\", \"obstacle_right\", \"right_blocked\")",
+        "(\"clear\", \"obstacle_left\", \"left_blocked\")",
+        "(\"clear\", \"task_move_forward\", \"clear\")",
+        "(\"clear\", \"task_rotate_clockwise\", \"clear\")",
+        "(\"clear\", \"task_rotate_counterclockwise\", \"clear\")",
+        "(\"front_blocked\", \"path_clear\", \"clear\")",
+        "(\"front_blocked\", \"obstacle_right\", \"right_blocked\")",
+        "(\"front_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"front_blocked\", \"task_rotate_clockwise\", \"front_blocked\")",
+        "(\"front_blocked\", \"task_rotate_counterclockwise\", \"front_blocked\")",
+        "(\"right_blocked\", \"path_clear\", \"clear\")",
+        "(\"right_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"right_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"right_blocked\", \"task_rotate_counterclockwise\", \"right_blocked\")",
+        "(\"left_blocked\", \"path_clear\", \"clear\")",
+        "(\"left_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"left_blocked\", \"obstacle_right\", \"right_blocked\")",
+        "(\"left_blocked\", \"task_rotate_clockwise\", \"left_blocked\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses obstacle observations to track the currently blocked direction and the three task-level movement events to perform exploration. Low-level movement events were omitted because collision_avoidance already protects them, and no communication or robot-coordination events are available in the supplied plants.",
+    "transition_design": "In clear, forward motion and either exploratory rotation are enabled. A front obstacle disables forward motion while allowing either task-level rotation; a right obstacle permits only counterclockwise rotation, and a left obstacle permits only clockwise rotation. Obstacle observations update the restriction state, while path_clear restores unrestricted exploration. All states are marked because each is a stable, repeatable exploration condition with a valid obstacle-avoidance action.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

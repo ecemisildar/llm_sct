@@ -1,0 +1,437 @@
+[INFO] [1788358305.296267632] [robot_2.robot_supervisor]: Required color order: red -> green -> blue
+[INFO] [1788358305.373387815] [robot_2.robot_supervisor]: Loaded initial mission 'patrolling' from explicit YAML supervisor.yaml
+[INFO] [1788358309.581884039] [robot_2.robot_supervisor]: Reached red; progress: 1/3 colors
+[INFO] [1788358309.582329546] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358310.082176193] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358310.483405008] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358311.183042186] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358311.682322988] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358312.086969068] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358312.684830137] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358312.982968700] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358313.483695764] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358313.983941572] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358314.483995401] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358315.083428198] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358315.483360973] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358315.982516226] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358316.482476245] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358316.982065114] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358317.582179592] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358317.582806293] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358318.182326238] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358318.182883594] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358318.383121802] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358321.882054566] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.186)
+[INFO] [1788358322.082712117] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358322.083328489] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358322.682067258] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358322.682404748] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358322.981965448] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358323.682020341] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358323.982220740] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358324.482419065] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358326.082551780] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358329.582278810] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.169)
+[INFO] [1788358329.781877019] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358329.982164157] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358330.581849526] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358330.582366106] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358330.582688543] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358330.970352932] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358330.972802548] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358330.982131124] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358330.982522294] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358331.475295199] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358331.476876081] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358331.478614940] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358331.482085174] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358331.482740529] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358331.985814304] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358331.987321971] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358332.082789805] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358332.083329895] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358332.083826508] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358335.482241175] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.218)
+[WARN] [1788358335.682175043] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358335.682722612] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358335.683050087] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358335.961049765] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358335.965402505] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358335.967518040] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358335.982226259] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358336.582287394] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358336.583039415] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358337.082125193] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358337.083011038] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358337.983709956] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358341.282537833] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.207)
+[INFO] [1788358341.582782855] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358341.583548800] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358342.082870806] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358342.083515056] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358342.084081842] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358342.682577836] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358342.683477202] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358342.684095554] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358342.684665305] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358342.965695320] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358342.968233074] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358342.982311340] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358342.982999943] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358342.983422408] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358343.488566710] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358343.490439637] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358343.582475970] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358343.583385812] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358343.584043019] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358344.084055470] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358344.084941338] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358344.085533774] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358344.682032378] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358344.682949122] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358344.683525353] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358344.971479363] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358344.975770843] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358344.979558626] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358344.981783078] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358344.983076133] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358344.983653313] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358345.282439118] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[WARN] [1788358345.484704076] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358345.582514705] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358345.583744759] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358345.584371791] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358346.183316780] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358346.184700432] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358346.185146156] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358346.468640972] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358346.471893370] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358346.482801072] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358346.484418535] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358347.082945566] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358347.083729201] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358347.084156367] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358347.682255547] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358347.683226771] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358347.683845029] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358347.967598546] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358347.970825007] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358347.982271749] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358347.982974679] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358348.490763099] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[WARN] [1788358348.492861183] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358348.581847546] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358348.582284353] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358349.082484221] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358349.682369835] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358349.982052348] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358350.583767101] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358351.183241376] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358351.483474323] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358351.782382092] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358352.082131039] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358352.682076245] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358352.983035547] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358353.582739023] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358354.182867291] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358354.482442827] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358354.682761713] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358358.182780366] [robot_2.robot_supervisor]: FULL ROTATE completed by timeout
+[INFO] [1788358359.185476516] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358359.684097692] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358359.983294974] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358360.482802975] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358361.182396120] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358361.682807147] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358361.982330381] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358362.483197725] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358363.082482315] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358363.582423345] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358364.082371084] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358364.682367859] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358364.683282352] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358368.082306124] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.218)
+[WARN] [1788358368.282053268] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358368.282673496] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358368.283063140] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358368.582117293] [robot_2.robot_supervisor]: Reached red out of order; next required color is green. This reach does not count.
+[INFO] [1788358368.583002013] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358368.583536552] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358369.182146964] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358369.481967204] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358369.983595284] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358370.582183858] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358371.082769777] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358371.482275764] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358371.982823499] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358372.582051728] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358373.183152396] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358374.082376408] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358374.682992552] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358374.982341579] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358375.582795753] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358376.085083193] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358376.682514547] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358376.983292982] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358377.582745024] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358378.083380771] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358378.682422722] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358378.982236317] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358379.482145883] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358380.083388258] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358380.682304665] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358380.953746643] [robot_2.robot_supervisor]: Reached green; progress: 2/3 colors
+[INFO] [1788358380.982291653] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358381.482162309] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358381.988371055] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358382.182472470] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358385.489022965] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.216)
+[INFO] [1788358385.782737563] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358386.182084916] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358386.182513801] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358386.682297287] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358386.682959240] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358387.082445994] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358387.083328204] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358387.083822791] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358387.681898409] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358387.682254539] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358387.682566521] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358388.281939787] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358388.282323494] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358388.282658473] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358388.782630710] [robot_2.robot_supervisor]: ############################# REACHED: EV_green_reached #############################
+[INFO] [1788358388.783551813] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358389.082705959] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358389.682036964] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358390.282481073] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358390.582283388] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358391.181799840] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358391.781814457] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358392.081691071] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358392.681696904] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358393.282001518] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358393.582041655] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358394.181907606] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358394.782177660] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358395.082076905] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358395.682019948] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358396.282166063] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358396.582114393] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358397.181743939] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358397.781743961] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358398.081819942] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358398.682071798] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358399.282097547] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358399.682027041] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358400.081832128] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358400.581683169] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358400.781837443] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358404.282696965] [robot_2.robot_supervisor]: FULL ROTATE completed by timeout
+[INFO] [1788358404.484691954] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358404.781949065] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358405.182178519] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358405.781723268] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358406.081681835] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358406.581985937] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358407.081871885] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358407.581789575] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358408.081741567] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358408.581757551] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358409.182069708] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358409.781751837] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358410.081732506] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358410.081993634] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358410.681722442] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358410.681968649] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358411.482072471] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358411.681763139] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358412.281786633] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358412.682046135] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358413.282069681] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358413.781747283] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358414.081669325] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358414.581749276] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358415.081868995] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358415.582237308] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358416.282325286] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358416.582293126] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358417.082214041] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358417.682392399] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358421.182089373] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.160)
+[INFO] [1788358421.482083699] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358421.781770284] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358421.782039674] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358422.082067199] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358422.082484232] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358422.681898840] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358423.181841241] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358423.581822998] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358424.081791917] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358424.581803082] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358425.181987585] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358425.781839433] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358426.082756125] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358426.781840990] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358427.281879866] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358427.682137582] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358428.282087858] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358437.581812035] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358438.282330967] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358438.781852990] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358439.182203801] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358439.682159635] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358439.682631105] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358440.281887670] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358440.282280737] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358440.881694180] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358440.882076544] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358440.882305042] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358440.882662963] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358444.182463467] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.189)
+[WARN] [1788358444.482014536] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358444.482675523] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358444.483089744] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358444.586329790] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358444.588793956] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358444.681863520] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358444.682152331] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358445.382212826] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358445.383043911] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358445.681970543] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358445.682560281] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358446.081300764] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358446.082265139] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358446.282109120] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358446.282853369] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358446.577524648] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358446.578724188] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358446.581722862] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358447.182028540] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358447.182689919] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358447.681863672] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358447.682370013] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358448.083007150] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358448.181713602] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358448.182115338] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358448.781885276] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358448.782293394] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358449.077051319] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358449.077895402] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358449.081774117] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358449.781780890] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358449.782232974] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358450.073402418] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358450.074660443] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358450.081838731] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358450.881884735] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358450.882317751] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358451.381738408] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358451.382160639] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358451.781978140] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358451.782608200] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358452.281974223] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358452.282632193] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358452.283286905] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358455.482112928] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.177)
+[WARN] [1788358455.682158183] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358455.682916895] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358455.683425241] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358456.282194358] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358456.283014837] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358456.283551307] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358456.881885728] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358456.882417213] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358456.882749001] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358457.282087404] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358457.282814282] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358457.781734112] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358457.782132408] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358458.281753157] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358458.282194279] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358459.282233488] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358462.682071031] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.208)
+[INFO] [1788358462.981781703] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358462.982056484] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358463.281720421] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358463.282033779] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358463.882029648] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358463.882420278] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358464.090369181] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358464.091652401] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358464.182008887] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358464.182411465] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358464.782107573] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358464.782771855] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358464.783084473] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358465.282012416] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358465.282721829] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358465.283622199] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358465.284636920] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358468.481927416] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.172)
+[WARN] [1788358468.681861020] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358468.682436349] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358468.682825010] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358469.181871202] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358469.182443213] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358469.681831975] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358469.682487894] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358470.981878481] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358474.181750712] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.200)
+[INFO] [1788358474.382049014] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358474.382449450] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358474.682034324] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358474.682432710] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358474.682786398] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358475.282055486] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358475.282473810] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358475.282908429] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358475.881911619] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358475.882571117] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358475.882976880] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358476.089635564] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358476.091248187] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358476.182073790] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358476.182525539] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358476.581870208] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358479.982017979] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.209)
+[WARN] [1788358480.281873046] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358480.282558674] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358480.282987398] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358480.571632137] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358480.572190443] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358480.581727630] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358480.582034668] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358481.381660059] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358481.382062664] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358481.579900727] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358481.582520592] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[WARN] [1788358481.882138498] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358481.883006150] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358482.682362402] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358485.882033847] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.200)
+[INFO] [1788358486.182067327] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358486.182569502] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358486.782098903] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358486.782582705] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_red_visible #############################
+[INFO] [1788358486.782992209] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358487.382276159] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358487.383120812] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358487.383632502] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358487.384113250] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358487.627107967] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[WARN] [1788358487.628831831] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358487.682155986] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358487.682700578] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358488.282015206] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358488.282762678] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358488.283217156] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[WARN] [1788358488.781920888] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358488.782615549] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################
+[INFO] [1788358488.783064773] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358488.783707992] [robot_2.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)
+[INFO] [1788358492.182199548] [robot_2.robot_supervisor]: FULL ROTATE completed by odom (accum_rad=3.228)
+[WARN] [1788358492.382112642] [robot_2.robot_supervisor]: Reached red out of order; next required color is blue. This reach does not count.
+[INFO] [1788358492.382899193] [robot_2.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358492.383397687] [robot_2.robot_supervisor]: ############################# REACHED: EV_red_reached #############################

@@ -55,8 +55,112 @@ class DeliverySemanticValidationTest(unittest.TestCase):
             }.isdisjoint(events)
         )
 
-    def test_hidden_reference_satisfies_contract(self):
-        self.assertEqual(delivery_semantic_errors(_baseline_payload()), [])
+    def test_baseline_task_stops_after_color_assignment(self):
+        path = (
+            ROOT
+            / "automata"
+            / "baseline_automata"
+            / "delivery"
+            / "delivery_task_specification_corrected.xml"
+        )
+        data = ET.parse(path).getroot().find("data")
+        assert data is not None
+        events = {event.attrib["name"] for event in data.findall("event")}
+        self.assertEqual(
+            events,
+            {
+                "claim_red",
+                "claim_green",
+                "claim_blue",
+                "received_claim_red",
+                "received_claim_green",
+                "received_claim_blue",
+            },
+        )
+        marked_states = {
+            state.attrib["name"]
+            for state in data.findall("state")
+            if state.attrib["marked"] == "True"
+        }
+        self.assertEqual(
+            marked_states,
+            {"red_task_assigned", "green_task_assigned", "blue_task_assigned"},
+        )
+
+    def test_baseline_availability_uses_claim_events_only(self):
+        directory = ROOT / "automata" / "baseline_automata" / "delivery"
+        for color in ("red", "green", "blue"):
+            with self.subTest(color=color):
+                data = ET.parse(directory / f"{color}_availability.xml").getroot().find("data")
+                assert data is not None
+                events = {event.attrib["name"] for event in data.findall("event")}
+                self.assertEqual(events, {f"claim_{color}", f"received_claim_{color}"})
+
+    def test_pickup_drop_plant_has_no_result_events(self):
+        path = (
+            ROOT
+            / "automata"
+            / "baseline_automata"
+            / "delivery"
+            / "pickup_and_drop_plant.xml"
+        )
+        data = ET.parse(path).getroot().find("data")
+        assert data is not None
+        events = {event.attrib["name"] for event in data.findall("event")}
+        self.assertEqual(events, {"pick_up_object", "drop_object"})
+
+    def test_robot_delivery_task_is_claim_gated_and_ordered(self):
+        task_actions = {
+            "search_object", "approach_object", "pick_up_object",
+            "search_zone", "approach_zone", "drop_object",
+        }
+        for color in ("red", "green", "blue"):
+            with self.subTest(color=color):
+                path = (
+                    ROOT / "automata" / "baseline_automata" / "delivery"
+                    / f"{color}_robot_delivery_task.xml"
+                )
+                data = ET.parse(path).getroot().find("data")
+                assert data is not None
+                states = {
+                    state.attrib["id"]: state.attrib["name"]
+                    for state in data.findall("state")
+                }
+                marked_states = {
+                    state.attrib["name"]
+                    for state in data.findall("state")
+                    if state.attrib["marked"] == "True"
+                }
+                events = {
+                    event.attrib["id"]: event.attrib["name"]
+                    for event in data.findall("event")
+                }
+                transitions = {
+                    (states[item.attrib["source"]], events[item.attrib["event"]]):
+                    states[item.attrib["target"]]
+                    for item in data.findall("transition")
+                }
+                self.assertTrue(
+                    task_actions.isdisjoint(
+                        event for state, event in transitions if state == "waiting"
+                    )
+                )
+                self.assertEqual(
+                    marked_states,
+                    {f"{color}_done", *(f"passive_{other}" for other in ("red", "green", "blue") if other != color)},
+                )
+                self.assertEqual(
+                    transitions[("waiting", f"claim_{color}")],
+                    f"{color}_search_object",
+                )
+                self.assertEqual(
+                    transitions[(f"{color}_pickup", "pick_up_object")],
+                    f"{color}_search_zone",
+                )
+                self.assertEqual(
+                    transitions[(f"{color}_drop", "drop_object")],
+                    f"{color}_done",
+                )
 
     def test_split_color_protocols_are_rejected(self):
         baseline = _baseline_payload()["automata"][0]

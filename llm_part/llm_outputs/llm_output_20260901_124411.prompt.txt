@@ -1,0 +1,1 @@
+Using the existing events, coordinate the robots to deliver three boxes per color. Each trip may transport at most one red box, two green boxes, or three blue boxes, and every box must reach its matching zone.

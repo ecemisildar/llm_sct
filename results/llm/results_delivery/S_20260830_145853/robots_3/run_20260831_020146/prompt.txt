@@ -1,0 +1,1 @@
+There are three robots, three objects, and three delivery zones in the environment. Choose an object and deliver it to its matching zone. Each robot should deliver one object.

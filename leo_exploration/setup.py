@@ -18,6 +18,7 @@ setup(
         ('share/' + package_name + '/worlds', [
             '../worlds/random_world.sdf',
             '../worlds/coverage_friendly_world.sdf',
+            '../worlds/common_walls_world.sdf',
         ]),
     ],
     install_requires=['setuptools'],

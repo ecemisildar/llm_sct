@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_RESULTS = ROOT / "results"
+DEFAULT_RESULTS = ROOT / "new_results"
 
 
 def run_dirs(root: Path) -> list[Path]:

@@ -1,0 +1,1380 @@
+You are an expert in Supervisory Control Theory (SCT) and deterministic finite-state automata.
+
+WHAT TO GENERATE
+
+Generate one or more deterministic control specifications that enforce only the control objective. Never generate a plant or regenerate a fixed automaton. Read `fixed_synthesis_roles`: `G_plants` identifies the plants used to build G, `K_fixed_specifications` identifies the fixed specifications added to K, and the generated automata are additional specifications synchronized into K.
+
+Use the smallest set of specifications and events needed for the objective. Separate independent restrictions only when useful. Use only task-level controllable events from the supplied fixed plants for mission decisions; low-level movement events protected by fixed safety specifications are forbidden unless the user explicitly requests them.
+
+For ordered target missions, support any positive number of requested goals, including repeated colors, and model a distinct search and approach phase for every occurrence in the stated order. Never assume there are exactly three goals. Patrolling uses `search_color` and `approach_color`. A requested target's `<color>_visible` observation enters its approach phase, `<color>_not_visible` returns to its search phase, and `<color>_reached` advances from either phase to the next target occurrence or completion. A reached observation can occur without a preceding visible observation.
+
+TASK RUNTIME REQUIREMENTS
+
+Exploration: Use task-level movement events to maintain exploration. Allow repeated movement while `path_clear` is observed and respond to obstacle observations using compatible rotation or recovery actions. Keep repeatable movement actions as self-loops.
+
+Patrolling: Generate one ordered protocol for every requested color occurrence. Use `search_color` repeatedly while searching and `approach_color` repeatedly after the requested `<color>_visible` event. Return to search on `<color>_not_visible`, and advance on `<color>_reached` from either the search or approach phase.
+
+Delivery: Generate exactly one unified delivery protocol specification containing the complete red, green, and blue branches. Repeatedly use `search_object` while searching. Observe `<color>_object_visible` before entering that color's claim-attempt state and executing `claim_<color>`. Every claim-attempt state must handle `received_claim_<color>` so a robot can abandon a box claimed by another robot. Immediately after a successful claim, enter a state where `approach_object` is enabled. Execute `pick_up_object` only after `<color>_object_reached`. Then repeatedly use `search_zone` for the matching color, use `approach_zone` after `<color>_zone_visible`, and execute `drop_object` only after `<color>_zone_reached`. Keep `search_object`, `approach_object`, `search_zone`, and `approach_zone` as self-loops wherever they are enabled. Handle the corresponding not-visible observations by returning to the relevant search phase. Do not split the three color branches into separate protocol automata.
+
+Complex task: Apply this paragraph only when `fixed_synthesis_roles.mission` is `complex_task`; otherwise ignore it completely. Generate exactly one unified complex-task protocol containing the complete red, green, and blue branches. There are three boxes of each color. Use counter states for remaining boxes and current payload. Red payload capacity is one box, green capacity is two boxes, and blue capacity is three boxes. After a successful claim, repeat that color's existing object search, visibility/approach, reached, and `pick_up_object` sequence until its capacity is reached or fewer boxes remain. Do not introduce events or plants. Then search for and approach only the matching zone; one `drop_object` unloads the complete batch. Publish the matching delivered event, update progress, and return to object search while any boxes remain. Use the existing claim, release, publish-delivered, and received events for team coordination and completed-batch counting. Keep search and approach actions as repeatable self-loops and preserve visibility-loss recovery. Mark only states where all three red, all three green, and all three blue boxes have been delivered. Low-level motion and collision handling remain under the supplied fixed free-behavior plants and collision-avoidance specification.
+
+OUTPUT FORMAT
+
+Return only one valid JSON object with exactly two top-level fields named `automata` and `explanation`. Do not return Markdown, commentary, or text outside the JSON.
+
+`automata` must be a non-empty array. Every element must contain exactly these fields:
+
+- `type`: the string `specification`
+- `name`: a unique identifier ending in `_specification`
+- `states`: a non-empty array of unique state-name strings
+- `initial_state`: one state from `states`
+- `marked_states`: an array containing only states from `states`
+- `events`: a non-empty array containing the specification's local event alphabet
+- `transitions`: an array of transition strings
+
+`explanation` must be an object containing exactly these fields:
+
+- `event_selection`: a concise explanation of why the selected events are required by the control objective and why other available event categories were omitted
+- `transition_design`: a concise explanation of how the transitions enforce sequencing, observation handling, completion, and any explicit exclusions
+- `feedback_response`: state that no previous-run feedback was supplied
+
+Describe the resulting design, not private step-by-step reasoning. Refer to event and state names exactly as they appear in `automata`.
+
+Every transition string must have exactly this form:
+
+`(\"state\", \"event\", \"next_state\")`
+
+Inside JSON, escape the double quotes required by the transition string. Do not encode transitions as objects, maps, or nested arrays.
+
+SCT RULES
+
+1. Use only events declared by the supplied fixed plants, with exact spelling and case. Select only task-level events relevant to the user input.
+2. Every event used by a generated specification must exist in at least one supplied fixed plant. Do not create a plant to introduce an event.
+3. Include every transition event in that specification's `events` field. Keep the local alphabet minimal and relevant to the control objective.
+4. The converter completes each generated specification with the selected plants' event alphabet. A globally unused controllable event is declared without transitions and therefore disabled. A controllable event selected by another generated specification is completed with self-loops so independent specifications do not disable it.
+5. Explicitly write every uncontrollable transition that changes specification state. Missing uncontrollable transitions are completed as self-loops, so omit inert uncontrollable self-loops.
+6. Never omit a required state-changing observation. In an ordered target phase, explicitly handle the requested target's reached observation from both search and approach states; it must not self-loop.
+7. Make every automaton deterministic: each `(state, event)` pair has at most one target.
+8. Add a controllable transition only where that request is semantically valid. A state may enable zero, one, or multiple controllable events.
+9. Treat `only`, `never`, `must not`, and equivalent objective language as event-exclusion requirements.
+10. Every transition source and target must belong to `states`, and every listed state must be reachable from `initial_state`.
+11. Use short, unique names containing only letters, numbers, and underscores.
+12. Mark only acceptable completed conditions, stable checkpoints, or legitimately repeatable mission conditions. Do not mark transient states with outstanding obligations. Always include `marked_states`, using an empty array only when no marked condition exists.
+13. Generate a nonblocking specification whenever the objective permits it: every reachable state must be marked or have a path to a marked state.
+14. Do not add behavior unrelated to the objective. Use color, communication, reception, skip, or obstacle events only when relevant.
+15. Return valid JSON containing only the required automata, explanation, and transition-string representation.
+
+USER INPUT
+Claim a box that is not claimed by another robot, approach it, and pick it up. Then search for the delivery zone that is the same color as the claimed box, approach it, and drop the box there. Robots may batch one red, two green, or three blue boxes. Each robot should deliver three boxes and avoid the obstacles.
+
+FIXED AUTOMATA (JSON)
+These automata are already included during synchronization. Do not regenerate them. Use their exact states, events, and transitions to design compatible additional control specifications. When the control objective requires robot motion, explicitly connect relevant observations and mission states to the existing controllable movement events.
+{
+  "fixed_synthesis_roles": {
+    "mission": "complex_task",
+    "G_plants": [
+      "obstacle_sensor",
+      "motion_plant",
+      "pickup_and_drop_plant",
+      "color_sensor",
+      "red_availability",
+      "green_availability",
+      "blue_availability",
+      "team_delivery_status_plant_corrected"
+    ],
+    "K_fixed_specifications": [
+      "collision_avoidance"
+    ],
+    "llm_output_role": "specifications_only"
+  },
+  "fixed_automata": [
+    {
+      "name": "obstacle_sensor",
+      "type": "plant",
+      "states": [
+        "RIGHT",
+        "FRONT",
+        "LEFT",
+        "CLEAR"
+      ],
+      "initial_state": "CLEAR",
+      "marked_states": [
+        "RIGHT",
+        "FRONT",
+        "LEFT",
+        "CLEAR"
+      ],
+      "events": [
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "RIGHT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "RIGHT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "FRONT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "LEFT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        }
+      ]
+    },
+    {
+      "name": "motion_plant",
+      "type": "plant",
+      "states": [
+        "ready"
+      ],
+      "initial_state": "ready",
+      "marked_states": [
+        "ready"
+      ],
+      "events": [
+        {
+          "name": "search_zone",
+          "controllable": true
+        },
+        {
+          "name": "search_object",
+          "controllable": true
+        },
+        {
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        },
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        },
+        {
+          "name": "approach_zone",
+          "controllable": true
+        },
+        {
+          "name": "full_rotate",
+          "controllable": true
+        },
+        {
+          "name": "approach_object",
+          "controllable": true
+        },
+        {
+          "name": "move_backward",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "ready",
+          "event": "approach_zone",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "approach_object",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_counterclockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "search_object",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "search_zone",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "move_forward",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "full_rotate",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_clockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "move_backward",
+          "target": "ready"
+        }
+      ]
+    },
+    {
+      "name": "pickup_and_drop_plant",
+      "type": "plant",
+      "states": [
+        "empty",
+        "pickup_pending",
+        "carrying",
+        "drop_pending"
+      ],
+      "initial_state": "empty",
+      "marked_states": [
+        "empty",
+        "carrying"
+      ],
+      "events": [
+        {
+          "name": "pick_up_object",
+          "controllable": true
+        },
+        {
+          "name": "pickup_confirmed",
+          "controllable": false
+        },
+        {
+          "name": "pickup_failed",
+          "controllable": false
+        },
+        {
+          "name": "drop_object",
+          "controllable": true
+        },
+        {
+          "name": "delivery_confirmed",
+          "controllable": false
+        },
+        {
+          "name": "delivery_failed",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "empty",
+          "event": "pick_up_object",
+          "target": "pickup_pending"
+        },
+        {
+          "source": "pickup_pending",
+          "event": "pickup_confirmed",
+          "target": "carrying"
+        },
+        {
+          "source": "pickup_pending",
+          "event": "pickup_failed",
+          "target": "empty"
+        },
+        {
+          "source": "carrying",
+          "event": "drop_object",
+          "target": "drop_pending"
+        },
+        {
+          "source": "drop_pending",
+          "event": "delivery_confirmed",
+          "target": "empty"
+        },
+        {
+          "source": "drop_pending",
+          "event": "delivery_failed",
+          "target": "carrying"
+        }
+      ]
+    },
+    {
+      "name": "color_sensor",
+      "type": "plant",
+      "states": [
+        "detecting"
+      ],
+      "initial_state": "detecting",
+      "marked_states": [
+        "detecting"
+      ],
+      "events": [
+        {
+          "name": "blue_zone_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "green_object_reached",
+          "controllable": false
+        },
+        {
+          "name": "blue_zone_visible",
+          "controllable": false
+        },
+        {
+          "name": "blue_zone_reached",
+          "controllable": false
+        },
+        {
+          "name": "blue_object_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "green_zone_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "green_zone_visible",
+          "controllable": false
+        },
+        {
+          "name": "green_object_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "green_zone_reached",
+          "controllable": false
+        },
+        {
+          "name": "red_object_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_object_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "green_object_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_zone_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_object_reached",
+          "controllable": false
+        },
+        {
+          "name": "red_zone_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "blue_object_reached",
+          "controllable": false
+        },
+        {
+          "name": "red_zone_reached",
+          "controllable": false
+        },
+        {
+          "name": "blue_object_visible",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "detecting",
+          "event": "blue_zone_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_zone_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "blue_object_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "blue_object_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_object_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_zone_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_object_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_object_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_object_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "blue_zone_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_object_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_zone_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_object_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_zone_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_zone_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_zone_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "blue_object_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "blue_zone_visible",
+          "target": "detecting"
+        }
+      ]
+    },
+    {
+      "name": "red_availability",
+      "type": "plant",
+      "states": [
+        "red_claimed_by_me",
+        "red_delivered",
+        "red_free",
+        "red_claimed_by_other"
+      ],
+      "initial_state": "red_free",
+      "marked_states": [
+        "red_claimed_by_me",
+        "red_delivered",
+        "red_free",
+        "red_claimed_by_other"
+      ],
+      "events": [
+        {
+          "name": "release_red",
+          "controllable": true
+        },
+        {
+          "name": "received_release_red",
+          "controllable": false
+        },
+        {
+          "name": "claim_red",
+          "controllable": true
+        },
+        {
+          "name": "publish_delivered_red",
+          "controllable": true
+        },
+        {
+          "name": "received_delivered_red",
+          "controllable": false
+        },
+        {
+          "name": "received_claim_red",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "red_claimed_by_me",
+          "event": "release_red",
+          "target": "red_free"
+        },
+        {
+          "source": "red_claimed_by_me",
+          "event": "received_claim_red",
+          "target": "red_claimed_by_me"
+        },
+        {
+          "source": "red_claimed_by_me",
+          "event": "publish_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "received_claim_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "received_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "received_release_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_free",
+          "event": "received_claim_red",
+          "target": "red_claimed_by_other"
+        },
+        {
+          "source": "red_free",
+          "event": "claim_red",
+          "target": "red_claimed_by_me"
+        },
+        {
+          "source": "red_free",
+          "event": "received_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_claimed_by_other",
+          "event": "received_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_claimed_by_other",
+          "event": "received_release_red",
+          "target": "red_free"
+        },
+        {
+          "source": "red_claimed_by_other",
+          "event": "received_claim_red",
+          "target": "red_claimed_by_other"
+        }
+      ]
+    },
+    {
+      "name": "green_availability",
+      "type": "plant",
+      "states": [
+        "green_claimed_by_me",
+        "green_free",
+        "green_delivered",
+        "green_claimed_by_other"
+      ],
+      "initial_state": "green_free",
+      "marked_states": [
+        "green_claimed_by_me",
+        "green_free",
+        "green_delivered",
+        "green_claimed_by_other"
+      ],
+      "events": [
+        {
+          "name": "received_delivered_green",
+          "controllable": false
+        },
+        {
+          "name": "publish_delivered_green",
+          "controllable": true
+        },
+        {
+          "name": "claim_green",
+          "controllable": true
+        },
+        {
+          "name": "received_release_green",
+          "controllable": false
+        },
+        {
+          "name": "received_claim_green",
+          "controllable": false
+        },
+        {
+          "name": "release_green",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "green_claimed_by_me",
+          "event": "release_green",
+          "target": "green_free"
+        },
+        {
+          "source": "green_claimed_by_me",
+          "event": "received_claim_green",
+          "target": "green_claimed_by_me"
+        },
+        {
+          "source": "green_claimed_by_me",
+          "event": "publish_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_free",
+          "event": "received_claim_green",
+          "target": "green_claimed_by_other"
+        },
+        {
+          "source": "green_free",
+          "event": "claim_green",
+          "target": "green_claimed_by_me"
+        },
+        {
+          "source": "green_free",
+          "event": "received_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "received_claim_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "received_release_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "received_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_claimed_by_other",
+          "event": "received_release_green",
+          "target": "green_free"
+        },
+        {
+          "source": "green_claimed_by_other",
+          "event": "received_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_claimed_by_other",
+          "event": "received_claim_green",
+          "target": "green_claimed_by_other"
+        }
+      ]
+    },
+    {
+      "name": "blue_availability",
+      "type": "plant",
+      "states": [
+        "blue_claimed_by_other",
+        "blue_free",
+        "blue_delivered",
+        "blue_claimed_by_me"
+      ],
+      "initial_state": "blue_free",
+      "marked_states": [
+        "blue_claimed_by_other",
+        "blue_free",
+        "blue_delivered",
+        "blue_claimed_by_me"
+      ],
+      "events": [
+        {
+          "name": "claim_blue",
+          "controllable": true
+        },
+        {
+          "name": "release_blue",
+          "controllable": true
+        },
+        {
+          "name": "received_claim_blue",
+          "controllable": false
+        },
+        {
+          "name": "publish_delivered_blue",
+          "controllable": true
+        },
+        {
+          "name": "received_delivered_blue",
+          "controllable": false
+        },
+        {
+          "name": "received_release_blue",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "blue_claimed_by_other",
+          "event": "received_claim_blue",
+          "target": "blue_claimed_by_other"
+        },
+        {
+          "source": "blue_claimed_by_other",
+          "event": "received_delivered_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "blue_claimed_by_other",
+          "event": "received_release_blue",
+          "target": "blue_free"
+        },
+        {
+          "source": "blue_free",
+          "event": "received_delivered_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "blue_free",
+          "event": "claim_blue",
+          "target": "blue_claimed_by_me"
+        },
+        {
+          "source": "blue_free",
+          "event": "received_claim_blue",
+          "target": "blue_claimed_by_other"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "received_release_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "received_delivered_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "received_claim_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "blue_claimed_by_me",
+          "event": "received_claim_blue",
+          "target": "blue_claimed_by_me"
+        },
+        {
+          "source": "blue_claimed_by_me",
+          "event": "release_blue",
+          "target": "blue_free"
+        },
+        {
+          "source": "blue_claimed_by_me",
+          "event": "publish_delivered_blue",
+          "target": "blue_delivered"
+        }
+      ]
+    },
+    {
+      "name": "team_delivery_status_plant_corrected",
+      "type": "plant",
+      "states": [
+        "none_delivered",
+        "red_delivered",
+        "green_delivered",
+        "blue_delivered",
+        "red_green_delivered",
+        "red_blue_delivered",
+        "green_blue_delivered",
+        "all_delivered"
+      ],
+      "initial_state": "none_delivered",
+      "marked_states": [
+        "all_delivered"
+      ],
+      "events": [
+        {
+          "name": "publish_delivered_red",
+          "controllable": true
+        },
+        {
+          "name": "publish_delivered_green",
+          "controllable": true
+        },
+        {
+          "name": "publish_delivered_blue",
+          "controllable": true
+        },
+        {
+          "name": "received_delivered_red",
+          "controllable": false
+        },
+        {
+          "name": "received_delivered_green",
+          "controllable": false
+        },
+        {
+          "name": "received_delivered_blue",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "none_delivered",
+          "event": "publish_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "none_delivered",
+          "event": "received_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "none_delivered",
+          "event": "publish_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "none_delivered",
+          "event": "received_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "none_delivered",
+          "event": "publish_delivered_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "none_delivered",
+          "event": "received_delivered_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "publish_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "received_delivered_red",
+          "target": "red_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "publish_delivered_green",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "received_delivered_green",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "publish_delivered_blue",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "red_delivered",
+          "event": "received_delivered_blue",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "publish_delivered_red",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "received_delivered_red",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "publish_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "received_delivered_green",
+          "target": "green_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "publish_delivered_blue",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "green_delivered",
+          "event": "received_delivered_blue",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "publish_delivered_red",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "received_delivered_red",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "publish_delivered_green",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "received_delivered_green",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "publish_delivered_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "blue_delivered",
+          "event": "received_delivered_blue",
+          "target": "blue_delivered"
+        },
+        {
+          "source": "red_green_delivered",
+          "event": "publish_delivered_red",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "red_green_delivered",
+          "event": "received_delivered_red",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "red_green_delivered",
+          "event": "publish_delivered_green",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "red_green_delivered",
+          "event": "received_delivered_green",
+          "target": "red_green_delivered"
+        },
+        {
+          "source": "red_green_delivered",
+          "event": "publish_delivered_blue",
+          "target": "all_delivered"
+        },
+        {
+          "source": "red_green_delivered",
+          "event": "received_delivered_blue",
+          "target": "all_delivered"
+        },
+        {
+          "source": "red_blue_delivered",
+          "event": "publish_delivered_red",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "red_blue_delivered",
+          "event": "received_delivered_red",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "red_blue_delivered",
+          "event": "publish_delivered_green",
+          "target": "all_delivered"
+        },
+        {
+          "source": "red_blue_delivered",
+          "event": "received_delivered_green",
+          "target": "all_delivered"
+        },
+        {
+          "source": "red_blue_delivered",
+          "event": "publish_delivered_blue",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "red_blue_delivered",
+          "event": "received_delivered_blue",
+          "target": "red_blue_delivered"
+        },
+        {
+          "source": "green_blue_delivered",
+          "event": "publish_delivered_red",
+          "target": "all_delivered"
+        },
+        {
+          "source": "green_blue_delivered",
+          "event": "received_delivered_red",
+          "target": "all_delivered"
+        },
+        {
+          "source": "green_blue_delivered",
+          "event": "publish_delivered_green",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "green_blue_delivered",
+          "event": "received_delivered_green",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "green_blue_delivered",
+          "event": "publish_delivered_blue",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "green_blue_delivered",
+          "event": "received_delivered_blue",
+          "target": "green_blue_delivered"
+        },
+        {
+          "source": "all_delivered",
+          "event": "publish_delivered_red",
+          "target": "all_delivered"
+        },
+        {
+          "source": "all_delivered",
+          "event": "received_delivered_red",
+          "target": "all_delivered"
+        },
+        {
+          "source": "all_delivered",
+          "event": "publish_delivered_green",
+          "target": "all_delivered"
+        },
+        {
+          "source": "all_delivered",
+          "event": "received_delivered_green",
+          "target": "all_delivered"
+        },
+        {
+          "source": "all_delivered",
+          "event": "publish_delivered_blue",
+          "target": "all_delivered"
+        },
+        {
+          "source": "all_delivered",
+          "event": "received_delivered_blue",
+          "target": "all_delivered"
+        }
+      ]
+    },
+    {
+      "name": "collision_avoidance",
+      "type": "specification",
+      "states": [
+        "clear",
+        "right",
+        "front",
+        "left"
+      ],
+      "initial_state": "clear",
+      "marked_states": [
+        "clear",
+        "right",
+        "front",
+        "left"
+      ],
+      "events": [
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "approach_zone",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        },
+        {
+          "name": "approach_object",
+          "controllable": true
+        },
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        },
+        {
+          "name": "search_zone",
+          "controllable": true
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        },
+        {
+          "name": "search_object",
+          "controllable": true
+        },
+        {
+          "name": "move_backward",
+          "controllable": true
+        },
+        {
+          "name": "full_rotate",
+          "controllable": true
+        },
+        {
+          "name": "move_forward",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "clear",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "clear",
+          "event": "move_forward",
+          "target": "clear"
+        },
+        {
+          "source": "clear",
+          "event": "approach_object",
+          "target": "clear"
+        },
+        {
+          "source": "clear",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "clear",
+          "event": "search_zone",
+          "target": "clear"
+        },
+        {
+          "source": "clear",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "clear",
+          "event": "approach_zone",
+          "target": "clear"
+        },
+        {
+          "source": "clear",
+          "event": "path_clear",
+          "target": "clear"
+        },
+        {
+          "source": "clear",
+          "event": "search_object",
+          "target": "clear"
+        },
+        {
+          "source": "right",
+          "event": "rotate_counterclockwise",
+          "target": "right"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "right",
+          "event": "full_rotate",
+          "target": "right"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "right",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "right",
+          "event": "path_clear",
+          "target": "clear"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "front",
+          "event": "rotate_counterclockwise",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "path_clear",
+          "target": "clear"
+        },
+        {
+          "source": "front",
+          "event": "rotate_clockwise",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "move_backward",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "full_rotate",
+          "target": "front"
+        },
+        {
+          "source": "front",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_left",
+          "target": "left"
+        },
+        {
+          "source": "left",
+          "event": "full_rotate",
+          "target": "left"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_front",
+          "target": "front"
+        },
+        {
+          "source": "left",
+          "event": "obstacle_right",
+          "target": "right"
+        },
+        {
+          "source": "left",
+          "event": "path_clear",
+          "target": "clear"
+        },
+        {
+          "source": "left",
+          "event": "rotate_clockwise",
+          "target": "left"
+        }
+      ]
+    }
+  ]
+}
+
+AUTHORITATIVE EVENT LIST
+Use only events in this list. Events visible in fixed-automata JSON but absent here are forbidden in generated output.
+Select only the events relevant to the user's control objective.
+Controllable events: ["approach_object", "approach_zone", "claim_blue", "claim_green", "claim_red", "drop_object", "pick_up_object", "publish_delivered_blue", "publish_delivered_green", "publish_delivered_red", "release_blue", "release_green", "release_red", "search_object", "search_zone"]
+Uncontrollable observation events: ["blue_object_not_visible", "blue_object_reached", "blue_object_visible", "blue_zone_not_visible", "blue_zone_reached", "blue_zone_visible", "delivery_confirmed", "delivery_failed", "green_object_not_visible", "green_object_reached", "green_object_visible", "green_zone_not_visible", "green_zone_reached", "green_zone_visible", "obstacle_front", "obstacle_left", "obstacle_right", "path_clear", "pickup_confirmed", "pickup_failed", "received_claim_blue", "received_claim_green", "received_claim_red", "received_delivered_blue", "received_delivered_green", "received_delivered_red", "received_release_blue", "received_release_green", "received_release_red", "red_object_not_visible", "red_object_reached", "red_object_visible", "red_zone_not_visible", "red_zone_reached", "red_zone_visible"]

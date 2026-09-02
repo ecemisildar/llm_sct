@@ -1,0 +1,13 @@
+[INFO] [1788358501.817926842] [robot_1.robot_supervisor]: Required color order: red -> green -> blue
+[INFO] [1788358501.891669002] [robot_1.robot_supervisor]: Loaded initial mission 'patrolling' from explicit YAML supervisor.yaml
+[INFO] [1788358506.099453461] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358506.099896438] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358506.599725645] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358506.600369971] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358507.099315597] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358507.099744189] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358507.599638775] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358507.600071677] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358508.099281813] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_green_visible #############################
+[INFO] [1788358508.099716398] [robot_1.robot_supervisor]: ############################# VISIBLE: EV_blue_visible #############################
+[INFO] [1788358509.799362180] [robot_1.robot_supervisor]: Starting FULL ROTATE (omega=1.000, have_odom=True, target_rad=3.142, timeout_s=3.500)

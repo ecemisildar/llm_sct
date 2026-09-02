@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="720" viewBox="0 0 900 720">
+<rect width="100%" height="100%" fill="white"/>
+<text x="450.0" y="34.0" text-anchor="middle" font-size="22" font-family="sans-serif" font-weight="bold">Delivery aggregate coverage — seed 1001</text>
+<text x="450.0" y="58.0" text-anchor="middle" font-size="14" font-family="sans-serif" fill="#444">Cell color = number of runs visiting the cell (n=15)</text>
+<rect x="90.00" y="450.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-5.0, -2.0): 15/15 runs</title></rect>
+<text x="130.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="90.00" y="390.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-5.0, -1.0): 15/15 runs</title></rect>
+<text x="130.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="90.00" y="330.00" width="80.00" height="60.00" fill="rgb(228,237,253)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-5.0, 0.0): 1/15 runs</title></rect>
+<text x="130.0" y="364.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">1</text>
+<rect x="90.00" y="270.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-5.0, 1.0): 15/15 runs</title></rect>
+<text x="130.0" y="304.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="90.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-5.0, 2.0): 15/15 runs</title></rect>
+<text x="130.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="90.00" y="150.00" width="80.00" height="60.00" fill="rgb(146,183,243)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-5.0, 3.0): 7/15 runs</title></rect>
+<text x="130.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">7</text>
+<rect x="90.00" y="90.00" width="80.00" height="60.00" fill="rgb(214,228,251)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-5.0, 4.0): 2/15 runs</title></rect>
+<text x="130.0" y="124.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">2</text>
+<rect x="170.00" y="450.00" width="80.00" height="60.00" fill="rgb(214,228,251)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-4.0, -2.0): 2/15 runs</title></rect>
+<text x="210.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">2</text>
+<rect x="170.00" y="390.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-4.0, -1.0): 15/15 runs</title></rect>
+<text x="210.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="170.00" y="330.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-4.0, 0.0): 15/15 runs</title></rect>
+<text x="210.0" y="364.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="170.00" y="270.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-4.0, 1.0): 15/15 runs</title></rect>
+<text x="210.0" y="304.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="170.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-4.0, 2.0): 15/15 runs</title></rect>
+<text x="210.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="170.00" y="150.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-4.0, 3.0): 15/15 runs</title></rect>
+<text x="210.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="170.00" y="90.00" width="80.00" height="60.00" fill="rgb(173,201,246)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-4.0, 4.0): 5/15 runs</title></rect>
+<text x="210.0" y="124.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">5</text>
+<rect x="250.00" y="450.00" width="80.00" height="60.00" fill="rgb(78,137,235)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-3.0, -2.0): 12/15 runs</title></rect>
+<text x="290.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">12</text>
+<rect x="250.00" y="390.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-3.0, -1.0): 15/15 runs</title></rect>
+<text x="290.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="250.00" y="330.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-3.0, 0.0): 15/15 runs</title></rect>
+<text x="290.0" y="364.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="250.00" y="270.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-3.0, 1.0): 15/15 runs</title></rect>
+<text x="290.0" y="304.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="250.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-3.0, 2.0): 15/15 runs</title></rect>
+<text x="290.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="250.00" y="150.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-3.0, 3.0): 15/15 runs</title></rect>
+<text x="290.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="250.00" y="90.00" width="80.00" height="60.00" fill="rgb(214,228,251)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-3.0, 4.0): 2/15 runs</title></rect>
+<text x="290.0" y="124.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">2</text>
+<rect x="330.00" y="570.00" width="80.00" height="60.00" fill="rgb(228,237,253)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-2.0, -4.0): 1/15 runs</title></rect>
+<text x="370.0" y="604.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">1</text>
+<rect x="330.00" y="510.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-2.0, -3.0): 15/15 runs</title></rect>
+<text x="370.0" y="544.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="330.00" y="450.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-2.0, -2.0): 15/15 runs</title></rect>
+<text x="370.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="330.00" y="390.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-2.0, -1.0): 15/15 runs</title></rect>
+<text x="370.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="330.00" y="330.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-2.0, 0.0): 15/15 runs</title></rect>
+<text x="370.0" y="364.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="330.00" y="270.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-2.0, 1.0): 15/15 runs</title></rect>
+<text x="370.0" y="304.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="330.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-2.0, 2.0): 15/15 runs</title></rect>
+<text x="370.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="410.00" y="570.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, -4.0): 15/15 runs</title></rect>
+<text x="450.0" y="604.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="410.00" y="510.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, -3.0): 15/15 runs</title></rect>
+<text x="450.0" y="544.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="410.00" y="450.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, -2.0): 15/15 runs</title></rect>
+<text x="450.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="410.00" y="390.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, -1.0): 15/15 runs</title></rect>
+<text x="450.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="410.00" y="330.00" width="80.00" height="60.00" fill="rgb(50,119,231)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, 0.0): 14/15 runs</title></rect>
+<text x="450.0" y="364.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">14</text>
+<rect x="410.00" y="270.00" width="80.00" height="60.00" fill="rgb(50,119,231)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, 1.0): 14/15 runs</title></rect>
+<text x="450.0" y="304.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">14</text>
+<rect x="410.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, 2.0): 15/15 runs</title></rect>
+<text x="450.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="410.00" y="150.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (-1.0, 3.0): 15/15 runs</title></rect>
+<text x="450.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="490.00" y="570.00" width="80.00" height="60.00" fill="rgb(50,119,231)" stroke="#d0d7de" stroke-width="0.7"><title>cell (0.0, -4.0): 14/15 runs</title></rect>
+<text x="530.0" y="604.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">14</text>
+<rect x="490.00" y="510.00" width="80.00" height="60.00" fill="rgb(50,119,231)" stroke="#d0d7de" stroke-width="0.7"><title>cell (0.0, -3.0): 14/15 runs</title></rect>
+<text x="530.0" y="544.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">14</text>
+<rect x="490.00" y="450.00" width="80.00" height="60.00" fill="rgb(50,119,231)" stroke="#d0d7de" stroke-width="0.7"><title>cell (0.0, -2.0): 14/15 runs</title></rect>
+<text x="530.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">14</text>
+<rect x="490.00" y="390.00" width="80.00" height="60.00" fill="rgb(105,155,238)" stroke="#d0d7de" stroke-width="0.7"><title>cell (0.0, -1.0): 10/15 runs</title></rect>
+<text x="530.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">10</text>
+<rect x="490.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (0.0, 2.0): 15/15 runs</title></rect>
+<text x="530.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="490.00" y="150.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (0.0, 3.0): 15/15 runs</title></rect>
+<text x="530.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="490.00" y="90.00" width="80.00" height="60.00" fill="rgb(160,192,245)" stroke="#d0d7de" stroke-width="0.7"><title>cell (0.0, 4.0): 6/15 runs</title></rect>
+<text x="530.0" y="124.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">6</text>
+<rect x="570.00" y="210.00" width="80.00" height="60.00" fill="rgb(105,155,238)" stroke="#d0d7de" stroke-width="0.7"><title>cell (1.0, 2.0): 10/15 runs</title></rect>
+<text x="610.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">10</text>
+<rect x="570.00" y="150.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (1.0, 3.0): 15/15 runs</title></rect>
+<text x="610.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="570.00" y="90.00" width="80.00" height="60.00" fill="rgb(160,192,245)" stroke="#d0d7de" stroke-width="0.7"><title>cell (1.0, 4.0): 6/15 runs</title></rect>
+<text x="610.0" y="124.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">6</text>
+<rect x="650.00" y="510.00" width="80.00" height="60.00" fill="rgb(78,137,235)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, -3.0): 12/15 runs</title></rect>
+<text x="690.0" y="544.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">12</text>
+<rect x="650.00" y="450.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, -2.0): 15/15 runs</title></rect>
+<text x="690.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="650.00" y="390.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, -1.0): 15/15 runs</title></rect>
+<text x="690.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="650.00" y="330.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, 0.0): 15/15 runs</title></rect>
+<text x="690.0" y="364.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="650.00" y="270.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, 1.0): 15/15 runs</title></rect>
+<text x="690.0" y="304.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="650.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, 2.0): 15/15 runs</title></rect>
+<text x="690.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="650.00" y="150.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, 3.0): 15/15 runs</title></rect>
+<text x="690.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="650.00" y="90.00" width="80.00" height="60.00" fill="rgb(146,183,243)" stroke="#d0d7de" stroke-width="0.7"><title>cell (2.0, 4.0): 7/15 runs</title></rect>
+<text x="690.0" y="124.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">7</text>
+<rect x="730.00" y="450.00" width="80.00" height="60.00" fill="rgb(201,219,250)" stroke="#d0d7de" stroke-width="0.7"><title>cell (3.0, -2.0): 3/15 runs</title></rect>
+<text x="770.0" y="484.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">3</text>
+<rect x="730.00" y="390.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (3.0, -1.0): 15/15 runs</title></rect>
+<text x="770.0" y="424.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="730.00" y="330.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (3.0, 0.0): 15/15 runs</title></rect>
+<text x="770.0" y="364.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="730.00" y="270.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (3.0, 1.0): 15/15 runs</title></rect>
+<text x="770.0" y="304.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="730.00" y="210.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (3.0, 2.0): 15/15 runs</title></rect>
+<text x="770.0" y="244.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="730.00" y="150.00" width="80.00" height="60.00" fill="rgb(37,110,230)" stroke="#d0d7de" stroke-width="0.7"><title>cell (3.0, 3.0): 15/15 runs</title></rect>
+<text x="770.0" y="184.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">15</text>
+<rect x="730.00" y="90.00" width="80.00" height="60.00" fill="rgb(214,228,251)" stroke="#d0d7de" stroke-width="0.7"><title>cell (3.0, 4.0): 2/15 runs</title></rect>
+<text x="770.0" y="124.0" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#111">2</text>
+<rect x="90.0" y="90.0" width="720.0" height="540.0" fill="none" stroke="#222" stroke-width="1.5"/>
+<text x="450.0" y="698.0" text-anchor="middle" font-size="14" font-family="sans-serif">World X (m)</text>
+<text x="22.0" y="360.0" text-anchor="middle" font-size="14" font-family="sans-serif" transform="rotate(-90 22 360.0)">World Y (m)</text>
+</svg>

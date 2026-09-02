@@ -47,7 +47,7 @@ def main() -> int:
     parser.add_argument(
         "--results-root",
         type=Path,
-        default=Path(__file__).resolve().parents[2] / "results",
+        default=Path(__file__).resolve().parents[2] / "new_results",
     )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()

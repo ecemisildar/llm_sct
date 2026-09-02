@@ -1,0 +1,1 @@
+Claim a box that is not claimed by another robot, approach it, and pick it up. Then search for the delivery zone that is the same color as the claimed box, approach it, and drop the box there. Robots may batch one red, two green, or three blue boxes. Each robot should deliver three boxes and avoid the obstacles.

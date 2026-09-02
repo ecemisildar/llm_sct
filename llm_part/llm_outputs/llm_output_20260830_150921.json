@@ -1,0 +1,54 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "area_exploration_specification",
+      "states": [
+        "clear",
+        "front",
+        "right",
+        "left"
+      ],
+      "initial_state": "clear",
+      "marked_states": [
+        "clear",
+        "front",
+        "right",
+        "left"
+      ],
+      "events": [
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left",
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"clear\", \"task_move_forward\", \"clear\")",
+        "(\"clear\", \"obstacle_front\", \"front\")",
+        "(\"clear\", \"obstacle_right\", \"right\")",
+        "(\"clear\", \"obstacle_left\", \"left\")",
+        "(\"front\", \"task_rotate_clockwise\", \"front\")",
+        "(\"front\", \"task_rotate_counterclockwise\", \"front\")",
+        "(\"front\", \"path_clear\", \"clear\")",
+        "(\"front\", \"obstacle_right\", \"right\")",
+        "(\"front\", \"obstacle_left\", \"left\")",
+        "(\"right\", \"task_rotate_counterclockwise\", \"right\")",
+        "(\"right\", \"path_clear\", \"clear\")",
+        "(\"right\", \"obstacle_front\", \"front\")",
+        "(\"right\", \"obstacle_left\", \"left\")",
+        "(\"left\", \"task_rotate_clockwise\", \"left\")",
+        "(\"left\", \"path_clear\", \"clear\")",
+        "(\"left\", \"obstacle_front\", \"front\")",
+        "(\"left\", \"obstacle_right\", \"right\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses task_move_forward to maintain exploration on a clear path and the task-level rotations task_rotate_clockwise and task_rotate_counterclockwise to recover from obstacles. The four obstacle observations are required to track current path conditions. Low-level motion events are omitted because collision_avoidance already protects that event category and the mission must use task-level movement decisions.",
+    "transition_design": "In clear, task_move_forward is repeatable to continue covering area. obstacle_front, obstacle_right, and obstacle_left enter matching recovery states. The front state permits repeated rotation in either direction, while right permits counterclockwise rotation and left permits clockwise rotation so the robot turns away from the detected side obstacle. path_clear returns every recovery state to clear, and all state-changing obstacle observations are explicit. Inert repeated observations are left as completion self-loops. All states are marked because each is a stable exploration or obstacle-recovery condition.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

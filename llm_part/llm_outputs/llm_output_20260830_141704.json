@@ -1,0 +1,54 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "continuous_exploration_specification",
+      "states": [
+        "explore_clear",
+        "explore_front",
+        "explore_right",
+        "explore_left"
+      ],
+      "initial_state": "explore_clear",
+      "marked_states": [
+        "explore_clear",
+        "explore_front",
+        "explore_right",
+        "explore_left"
+      ],
+      "events": [
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left",
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"explore_clear\", \"obstacle_front\", \"explore_front\")",
+        "(\"explore_clear\", \"obstacle_right\", \"explore_right\")",
+        "(\"explore_clear\", \"obstacle_left\", \"explore_left\")",
+        "(\"explore_front\", \"path_clear\", \"explore_clear\")",
+        "(\"explore_front\", \"obstacle_right\", \"explore_right\")",
+        "(\"explore_front\", \"obstacle_left\", \"explore_left\")",
+        "(\"explore_right\", \"path_clear\", \"explore_clear\")",
+        "(\"explore_right\", \"obstacle_front\", \"explore_front\")",
+        "(\"explore_right\", \"obstacle_left\", \"explore_left\")",
+        "(\"explore_left\", \"path_clear\", \"explore_clear\")",
+        "(\"explore_left\", \"obstacle_front\", \"explore_front\")",
+        "(\"explore_left\", \"obstacle_right\", \"explore_right\")",
+        "(\"explore_clear\", \"task_move_forward\", \"explore_clear\")",
+        "(\"explore_front\", \"task_rotate_clockwise\", \"explore_front\")",
+        "(\"explore_front\", \"task_rotate_counterclockwise\", \"explore_front\")",
+        "(\"explore_right\", \"task_rotate_counterclockwise\", \"explore_right\")",
+        "(\"explore_left\", \"task_rotate_clockwise\", \"explore_left\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The four obstacle observations track whether the path is clear or blocked on a particular side. The task-level movement events provide forward exploration and obstacle-avoiding turns. Low-level movement events were omitted because mission decisions must use task-level events and low-level collision protection is already supplied by collision_avoidance.",
+    "transition_design": "In explore_clear, only task_move_forward is enabled to promote continuous area coverage. A front obstacle enables either turning direction, while a right obstacle enables task_rotate_counterclockwise and a left obstacle enables task_rotate_clockwise. Every state-changing obstacle observation is explicit, and inert repeated observations are left to completion as self-loops. All states are marked as stable, repeatable exploration conditions, so the cyclic mission remains nonblocking and has no terminal completion state.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

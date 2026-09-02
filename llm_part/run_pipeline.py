@@ -34,7 +34,7 @@ DEFAULT_EXPLORATION_FEEDBACK_PATH = (
 )
 DEFAULT_EXPLORATION_RESULTS_DIR = (
     Path(__file__).resolve().parent.parent
-    / "results"
+    / "new_results"
     / "llm"
     / "results_exploration"
 )
@@ -43,7 +43,7 @@ DEFAULT_PATROLLING_FEEDBACK_PATH = (
 )
 DEFAULT_PATROLLING_RESULTS_DIR = (
     Path(__file__).resolve().parent.parent
-    / "results"
+    / "new_results"
     / "llm"
     / "results_patrolling"
 )
@@ -52,7 +52,7 @@ DEFAULT_DELIVERY_FEEDBACK_PATH = (
 )
 DEFAULT_DELIVERY_RESULTS_DIR = (
     Path(__file__).resolve().parent.parent
-    / "results"
+    / "new_results"
     / "llm"
     / "results_delivery"
 )
@@ -517,63 +517,34 @@ def select_profile(
         else:
             mission = "patrolling"
 
-    llm_automata = nadzoru_sync.AUTOMATA_DIR / "llm_automata"
-    shared_motion_plant = llm_automata / "shared" / "motion_plant.xml"
-    shared_obstacle_sensor = llm_automata / "shared" / "obstacle_sensor.xml"
-    shared_collision_avoidance = llm_automata / "shared" / "collision_avoidance.xml"
-    shared_task_motion_safety = (
-        llm_automata / "shared" / "task_motion_safety.xml"
-    )
+    baseline_root = nadzoru_sync.AUTOMATA_DIR / "baseline_automata"
     if mission == "exploration":
+        directory = baseline_root / "exploration"
         return (
             mission,
-            [shared_obstacle_sensor, shared_motion_plant],
-            [shared_collision_avoidance, shared_task_motion_safety],
+            [directory / "obstacle_sensor.xml", directory / "motion_plant.xml"],
+            [directory / "collision_avoidance.xml"],
         )
-    if mission == "delivery":
-        directory = llm_automata / "delivery"
+    if mission in {"delivery", "complex_task"}:
+        directory = baseline_root / "delivery"
         plants = [
-            shared_obstacle_sensor,
-            shared_motion_plant,
-            directory / "task_motion_plant.xml",
-            *(
-                directory / name
-                for name in (
-                "pickup_and_drop_plant.xml",
-                "color_sensor.xml",
-                "communication_plant.xml",
-                "red_availability.xml",
-                "green_availability.xml",
-                "blue_availability.xml",
-                )
-            ),
+            directory / "obstacle_sensor.xml",
+            directory / "motion_plant.xml",
+            directory / "pickup_and_drop_plant.xml",
+            directory / "color_sensor.xml",
+            directory / "red_availability.xml",
+            directory / "green_availability.xml",
+            directory / "blue_availability.xml",
         ]
-        return (
-            mission,
-            plants,
-            [
-                shared_collision_avoidance,
-                shared_task_motion_safety,
-                directory / "task_collision_avoidance.xml",
-            ],
-        )
+        return mission, plants, [directory / "collision_avoidance.xml"]
 
-    directory = llm_automata / "patrolling"
+    directory = baseline_root / "patrolling"
     plants = [
-        shared_obstacle_sensor,
+        directory / "obstacle_sensor.xml",
         directory / "color_sensor.xml",
-        shared_motion_plant,
-        directory / "task_motion_plant.xml",
+        directory / "motion_plant.xml",
     ]
-    return (
-        mission,
-        plants,
-        [
-            shared_collision_avoidance,
-            shared_task_motion_safety,
-            directory / "task_collision_avoidance.xml",
-        ],
-    )
+    return mission, plants, [directory / "collision_avoidance.xml"]
 
 
 def run_pipeline(
@@ -585,13 +556,18 @@ def run_pipeline(
     mission: str = "auto",
     exploration_mode: str = "auto",
     feedback: object | None = None,
-    auto_feedback: bool = True,
+    auto_feedback: bool = False,
     prompt_number: int = 1,
     generation_number: int = 1,
 ) -> PipelineResult:
     if prompt_number < 1 or generation_number < 1:
         raise ValueError("Prompt and generation numbers must be positive integers")
     report = status or (lambda _message: None)
+    if auto_feedback:
+        raise ValueError(
+            "Automatic feedback is disabled so every LLM request has the same "
+            "input structure. Put task requirements in the user input."
+        )
     selected_mission, fixed_plants, fixed_specs = select_profile(
         task, mission, exploration_mode
     )
@@ -655,7 +631,7 @@ def run_pipeline(
         llm_json_to_xml.convert(
             json_path,
             llm_json_to_xml.DEFAULT_OUTPUT_DIR,
-            llm_json_to_xml.DEFAULT_BASELINE_DIR,
+            fixed_plants[0].parent,
             allowed_generated_events=set(allowed_events),
             complete_event_alphabet=complete_event_alphabet,
         )
@@ -689,6 +665,11 @@ def run_pipeline(
     if source_prompt_path.is_file():
         shutil.copy2(source_prompt_path, yaml_prompt_path)
         report(f"Saved matching UI prompt: {yaml_prompt_path}")
+    source_llm_prompt_path = json_path.with_suffix(".llm_prompt.txt")
+    yaml_llm_prompt_path = yaml_path.with_suffix(".llm_prompt.txt")
+    if source_llm_prompt_path.is_file():
+        shutil.copy2(source_llm_prompt_path, yaml_llm_prompt_path)
+        report(f"Saved complete LLM prompt: {yaml_llm_prompt_path}")
     source_feedback_path = json_path.with_suffix(".feedback.json")
     yaml_feedback_path = yaml_path.with_suffix(".feedback.json")
     if source_feedback_path.is_file():
@@ -719,7 +700,8 @@ def build_parser() -> argparse.ArgumentParser:
     task_group.add_argument("--task-file", help="Text file containing the control task")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument(
-        "--mission", choices=("auto", "exploration", "patrolling", "delivery"),
+        "--mission",
+        choices=("auto", "exploration", "patrolling", "delivery", "complex_task"),
         default="auto",
     )
     parser.add_argument(
@@ -770,7 +752,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             mission=args.mission,
             exploration_mode=args.exploration_mode,
             feedback=feedback,
-            auto_feedback=not args.no_feedback,
+            auto_feedback=False,
             prompt_number=args.prompt_number,
             generation_number=args.generation_number,
             status=print,

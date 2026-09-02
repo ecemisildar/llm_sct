@@ -1,0 +1,54 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "area_exploration_specification",
+      "states": [
+        "clear",
+        "front",
+        "right",
+        "left"
+      ],
+      "initial_state": "clear",
+      "marked_states": [
+        "clear",
+        "front",
+        "right",
+        "left"
+      ],
+      "events": [
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise",
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left"
+      ],
+      "transitions": [
+        "(\"clear\", \"task_move_forward\", \"clear\")",
+        "(\"clear\", \"obstacle_front\", \"front\")",
+        "(\"clear\", \"obstacle_right\", \"right\")",
+        "(\"clear\", \"obstacle_left\", \"left\")",
+        "(\"front\", \"task_rotate_clockwise\", \"front\")",
+        "(\"front\", \"task_rotate_counterclockwise\", \"front\")",
+        "(\"front\", \"path_clear\", \"clear\")",
+        "(\"front\", \"obstacle_right\", \"right\")",
+        "(\"front\", \"obstacle_left\", \"left\")",
+        "(\"right\", \"task_rotate_counterclockwise\", \"right\")",
+        "(\"right\", \"path_clear\", \"clear\")",
+        "(\"right\", \"obstacle_front\", \"front\")",
+        "(\"right\", \"obstacle_left\", \"left\")",
+        "(\"left\", \"task_rotate_clockwise\", \"left\")",
+        "(\"left\", \"path_clear\", \"clear\")",
+        "(\"left\", \"obstacle_front\", \"front\")",
+        "(\"left\", \"obstacle_right\", \"right\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses the task-level commands task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise to perform exploration, together with obstacle and clearance observations needed to select safe exploration actions. Low-level movement events are omitted because collision_avoidance already protects them and they are forbidden for mission decisions.",
+    "transition_design": "In clear, task_move_forward is enabled. obstacle_front enters front, where either task rotation is enabled; obstacle_right enters right, where task_rotate_counterclockwise is enabled; and obstacle_left enters left, where task_rotate_clockwise is enabled. path_clear returns obstacle states to clear, while all state-changing obstacle observations are explicit. Forward task motion is excluded while an obstacle is reported. Exploration is ongoing rather than terminal, so every observation condition is a marked, repeatable mission state.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

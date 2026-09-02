@@ -1,0 +1,54 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "exploration_response_specification",
+      "states": [
+        "exp_clear",
+        "exp_front",
+        "exp_right",
+        "exp_left"
+      ],
+      "initial_state": "exp_clear",
+      "marked_states": [
+        "exp_clear",
+        "exp_front",
+        "exp_right",
+        "exp_left"
+      ],
+      "events": [
+        "path_clear",
+        "obstacle_front",
+        "obstacle_right",
+        "obstacle_left",
+        "task_move_forward",
+        "task_rotate_clockwise",
+        "task_rotate_counterclockwise"
+      ],
+      "transitions": [
+        "(\"exp_clear\", \"task_move_forward\", \"exp_clear\")",
+        "(\"exp_clear\", \"obstacle_front\", \"exp_front\")",
+        "(\"exp_clear\", \"obstacle_right\", \"exp_right\")",
+        "(\"exp_clear\", \"obstacle_left\", \"exp_left\")",
+        "(\"exp_front\", \"task_rotate_clockwise\", \"exp_front\")",
+        "(\"exp_front\", \"task_rotate_counterclockwise\", \"exp_front\")",
+        "(\"exp_front\", \"path_clear\", \"exp_clear\")",
+        "(\"exp_front\", \"obstacle_right\", \"exp_right\")",
+        "(\"exp_front\", \"obstacle_left\", \"exp_left\")",
+        "(\"exp_right\", \"task_rotate_counterclockwise\", \"exp_right\")",
+        "(\"exp_right\", \"path_clear\", \"exp_clear\")",
+        "(\"exp_right\", \"obstacle_front\", \"exp_front\")",
+        "(\"exp_right\", \"obstacle_left\", \"exp_left\")",
+        "(\"exp_left\", \"task_rotate_clockwise\", \"exp_left\")",
+        "(\"exp_left\", \"path_clear\", \"exp_clear\")",
+        "(\"exp_left\", \"obstacle_front\", \"exp_front\")",
+        "(\"exp_left\", \"obstacle_right\", \"exp_right\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses obstacle observations to track whether the path is clear or blocked and uses only the task-level movement events task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise for exploration decisions. Low-level motion events are omitted because collision_avoidance already protects them and they are not permitted for generated mission decisions.",
+    "transition_design": "In exp_clear, task_move_forward is repeatable to maintain exploration. obstacle_front, obstacle_right, and obstacle_left enter matching response states, where compatible task-level rotations are repeatable: either direction for a front obstacle, counterclockwise for a right obstacle, and clockwise for a left obstacle. path_clear returns every obstacle state to exp_clear, while changing obstacle observations update the response state. task_move_forward has no transition in obstacle states and is therefore excluded until the path becomes clear. All states are marked stable, repeatable mission conditions.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

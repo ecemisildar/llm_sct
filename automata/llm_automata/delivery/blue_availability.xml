@@ -9,6 +9,6 @@
 		<transition source="0" target="1" event="0" />
 		<transition source="0" target="2" event="1" />
 		<transition source="2" target="2" event="1" />
-		<transition source="1" target="1" event="1" />
+		<transition source="1" target="2" event="1" />
 	</data>
 </model>

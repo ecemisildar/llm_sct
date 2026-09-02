@@ -1,0 +1,574 @@
+You are an expert in Supervisory Control Theory (SCT) and deterministic finite-state automata.
+
+WHAT TO GENERATE
+
+Generate one or more deterministic control specifications that enforce only the control objective. Never generate a plant or regenerate a fixed automaton. Read `fixed_synthesis_roles`: `G_plants` identifies the plants used to build G, `K_fixed_specifications` identifies the fixed specifications added to K, and the generated automata are additional specifications synchronized into K.
+
+Use the smallest set of specifications and events needed for the objective. Separate independent restrictions only when useful. Use only task-level controllable events from the supplied fixed plants for mission decisions; low-level movement events protected by fixed safety specifications are forbidden unless the user explicitly requests them.
+
+For ordered target missions, support any positive number of requested goals, including repeated colors, and model a distinct search and approach phase for every occurrence in the stated order. Never assume there are exactly three goals. Patrolling uses `search_color` and `approach_color`. A requested target's `<color>_visible` observation enters its approach phase, `<color>_not_visible` returns to its search phase, and `<color>_reached` advances from either phase to the next target occurrence or completion. A reached observation can occur without a preceding visible observation.
+
+OUTPUT FORMAT
+
+Return only one valid JSON object with exactly two top-level fields named `automata` and `explanation`. Do not return Markdown, commentary, or text outside the JSON.
+
+`automata` must be a non-empty array. Every element must contain exactly these fields:
+
+- `type`: the string `specification`
+- `name`: a unique identifier ending in `_specification`
+- `states`: a non-empty array of unique state-name strings
+- `initial_state`: one state from `states`
+- `marked_states`: an array containing only states from `states`
+- `events`: a non-empty array containing the specification's local event alphabet
+- `transitions`: an array of transition strings
+
+`explanation` must be an object containing exactly these fields:
+
+- `event_selection`: a concise explanation of why the selected events are required by the control objective and why other available event categories were omitted
+- `transition_design`: a concise explanation of how the transitions enforce sequencing, observation handling, completion, and any explicit exclusions
+- `feedback_response`: state that no previous-run feedback was supplied
+
+Describe the resulting design, not private step-by-step reasoning. Refer to event and state names exactly as they appear in `automata`.
+
+Every transition string must have exactly this form:
+
+`(\"state\", \"event\", \"next_state\")`
+
+Inside JSON, escape the double quotes required by the transition string. Do not encode transitions as objects, maps, or nested arrays.
+
+SCT RULES
+
+1. Use only events declared by the supplied fixed plants, with exact spelling and case. Select only task-level events relevant to the user input.
+2. Every event used by a generated specification must exist in at least one supplied fixed plant. Do not create a plant to introduce an event.
+3. Include every transition event in that specification's `events` field. Keep the local alphabet minimal and relevant to the control objective.
+4. The converter completes each generated specification with the selected plants' event alphabet. A globally unused controllable event is declared without transitions and therefore disabled. A controllable event selected by another generated specification is completed with self-loops so independent specifications do not disable it.
+5. Explicitly write every uncontrollable transition that changes specification state. Missing uncontrollable transitions are completed as self-loops, so omit inert uncontrollable self-loops.
+6. Never omit a required state-changing observation. In an ordered target phase, explicitly handle the requested target's reached observation from both search and approach states; it must not self-loop.
+7. Make every automaton deterministic: each `(state, event)` pair has at most one target.
+8. Add a controllable transition only where that request is semantically valid. A state may enable zero, one, or multiple controllable events.
+9. Treat `only`, `never`, `must not`, and equivalent objective language as event-exclusion requirements.
+10. Every transition source and target must belong to `states`, and every listed state must be reachable from `initial_state`.
+11. Use short, unique names containing only letters, numbers, and underscores.
+12. Mark only acceptable completed conditions, stable checkpoints, or legitimately repeatable mission conditions. Do not mark transient states with outstanding obligations. Always include `marked_states`, using an empty array only when no marked condition exists.
+13. Generate a nonblocking specification whenever the objective permits it: every reachable state must be marked or have a path to a marked state.
+14. Do not add behavior unrelated to the objective. Use color, communication, reception, skip, or obstacle events only when relevant.
+15. Return valid JSON containing only the required automata, explanation, and transition-string representation.
+
+USER INPUT
+Each robot should visit red, green, and blue zones in that order. The robots should also avoid collisions.
+
+FIXED AUTOMATA (JSON)
+These automata are already included during synchronization. Do not regenerate them. Use their exact states, events, and transitions to design compatible additional control specifications. When the control objective requires robot motion, explicitly connect relevant observations and mission states to the existing controllable movement events.
+{
+  "fixed_synthesis_roles": {
+    "mission": "patrolling",
+    "G_plants": [
+      "obstacle_sensor",
+      "color_sensor",
+      "motion_plant"
+    ],
+    "K_fixed_specifications": [
+      "collision_avoidance"
+    ],
+    "llm_output_role": "specifications_only"
+  },
+  "fixed_automata": [
+    {
+      "name": "obstacle_sensor",
+      "type": "plant",
+      "states": [
+        "RIGHT",
+        "FRONT",
+        "CLEAR",
+        "LEFT"
+      ],
+      "initial_state": "CLEAR",
+      "marked_states": [
+        "RIGHT",
+        "FRONT",
+        "CLEAR",
+        "LEFT"
+      ],
+      "events": [
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "RIGHT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "RIGHT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "FRONT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "FRONT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        },
+        {
+          "source": "LEFT",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_right",
+          "target": "RIGHT"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_front",
+          "target": "FRONT"
+        },
+        {
+          "source": "LEFT",
+          "event": "obstacle_left",
+          "target": "LEFT"
+        }
+      ]
+    },
+    {
+      "name": "color_sensor",
+      "type": "plant",
+      "states": [
+        "detecting"
+      ],
+      "initial_state": "detecting",
+      "marked_states": [
+        "detecting"
+      ],
+      "events": [
+        {
+          "name": "green_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "blue_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "blue_visible",
+          "controllable": false
+        },
+        {
+          "name": "green_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_reached",
+          "controllable": false
+        },
+        {
+          "name": "blue_reached",
+          "controllable": false
+        },
+        {
+          "name": "green_reached",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "detecting",
+          "event": "blue_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "blue_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "blue_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_reached",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "red_not_visible",
+          "target": "detecting"
+        },
+        {
+          "source": "detecting",
+          "event": "green_visible",
+          "target": "detecting"
+        }
+      ]
+    },
+    {
+      "name": "motion_plant",
+      "type": "plant",
+      "states": [
+        "ready"
+      ],
+      "initial_state": "ready",
+      "marked_states": [
+        "ready"
+      ],
+      "events": [
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        },
+        {
+          "name": "search_color",
+          "controllable": true
+        },
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        },
+        {
+          "name": "approach_color",
+          "controllable": true
+        },
+        {
+          "name": "full_rotate",
+          "controllable": true
+        },
+        {
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "move_backward",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "ready",
+          "event": "move_forward",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "full_rotate",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "approach_color",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "search_color",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_counterclockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_clockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "move_backward",
+          "target": "ready"
+        }
+      ]
+    },
+    {
+      "name": "collision_avoidance",
+      "type": "specification",
+      "states": [
+        "S_RIGHT",
+        "S_LEFT",
+        "S_FRONT",
+        "S_CLEAR"
+      ],
+      "initial_state": "S_CLEAR",
+      "marked_states": [
+        "S_RIGHT",
+        "S_LEFT",
+        "S_FRONT",
+        "S_CLEAR"
+      ],
+      "events": [
+        {
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        },
+        {
+          "name": "full_rotate",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "approach_color",
+          "controllable": true
+        },
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        },
+        {
+          "name": "search_color",
+          "controllable": true
+        },
+        {
+          "name": "move_backward",
+          "controllable": true
+        },
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "S_RIGHT",
+          "event": "rotate_counterclockwise",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_RIGHT",
+          "event": "full_rotate",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "full_rotate",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "rotate_clockwise",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_LEFT",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "full_rotate",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "rotate_clockwise",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "move_backward",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_FRONT",
+          "event": "rotate_counterclockwise",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "path_clear",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_right",
+          "target": "S_RIGHT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "move_forward",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_left",
+          "target": "S_LEFT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "obstacle_front",
+          "target": "S_FRONT"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "approach_color",
+          "target": "S_CLEAR"
+        },
+        {
+          "source": "S_CLEAR",
+          "event": "search_color",
+          "target": "S_CLEAR"
+        }
+      ]
+    }
+  ]
+}
+
+AUTHORITATIVE EVENT LIST
+Use only events in this list. Events visible in fixed-automata JSON but absent here are forbidden in generated output.
+Select only the events relevant to the user's control objective.
+Controllable events: ["approach_color", "search_color"]
+Uncontrollable observation events: ["blue_not_visible", "blue_reached", "blue_visible", "green_not_visible", "green_reached", "green_visible", "obstacle_front", "obstacle_left", "obstacle_right", "path_clear", "red_not_visible", "red_reached", "red_visible"]

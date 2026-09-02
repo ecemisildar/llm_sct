@@ -11,14 +11,13 @@ from ament_index_python.packages import get_package_prefix, get_package_share_di
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
-    ExecuteProcess,
     OpaqueFunction,
     RegisterEventHandler,
     SetEnvironmentVariable,
     Shutdown,
     TimerAction,
 )
-from launch.event_handlers import OnProcessExit, OnShutdown
+from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -133,6 +132,8 @@ def generate_multi_robot_launch(
     mission_package: str,
     *,
     enable_color_detector: bool,
+    supervisor_executable="robot_supervisor",
+    evaluation_mission=None,
     enable_color_order: bool = False,
     shutdown_on_task_complete: bool = False,
     wait_for_all_task_completion: bool = False,
@@ -140,7 +141,7 @@ def generate_multi_robot_launch(
 ):
 
     leo_description = get_package_share_directory("leo_description")
-    run_id = time.strftime("run_%Y%m%d_%H%M%S")
+    run_id = f'{time.strftime("run_%Y%m%d_%H%M%S")}_{time.time_ns() % 1_000_000_000:09d}'
     evaluation_python_path = os.path.join(
         get_package_prefix("evaluation"),
         "lib",
@@ -163,10 +164,20 @@ def generate_multi_robot_launch(
         default_value="0.90",
         description="Probability of choosing forward when multiple motion requests are enabled.",
     )
+    record_video_arg = DeclareLaunchArgument(
+        "record_video",
+        default_value="false",
+        description="Record the overhead camera to an MP4 in the run directory.",
+    )
+    object_cluster_half_width_arg = DeclareLaunchArgument(
+        "object_cluster_half_width",
+        default_value="0.125",
+        description="Half-width in metres of a delivery pickup cluster.",
+    )
 
     evaluation_parameters = [
         {"run_id": run_id},
-        {"mission": mission_package.removeprefix("leo_")},
+        {"mission": evaluation_mission or mission_package.removeprefix("leo_")},
         {
             "run_duration": ParameterValue(
                 LaunchConfiguration("run_duration"), value_type=float
@@ -179,7 +190,11 @@ def generate_multi_robot_launch(
         evaluation_parameters.extend(
             [
                 {"shutdown_on_task_complete": True},
-                {"task_progress_on_complete": task_progress_on_complete},
+                {
+                    "task_progress_on_complete": ParameterValue(
+                        task_progress_on_complete, value_type=int
+                    )
+                },
                 {
                     "wait_for_all_task_completion":
                     wait_for_all_task_completion
@@ -269,6 +284,7 @@ def generate_multi_robot_launch(
 
         bridge_args += [
             "/world/random_world/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V",
+            "/world/random_world/create@ros_gz_interfaces/srv/SpawnEntity",
             "/world/random_world/remove@ros_gz_interfaces/srv/DeleteEntity",
             "/world/random_world/set_pose@ros_gz_interfaces/srv/SetEntityPose",
         ]
@@ -368,9 +384,8 @@ def generate_multi_robot_launch(
             if shutdown_on_task_complete:
                 # The evaluation node saves the final completion timestamp and
                 # exits first. Its OnProcessExit handler then shuts down Gazebo.
-                # Keep the final robot in place long enough to prevent its
-                # relocation timer from racing that save-and-shutdown sequence.
-                behavior_parameters.append({"completion_shutdown_delay": 5.0})
+                # Keep the final robot stopped in place until that shutdown.
+                behavior_parameters.append({"remove_completed_robot": False})
             if enable_color_order:
                 behavior_parameters.append(
                     {"target_color_order": LaunchConfiguration("target_color_order")}
@@ -378,7 +393,7 @@ def generate_multi_robot_launch(
 
             behavior_node = Node(
                 package=mission_package,
-                executable="robot_supervisor",
+                executable=supervisor_executable,
                 name="robot_supervisor",
                 namespace=ns,
                 parameters=behavior_parameters,
@@ -454,6 +469,21 @@ def generate_multi_robot_launch(
                             {"rgb_topic": f"/{ns}/depth_camera/image"},
                             {"robot_name": ns},
                             {"reached_distance": 1.0},
+                            *(
+                                [
+                                    {
+                                        "object_cluster_half_width":
+                                        ParameterValue(
+                                            LaunchConfiguration(
+                                                "object_cluster_half_width"
+                                            ),
+                                            value_type=float,
+                                        )
+                                    }
+                                ]
+                                if mission_package == "leo_delivery"
+                                else []
+                            ),
                         ],
                         output="screen",
                     )
@@ -485,16 +515,8 @@ def generate_multi_robot_launch(
         SetEnvironmentVariable(name="PYTHONPATH", value=python_path),
         random_seed_arg,
         forward_probability_arg,
-        RegisterEventHandler(
-            OnShutdown(
-                on_shutdown=[
-                    ExecuteProcess(
-                        cmd=["bash", "-lc", "pkill -f parameter_bridge || true"],
-                        output="screen",
-                    )
-                ]
-            )
-        ),
+        record_video_arg,
+        object_cluster_half_width_arg,
     ]
     if shutdown_on_task_complete:
         actions.append(
@@ -520,6 +542,32 @@ def generate_multi_robot_launch(
             )
         )
     actions.extend([
+        Node(
+            package="ros_gz_image",
+            executable="image_bridge",
+            name="top_view_image_bridge",
+            arguments=["/top_view_camera/image"],
+            output="screen",
+        ),
+        Node(
+            package="evaluation",
+            executable="simulation_video_recorder",
+            name="simulation_video_recorder",
+            parameters=[
+                {"run_id": run_id},
+                {"results_dir": LaunchConfiguration("results_dir")},
+                {"metadata_yaml_path": LaunchConfiguration("metadata_yaml_path")},
+                {"total_robots": LaunchConfiguration("total_robots")},
+                {"image_topic": "/top_view_camera/image"},
+                {"fps": 15.0},
+                {
+                    "enabled": ParameterValue(
+                        LaunchConfiguration("record_video"), value_type=bool
+                    )
+                },
+            ],
+            output="screen",
+        ),
         plot_node,
         Node(
             package="evaluation",
@@ -531,7 +579,7 @@ def generate_multi_robot_launch(
                 {"results_dir": LaunchConfiguration("results_dir")},
                 {"metadata_yaml_path": LaunchConfiguration("metadata_yaml_path")},
                 {"total_robots": LaunchConfiguration("total_robots")},
-                {"save_depth_pre_collision_images": True},
+                {"save_depth_pre_collision_images": False},
                 {"depth_history_frames": 5},
                 {"depth_topic_template": "/{robot}/depth_camera/depth_image"},
             ],

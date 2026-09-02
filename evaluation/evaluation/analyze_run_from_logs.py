@@ -22,12 +22,12 @@ def find_results_root() -> Path:
     if override:
         return Path(override).expanduser().resolve()
 
-    candidates = [Path.cwd() / "src" / "llm_sct" / "results"]
+    candidates = [Path.cwd() / "src" / "llm_sct" / "new_results"]
     for parent in Path(__file__).resolve().parents:
         if parent.name == "install":
-            candidates.append(parent.parent / "src" / "llm_sct" / "results")
+            candidates.append(parent.parent / "src" / "llm_sct" / "new_results")
             break
-    candidates.append(PACKAGE_ROOT / "results")
+    candidates.append(PACKAGE_ROOT / "new_results")
     return next((path for path in candidates if path.is_dir()), candidates[0])
 
 

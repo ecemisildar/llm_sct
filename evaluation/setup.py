@@ -26,6 +26,7 @@ setup(
         "console_scripts": [
             "coverage_counter = evaluation.coverage_counter:main",
             "bump_counter = evaluation.bump_counter:main",
+            "simulation_video_recorder = evaluation.simulation_video_recorder:main",
             "analyze_run_from_logs = evaluation.analyze_run_from_logs:main",
             "aggregate_runs = evaluation.aggregate_runs:main",
         ],

@@ -1,0 +1,75 @@
+{
+  "automata": [
+    {
+      "type": "specification",
+      "name": "area_exploration_specification",
+      "states": [
+        "clear_path",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "initial_state": "clear_path",
+      "marked_states": [
+        "clear_path",
+        "front_blocked",
+        "right_blocked",
+        "left_blocked"
+      ],
+      "events": [
+        {
+          "name": "path_clear",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "task_move_forward",
+          "controllable": true
+        },
+        {
+          "name": "task_rotate_clockwise",
+          "controllable": true
+        },
+        {
+          "name": "task_rotate_counterclockwise",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        "(\"clear_path\", \"task_move_forward\", \"clear_path\")",
+        "(\"clear_path\", \"obstacle_front\", \"front_blocked\")",
+        "(\"clear_path\", \"obstacle_right\", \"right_blocked\")",
+        "(\"clear_path\", \"obstacle_left\", \"left_blocked\")",
+        "(\"front_blocked\", \"task_rotate_clockwise\", \"front_blocked\")",
+        "(\"front_blocked\", \"task_rotate_counterclockwise\", \"front_blocked\")",
+        "(\"front_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"front_blocked\", \"obstacle_right\", \"right_blocked\")",
+        "(\"front_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"right_blocked\", \"task_rotate_counterclockwise\", \"right_blocked\")",
+        "(\"right_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"right_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"right_blocked\", \"obstacle_left\", \"left_blocked\")",
+        "(\"left_blocked\", \"task_rotate_clockwise\", \"left_blocked\")",
+        "(\"left_blocked\", \"path_clear\", \"clear_path\")",
+        "(\"left_blocked\", \"obstacle_front\", \"front_blocked\")",
+        "(\"left_blocked\", \"obstacle_right\", \"right_blocked\")"
+      ]
+    }
+  ],
+  "explanation": {
+    "event_selection": "The specification uses obstacle observations to track whether the path is clear or blocked and uses only the task-level controls task_move_forward, task_rotate_clockwise, and task_rotate_counterclockwise. Low-level motion events are omitted because collision avoidance is already enforced by collision_avoidance and the objective requires task-level exploration decisions.",
+    "transition_design": "task_move_forward repeats in clear_path. A front obstacle permits repeated rotation in either direction, a right obstacle permits repeated counterclockwise rotation, and a left obstacle permits repeated clockwise rotation. path_clear restores forward exploration, while every state-changing obstacle observation explicitly updates the blocked direction. All states are marked as stable, repeatable exploration conditions.",
+    "feedback_response": "No previous-run feedback was supplied."
+  }
+}

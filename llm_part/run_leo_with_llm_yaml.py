@@ -15,7 +15,7 @@ from typing import Sequence
 LLM_SCT_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_ROOT = LLM_SCT_ROOT.parent.parent
 DEFAULT_YAML_DIR = LLM_SCT_ROOT / "automata" / "resulting_automata" / "YAML"
-DEFAULT_RESULTS_ROOT = LLM_SCT_ROOT / "results" / "llm"
+DEFAULT_RESULTS_ROOT = LLM_SCT_ROOT / "new_results" / "llm"
 INSTALL_SETUP = WORKSPACE_ROOT / "install" / "setup.bash"
 
 MISSIONS = {
@@ -100,8 +100,10 @@ def build_launch_command(args: argparse.Namespace) -> tuple[list[str], Path, Pat
         f"total_robots:={args.total_robots}",
         f"run_duration:={args.run_duration}",
         f"headless:={'true' if args.headless else 'false'}",
+        "overhead_camera:=false",
         f"random_seed:={args.random_seed}",
         f"forward_probability:={args.forward_probability}",
+        f"record_video:={'true' if args.record_video else 'false'}",
     ]
     if args.mission == "patrolling":
         command.append(
@@ -162,6 +164,9 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--headless", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument(
+        "--record-video", action=argparse.BooleanOptionalAction, default=False
+    )
     parser.add_argument("--results-root", default=str(DEFAULT_RESULTS_ROOT))
     parser.add_argument(
         "--dry-run", action="store_true", help="Print paths and command without launching"

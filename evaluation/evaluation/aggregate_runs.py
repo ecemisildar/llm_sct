@@ -49,7 +49,7 @@ def main():
     parser = argparse.ArgumentParser(description="Aggregate coverage/collision results.")
     parser.add_argument(
         "--results_dir",
-        default=str(Path(__file__).resolve().parents[1] / "results"),
+        default=str(Path(__file__).resolve().parents[1] / "new_results"),
         help="Directory containing baselines/ and llm_gen/ folders",
     )
     parser.add_argument(

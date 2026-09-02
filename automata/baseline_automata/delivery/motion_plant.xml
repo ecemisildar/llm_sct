@@ -10,6 +10,7 @@
 	<event id="5" name="approach_zone" controllable="True" observable="True"/>
 	<event id="6" name="full_rotate" controllable="True" observable="True"/>
 	<event id="7" name="approach_object" controllable="True" observable="True"/>
+	<event id="8" name="move_backward" controllable="True" observable="True"/>
 	<transition source="0" target="0" event="5"/>
 	<transition source="0" target="0" event="7"/>
 	<transition source="0" target="0" event="3"/>
@@ -18,5 +19,6 @@
 	<transition source="0" target="0" event="2"/>
 	<transition source="0" target="0" event="6"/>
 	<transition source="0" target="0" event="4"/>
+	<transition source="0" target="0" event="8"/>
 </data>
 </model>

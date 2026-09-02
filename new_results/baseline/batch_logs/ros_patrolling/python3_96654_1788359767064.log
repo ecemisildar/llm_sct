@@ -1,0 +1,16 @@
+[INFO] [1788359767.231351055] [robot_0.color_detector]: Color detector listening on RGB '/robot_0/depth_camera/image'; reached uses world poses
+[INFO] [1788359773.519130338] [robot_0.color_detector]: RGB HEARTBEAT frames_total=10 recent_rate_hz=1.565 last_frame_age_s=0.438 status=OK
+[INFO] [1788359778.519074431] [robot_0.color_detector]: RGB HEARTBEAT frames_total=20 recent_rate_hz=2.000 last_frame_age_s=0.480 status=OK
+[INFO] [1788359783.518780402] [robot_0.color_detector]: RGB HEARTBEAT frames_total=30 recent_rate_hz=2.000 last_frame_age_s=0.435 status=OK
+[INFO] [1788359788.518943545] [robot_0.color_detector]: RGB HEARTBEAT frames_total=40 recent_rate_hz=2.000 last_frame_age_s=0.431 status=OK
+[INFO] [1788359793.518831220] [robot_0.color_detector]: RGB HEARTBEAT frames_total=50 recent_rate_hz=2.000 last_frame_age_s=0.483 status=OK
+[INFO] [1788359798.519291955] [robot_0.color_detector]: RGB HEARTBEAT frames_total=60 recent_rate_hz=2.000 last_frame_age_s=0.383 status=OK
+[INFO] [1788359803.519264256] [robot_0.color_detector]: RGB HEARTBEAT frames_total=70 recent_rate_hz=2.000 last_frame_age_s=0.480 status=OK
+[INFO] [1788359808.518788647] [robot_0.color_detector]: RGB HEARTBEAT frames_total=80 recent_rate_hz=2.000 last_frame_age_s=0.460 status=OK
+[INFO] [1788359813.519168270] [robot_0.color_detector]: RGB HEARTBEAT frames_total=90 recent_rate_hz=2.000 last_frame_age_s=0.442 status=OK
+[INFO] [1788359818.519294927] [robot_0.color_detector]: RGB HEARTBEAT frames_total=100 recent_rate_hz=2.000 last_frame_age_s=0.443 status=OK
+[INFO] [1788359823.518963305] [robot_0.color_detector]: RGB HEARTBEAT frames_total=110 recent_rate_hz=2.000 last_frame_age_s=0.442 status=OK
+[INFO] [1788359828.519236085] [robot_0.color_detector]: RGB HEARTBEAT frames_total=120 recent_rate_hz=2.000 last_frame_age_s=0.445 status=OK
+[INFO] [1788359833.519242779] [robot_0.color_detector]: RGB HEARTBEAT frames_total=130 recent_rate_hz=2.000 last_frame_age_s=0.447 status=OK
+[INFO] [1788359838.519253062] [robot_0.color_detector]: RGB HEARTBEAT frames_total=140 recent_rate_hz=2.000 last_frame_age_s=0.441 status=OK
+[INFO] [1788359840.710080474] [robot_0.color_detector]: Task complete; color publications stopped.

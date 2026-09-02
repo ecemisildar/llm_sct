@@ -1,0 +1,22 @@
+Node started
+run_id: run_20260830_183250
+results_dir: /home/ecem/sct_ws/src/llm_sct/results/llm/results_delivery/S_20260830_145853/robots_3/run_20260830_183250
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/automata/resulting_automata/YAML/delivery/prompt_4/generation_1/S_20260830_145853.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /home/ecem/sct_ws/install/leo_delivery/share/leo_delivery/worlds/delivery_world.sdf
+  headless: true
+  auto_start: true
+  run_duration: 600.0
+  total_robots: 3
+  random_seed: 1001
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/results/llm/results_delivery
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/automata/resulting_automata/YAML/delivery/prompt_4/generation_1/S_20260830_145853.yaml
+robot_2 delivered green at 93.166s.
+robot_1 delivered blue at 123.320s.
+robot_0 delivered red at 140.673s.
+Delivery task success: true
+Task duration: 140.673s
+Saving started...
+Saving OK

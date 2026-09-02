@@ -8,7 +8,6 @@ class SCT:
         filename,
         random_seed=None,
         choice_mode="random",
-        forward_probability=0.90,
     ):
 
         self.read_supervisor(filename)
@@ -19,7 +18,6 @@ class SCT:
         self.last_uncontrollable_events = []
         self.rng = random.Random(random_seed)
         self.choice_mode = str(choice_mode or "random").strip().lower()
-        self.forward_probability = max(0.0, min(1.0, float(forward_probability)))
 
 
     def read_supervisor(self, filename):

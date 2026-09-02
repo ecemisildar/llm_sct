@@ -57,7 +57,7 @@ def main() -> int:
         generation = int(yaml_path.parent.name.removeprefix("generation_"))
         yaml_index[yaml_path.stem] = (prompt, generation, yaml_path)
 
-    result_root = root / "results" / "llm" / f"results_{args.task}"
+    result_root = root / "new_results" / "llm" / f"results_{args.task}"
     newest_by_supervisor: dict[str, Path] = {}
     for result_path in result_root.glob("S_*/robots_*/run_*/task_result.csv"):
         run = result_path.parent
@@ -104,7 +104,7 @@ def main() -> int:
     write_csv(args.output.with_suffix(".csv"), rows)
 
     baseline = newest_completed_run_for_seed(
-        root / "results" / "baseline" / f"results_{args.task}", args.seed
+        root / "new_results" / "baseline" / f"results_{args.task}", args.seed
     )
     baseline_success, baseline_duration = read_result(baseline)
     baseline_metrics = {

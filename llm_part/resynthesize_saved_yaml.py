@@ -40,7 +40,7 @@ def resynthesize(yaml_path: Path, mission: str) -> None:
         generated_xml = llm_json_to_xml.convert(
             json_path,
             temp_dir / "generated",
-            llm_json_to_xml.DEFAULT_BASELINE_DIR,
+            fixed_plants[0].parent,
             allowed_generated_events=set(allowed_events),
             complete_event_alphabet=complete_event_alphabet,
         )
@@ -61,7 +61,7 @@ def resynthesize(yaml_path: Path, mission: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "mission", choices=("exploration", "patrolling", "delivery")
+        "mission", choices=("exploration", "patrolling", "delivery", "complex_task")
     )
     parser.add_argument("yaml", type=Path, nargs="+")
     args = parser.parse_args()
