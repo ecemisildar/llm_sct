@@ -1,0 +1,31 @@
+# ROS / colcon generated output
+/build/
+/install/
+/log/
+
+# Python caches and test state
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Raw recordings and capture sessions
+/sessions/
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.bag
+*.db3
+*.mcap
+
+# Generated frames, screenshots, and raster analysis output
+*.png
+*.jpg
+*.jpeg
+*.bmp
+
+# Incomplete exports and editor residue
+*.partial
+*.tmp
+*.swp
+*~

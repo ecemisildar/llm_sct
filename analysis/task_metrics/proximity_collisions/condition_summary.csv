@@ -1,0 +1,5 @@
+task,condition,trials,total_collision_estimates,mean_collision_estimates,mean_robot_collision_estimates,mean_wall_collision_estimates,mean_pillar_collision_estimates,mean_collisions_at_common_cutoff
+exploration,baseline,10,13,1.3,0.6,0.7,0,1.2
+exploration,llm,10,9,0.9,0.7,0.2,0,0.9
+patrolling,baseline,10,2,0.2,0.2,0,0,0.2
+patrolling,llm,10,6,0.6,0.5,0.1,0,0.4

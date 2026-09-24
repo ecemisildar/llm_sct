@@ -1,0 +1,2922 @@
+[
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 17-58-52_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7270371,
+    "video_mtime_ns": 1789377279315706631,
+    "frame_count": 1937,
+    "duration_s": 64.56666666666666,
+    "analyzed_samples": 323,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 45.0,
+    "detection_pct": {
+      "0": 99.07120743034056,
+      "1": 97.83281733746131,
+      "2": 100.0
+    },
+    "longest_missing_gap_s": {
+      "0": 0.40000000000000213,
+      "1": 0.6000000000000014,
+      "2": 0.20000000000000284
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 17-58-52_exp_base.mp4",
+    "original_size": 20280235,
+    "original_mtime_ns": 1789315198185433576,
+    "original_fallback_detections": {
+      "0": 22,
+      "1": 22,
+      "2": 7
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.07120743034056,
+      "1": 97.83281733746131,
+      "2": 100.0
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.6000000000000014,
+      "2": 0.20000000000000284
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        64.4
+      ],
+      "1": [
+        0.0,
+        64.4
+      ],
+      "2": [
+        0.0,
+        64.4
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-01-11_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7817360,
+    "video_mtime_ns": 1789377403658755659,
+    "frame_count": 2005,
+    "duration_s": 66.89999999999999,
+    "analyzed_samples": 335,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 10,
+    "final_coverage_pct": 83.33333333333333,
+    "time_to_100_pct_s": null,
+    "detection_pct": {
+      "0": 100.0,
+      "1": 96.11940298507463,
+      "2": 98.2089552238806
+    },
+    "longest_missing_gap_s": {
+      "0": 0.2666666666666657,
+      "1": 0.4000000000000057,
+      "2": 0.4000000000000057
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.4,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-01-11_exp_llm.mp4",
+    "original_size": 21168900,
+    "original_mtime_ns": 1789315339718007961,
+    "original_fallback_detections": {
+      "0": 7,
+      "1": 39,
+      "2": 28
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 100.0,
+      "1": 96.69669669669669,
+      "2": 98.2089552238806
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.2666670000000124,
+      "1": 0.4000000000000057,
+      "2": 0.40000000000000213
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.866667
+      ],
+      "1": [
+        0.4,
+        66.866667
+      ],
+      "2": [
+        0.0,
+        66.866667
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-03-08_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7305491,
+    "video_mtime_ns": 1789377399133680836,
+    "frame_count": 1989,
+    "duration_s": 66.36666666666666,
+    "analyzed_samples": 332,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 17.5,
+    "detection_pct": {
+      "0": 98.79518072289157,
+      "1": 99.39759036144578,
+      "2": 100.0
+    },
+    "longest_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.40000000000000213,
+      "2": 0.20000000000000284
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-03-08_exp_base.mp4",
+    "original_size": 20849064,
+    "original_mtime_ns": 1789315456059281789,
+    "original_fallback_detections": {
+      "0": 24,
+      "1": 3,
+      "2": 24
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.79518072289157,
+      "1": 99.39759036144578,
+      "2": 100.0
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.40000000000000213,
+      "2": 0.20000000000000284
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.2
+      ],
+      "1": [
+        0.0,
+        66.2
+      ],
+      "2": [
+        0.0,
+        66.2
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-06-11_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7146780,
+    "video_mtime_ns": 1789377311232231111,
+    "frame_count": 1973,
+    "duration_s": 65.76666666666667,
+    "analyzed_samples": 329,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 31.0,
+    "detection_pct": {
+      "0": 98.17629179331307,
+      "1": 99.69604863221885,
+      "2": 99.3920972644377
+    },
+    "longest_missing_gap_s": {
+      "0": 0.5999999999999979,
+      "1": 0.40000000000000036,
+      "2": 0.6000000000000014
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-06-11_exp_llm.mp4",
+    "original_size": 20657391,
+    "original_mtime_ns": 1789315638483251385,
+    "original_fallback_detections": {
+      "0": 35,
+      "1": 1,
+      "2": 11
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.17629179331307,
+      "1": 99.69604863221885,
+      "2": 99.3920972644377
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.5999999999999979,
+      "1": 0.40000000000000036,
+      "2": 0.6000000000000014
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        65.6
+      ],
+      "1": [
+        0.0,
+        65.6
+      ],
+      "2": [
+        0.0,
+        65.6
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-08-41_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7451804,
+    "video_mtime_ns": 1789377399889693336,
+    "frame_count": 1990,
+    "duration_s": 66.36666666666666,
+    "analyzed_samples": 332,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 29.0,
+    "detection_pct": {
+      "0": 99.6987951807229,
+      "1": 100.0,
+      "2": 96.3855421686747
+    },
+    "longest_missing_gap_s": {
+      "0": 0.40000000000000036,
+      "1": 0.20000000000000284,
+      "2": 0.8000000000000043
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-08-41_exp_base.mp4",
+    "original_size": 20844408,
+    "original_mtime_ns": 1789315789315860752,
+    "original_fallback_detections": {
+      "0": 28,
+      "1": 0,
+      "2": 27
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.6987951807229,
+      "1": 100.0,
+      "2": 96.3855421686747
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.40000000000000036,
+      "1": 0.20000000000000284,
+      "2": 0.8000000000000043
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.2
+      ],
+      "1": [
+        0.0,
+        66.2
+      ],
+      "2": [
+        0.0,
+        66.2
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-11-12_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7640643,
+    "video_mtime_ns": 1789377400877709672,
+    "frame_count": 1985,
+    "duration_s": 66.16666666666666,
+    "analyzed_samples": 331,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 40.0,
+    "detection_pct": {
+      "0": 98.48942598187311,
+      "1": 98.48942598187311,
+      "2": 96.07250755287009
+    },
+    "longest_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.6000000000000014,
+      "2": 0.8000000000000043
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-11-12_exp_llm.mp4",
+    "original_size": 20805659,
+    "original_mtime_ns": 1789315940149457507,
+    "original_fallback_detections": {
+      "0": 50,
+      "1": 11,
+      "2": 21
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.48942598187311,
+      "1": 98.48942598187311,
+      "2": 96.07250755287009
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.6000000000000014,
+      "2": 0.8000000000000043
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.0
+      ],
+      "1": [
+        0.0,
+        66.0
+      ],
+      "2": [
+        0.0,
+        66.0
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-14-32_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7778256,
+    "video_mtime_ns": 1789377406259798675,
+    "frame_count": 2026,
+    "duration_s": 67.6,
+    "analyzed_samples": 338,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 62.0,
+    "detection_pct": {
+      "0": 99.40828402366864,
+      "1": 97.33727810650888,
+      "2": 95.56213017751479
+    },
+    "longest_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.6000000000000014,
+      "2": 1.0
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-14-32_exp_base.mp4",
+    "original_size": 21324806,
+    "original_mtime_ns": 1789316141164571323,
+    "original_fallback_detections": {
+      "0": 44,
+      "1": 24,
+      "2": 28
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.40828402366864,
+      "1": 97.33727810650888,
+      "2": 95.56213017751479
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 0.6000000000000014,
+      "2": 1.0
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        67.4
+      ],
+      "1": [
+        0.0,
+        67.4
+      ],
+      "2": [
+        0.0,
+        67.4
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-17-02_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 8350956,
+    "video_mtime_ns": 1789377410278865155,
+    "frame_count": 2090,
+    "duration_s": 69.7,
+    "analyzed_samples": 349,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 43.5,
+    "detection_pct": {
+      "0": 98.567335243553,
+      "1": 95.12893982808023,
+      "2": 94.84240687679083
+    },
+    "longest_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 1.4000000000000021,
+      "2": 0.8000000000000007
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-17-02_exp_llm.mp4",
+    "original_size": 21883159,
+    "original_mtime_ns": 1789316293318163571,
+    "original_fallback_detections": {
+      "0": 30,
+      "1": 38,
+      "2": 17
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.567335243553,
+      "1": 95.12893982808023,
+      "2": 94.84240687679083
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 1.4000000000000021,
+      "2": 0.8000000000000007
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        69.6
+      ],
+      "1": [
+        0.0,
+        69.6
+      ],
+      "2": [
+        0.0,
+        69.6
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-21-51_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 8099552,
+    "video_mtime_ns": 1789377472420894731,
+    "frame_count": 2014,
+    "duration_s": 67.2,
+    "analyzed_samples": 336,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 15.0,
+    "detection_pct": {
+      "0": 90.77380952380952,
+      "1": 99.10714285714286,
+      "2": 99.70238095238095
+    },
+    "longest_missing_gap_s": {
+      "0": 0.8000000000000043,
+      "1": 0.4000000000000057,
+      "2": 0.3999999999999986
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-21-51_exp_base.mp4",
+    "original_size": 21189689,
+    "original_mtime_ns": 1789316580615157987,
+    "original_fallback_detections": {
+      "0": 68,
+      "1": 26,
+      "2": 18
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 90.77380952380952,
+      "1": 99.10714285714286,
+      "2": 99.70238095238095
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.8000000000000043,
+      "1": 0.4000000000000057,
+      "2": 0.3999999999999986
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        67.0
+      ],
+      "1": [
+        0.0,
+        67.0
+      ],
+      "2": [
+        0.0,
+        67.0
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-24-07_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 8412132,
+    "video_mtime_ns": 1789377477033971282,
+    "frame_count": 2071,
+    "duration_s": 69.1,
+    "analyzed_samples": 346,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 11,
+    "final_coverage_pct": 91.66666666666667,
+    "time_to_100_pct_s": null,
+    "detection_pct": {
+      "0": 93.64161849710983,
+      "1": 100.0,
+      "2": 98.55491329479769
+    },
+    "longest_missing_gap_s": {
+      "0": 1.0,
+      "1": 0.2666666666666657,
+      "2": 0.4000000000000057
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-24-07_exp_llm.mp4",
+    "original_size": 21733121,
+    "original_mtime_ns": 1789316718117648646,
+    "original_fallback_detections": {
+      "0": 57,
+      "1": 2,
+      "2": 22
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 93.64161849710983,
+      "1": 100.0,
+      "2": 98.55491329479769
+    },
+    "max_internal_missing_gap_s": {
+      "0": 1.0,
+      "1": 0.2666669999999982,
+      "2": 0.4000000000000057
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        69.066667
+      ],
+      "1": [
+        0.0,
+        69.066667
+      ],
+      "2": [
+        0.0,
+        69.066667
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-26-08_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 10409135,
+    "video_mtime_ns": 1789377497065303870,
+    "frame_count": 2665,
+    "duration_s": 88.86666666666666,
+    "analyzed_samples": 445,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 7.0,
+    "detection_pct": {
+      "0": 98.42696629213484,
+      "1": 100.0,
+      "2": 96.85393258426966
+    },
+    "longest_missing_gap_s": {
+      "0": 0.40000000000000036,
+      "1": 0.23333333333333428,
+      "2": 0.8000000000000007
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-26-08_exp_base.mp4",
+    "original_size": 27893692,
+    "original_mtime_ns": 1789316858497281271,
+    "original_fallback_detections": {
+      "0": 43,
+      "1": 0,
+      "2": 26
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.42696629213484,
+      "1": 100.0,
+      "2": 96.85393258426966
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.40000000000000036,
+      "1": 0.2333330000000018,
+      "2": 0.8000000000000007
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        88.833333
+      ],
+      "1": [
+        0.0,
+        88.833333
+      ],
+      "2": [
+        0.0,
+        88.833333
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-28-52_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 6986101,
+    "video_mtime_ns": 1789377474713932781,
+    "frame_count": 2000,
+    "duration_s": 66.66666666666666,
+    "analyzed_samples": 334,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 41.5,
+    "detection_pct": {
+      "0": 99.7005988023952,
+      "1": 99.7005988023952,
+      "2": 97.90419161676647
+    },
+    "longest_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 0.3999999999999986,
+      "2": 0.6000000000000014
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 1,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-28-52_exp_llm.mp4",
+    "original_size": 20921699,
+    "original_mtime_ns": 1789317002986922564,
+    "original_fallback_detections": {
+      "0": 84,
+      "1": 2,
+      "2": 11
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.7005988023952,
+      "1": 99.7005988023952,
+      "2": 97.90419161676647
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 0.3999999999999986,
+      "2": 0.6000000000000014
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.6
+      ],
+      "1": [
+        0.0,
+        66.6
+      ],
+      "2": [
+        0.0,
+        66.6
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-31-50_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7278476,
+    "video_mtime_ns": 1789377477594980593,
+    "frame_count": 1996,
+    "duration_s": 66.56666666666666,
+    "analyzed_samples": 333,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 17.5,
+    "detection_pct": {
+      "0": 99.3993993993994,
+      "1": 100.0,
+      "2": 98.49849849849849
+    },
+    "longest_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 0.20000000000000284,
+      "2": 0.6000000000000014
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-31-50_exp_base.mp4",
+    "original_size": 20892205,
+    "original_mtime_ns": 1789317178215873501,
+    "original_fallback_detections": {
+      "0": 16,
+      "1": 1,
+      "2": 14
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.3993993993994,
+      "1": 100.0,
+      "2": 98.49849849849849
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 0.20000000000000284,
+      "2": 0.6000000000000014
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.4
+      ],
+      "1": [
+        0.0,
+        66.4
+      ],
+      "2": [
+        0.0,
+        66.4
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-34-45_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7688627,
+    "video_mtime_ns": 1789377483670081432,
+    "frame_count": 1983,
+    "duration_s": 66.16666666666666,
+    "analyzed_samples": 331,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 16.5,
+    "detection_pct": {
+      "0": 98.18731117824774,
+      "1": 100.0,
+      "2": 98.48942598187311
+    },
+    "longest_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.20000000000000284,
+      "2": 0.40000000000000213
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-34-45_exp_llm.mp4",
+    "original_size": 20758994,
+    "original_mtime_ns": 1789317353551794164,
+    "original_fallback_detections": {
+      "0": 43,
+      "1": 1,
+      "2": 20
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.18731117824774,
+      "1": 100.0,
+      "2": 98.48942598187311
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.20000000000000284,
+      "2": 0.3999999999999999
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.0
+      ],
+      "1": [
+        0.0,
+        66.0
+      ],
+      "2": [
+        0.0,
+        66.0
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-37-15_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7487123,
+    "video_mtime_ns": 1789377540588027472,
+    "frame_count": 2001,
+    "duration_s": 66.7,
+    "analyzed_samples": 334,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 27.5,
+    "detection_pct": {
+      "0": 98.50299401197604,
+      "1": 100.0,
+      "2": 98.20359281437126
+    },
+    "longest_missing_gap_s": {
+      "0": 0.40000000000000213,
+      "1": 0.20000000000000284,
+      "2": 0.40000000000000036
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-37-15_exp_base.mp4",
+    "original_size": 21081394,
+    "original_mtime_ns": 1789317503686420743,
+    "original_fallback_detections": {
+      "0": 36,
+      "1": 3,
+      "2": 31
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.50299401197604,
+      "1": 100.0,
+      "2": 98.20359281437126
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.40000000000000213,
+      "1": 0.20000000000000284,
+      "2": 0.40000000000000036
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.6
+      ],
+      "1": [
+        0.0,
+        66.6
+      ],
+      "2": [
+        0.0,
+        66.6
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-39-43_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7238424,
+    "video_mtime_ns": 1789377542704062685,
+    "frame_count": 2022,
+    "duration_s": 67.39999999999999,
+    "analyzed_samples": 337,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 59.0,
+    "detection_pct": {
+      "0": 94.95548961424332,
+      "1": 100.0,
+      "2": 91.3946587537092
+    },
+    "longest_missing_gap_s": {
+      "0": 0.6000000000000014,
+      "1": 0.20000000000000284,
+      "2": 3.200000000000001
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-39-43_exp_llm.mp4",
+    "original_size": 21390938,
+    "original_mtime_ns": 1789317656173060351,
+    "original_fallback_detections": {
+      "0": 49,
+      "1": 10,
+      "2": 14
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 94.95548961424332,
+      "1": 100.0,
+      "2": 91.3946587537092
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.6000000000000014,
+      "1": 0.20000000000000284,
+      "2": 3.200000000000001
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        67.2
+      ],
+      "1": [
+        0.0,
+        67.2
+      ],
+      "2": [
+        0.0,
+        67.2
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-42-20_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 7461128,
+    "video_mtime_ns": 1789377545595110800,
+    "frame_count": 2001,
+    "duration_s": 66.7,
+    "analyzed_samples": 334,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 48.0,
+    "detection_pct": {
+      "0": 99.10179640718563,
+      "1": 100.0,
+      "2": 100.0
+    },
+    "longest_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.20000000000000284,
+      "2": 0.20000000000000284
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-42-20_exp_base.mp4",
+    "original_size": 21108052,
+    "original_mtime_ns": 1789317809052694822,
+    "original_fallback_detections": {
+      "0": 24,
+      "1": 10,
+      "2": 12
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.10179640718563,
+      "1": 100.0,
+      "2": 100.0
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 0.20000000000000284,
+      "2": 0.20000000000000284
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        66.6
+      ],
+      "1": [
+        0.0,
+        66.6
+      ],
+      "2": [
+        0.0,
+        66.6
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-44-36_exp_lm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 10254501,
+    "video_mtime_ns": 1789377569133502748,
+    "frame_count": 2744,
+    "duration_s": 91.46666666666667,
+    "analyzed_samples": 458,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 41.0,
+    "detection_pct": {
+      "0": 99.12663755458516,
+      "1": 100.0,
+      "2": 96.2882096069869
+    },
+    "longest_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.20000000000000284,
+      "2": 0.6000000000000085
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-44-36_exp_lm.mp4",
+    "original_size": 28705250,
+    "original_mtime_ns": 1789317969619404024,
+    "original_fallback_detections": {
+      "0": 47,
+      "1": 0,
+      "2": 33
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.12663755458516,
+      "1": 100.0,
+      "2": 96.2882096069869
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.20000000000000284,
+      "2": 0.6000000000000085
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        91.4
+      ],
+      "1": [
+        0.0,
+        91.4
+      ],
+      "2": [
+        0.0,
+        91.4
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-48-05_exp_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 8507408,
+    "video_mtime_ns": 1789377558501325663,
+    "frame_count": 2307,
+    "duration_s": 76.93333333333334,
+    "analyzed_samples": 385,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 43.0,
+    "detection_pct": {
+      "0": 97.40259740259741,
+      "1": 100.0,
+      "2": 98.7012987012987
+    },
+    "longest_missing_gap_s": {
+      "0": 1.3999999999999915,
+      "1": 0.20000000000000284,
+      "2": 0.5999999999999979
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-48-05_exp_base.mp4",
+    "original_size": 24216772,
+    "original_mtime_ns": 1789318163949465278,
+    "original_fallback_detections": {
+      "0": 43,
+      "1": 5,
+      "2": 18
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 97.40259740259741,
+      "1": 100.0,
+      "2": 98.7012987012987
+    },
+    "max_internal_missing_gap_s": {
+      "0": 1.3999999999999915,
+      "1": 0.20000000000000284,
+      "2": 0.5999999999999979
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        76.8
+      ],
+      "1": [
+        0.0,
+        76.8
+      ],
+      "2": [
+        0.0,
+        76.8
+      ]
+    }
+  },
+  {
+    "task": "exploration",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-50-42_exp_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 6976185,
+    "video_mtime_ns": 1789377560902365648,
+    "frame_count": 2016,
+    "duration_s": 67.2,
+    "analyzed_samples": 336,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 13.0,
+    "detection_pct": {
+      "0": 97.61904761904762,
+      "1": 99.70238095238095,
+      "2": 95.83333333333333
+    },
+    "longest_missing_gap_s": {
+      "0": 0.8000000000000007,
+      "1": 0.3999999999999986,
+      "2": 0.7999999999999972
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 7,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-50-42_exp_llm.mp4",
+    "original_size": 21233496,
+    "original_mtime_ns": 1789318316452078817,
+    "original_fallback_detections": {
+      "0": 28,
+      "1": 4,
+      "2": 35
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 97.61904761904762,
+      "1": 99.70238095238095,
+      "2": 95.83333333333333
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.8000000000000007,
+      "1": 0.3999999999999986,
+      "2": 0.7999999999999972
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        67.0
+      ],
+      "1": [
+        0.0,
+        67.0
+      ],
+      "2": [
+        0.0,
+        67.0
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-25-28_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 14960747,
+    "video_mtime_ns": 1789377690817534145,
+    "frame_count": 4484,
+    "duration_s": 149.5,
+    "analyzed_samples": 748,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 27.0,
+    "detection_pct": {
+      "0": 39.3048128342246,
+      "1": 87.29946524064171,
+      "2": 99.59893048128342
+    },
+    "longest_missing_gap_s": {
+      "0": 90.7,
+      "1": 19.099999999999994,
+      "2": 0.4000000000000057
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-25-28_base.mp4",
+    "original_size": 46914041,
+    "original_mtime_ns": 1789295279866611776,
+    "original_fallback_detections": {
+      "0": 337,
+      "1": 3,
+      "2": 8
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.66101694915254,
+      "1": 100.0,
+      "2": 99.59893048128342
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.3999999999999986,
+      "1": 0.20000000000001705,
+      "2": 0.4000000000000057
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        58.8
+      ],
+      "1": [
+        0.0,
+        130.4
+      ],
+      "2": [
+        0.0,
+        149.4
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-36-00_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 21034047,
+    "video_mtime_ns": 1789377771050877668,
+    "frame_count": 6655,
+    "duration_s": 221.9,
+    "analyzed_samples": 1110,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 20.0,
+    "detection_pct": {
+      "0": 60.450450450450454,
+      "1": 99.63963963963964,
+      "2": 53.24324324324324
+    },
+    "longest_missing_gap_s": {
+      "0": 41.5,
+      "1": 0.5999999999999943,
+      "2": 103.9
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-36-00_llm.mp4",
+    "original_size": 69643229,
+    "original_mtime_ns": 1789295983599270787,
+    "original_fallback_detections": {
+      "0": 81,
+      "1": 17,
+      "2": 361
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 74.3078626799557,
+      "1": 99.63963963963964,
+      "2": 100.0
+    },
+    "max_internal_missing_gap_s": {
+      "0": 5.200000000000003,
+      "1": 0.5999999999999943,
+      "2": 0.20000000000000284
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        180.4
+      ],
+      "1": [
+        0.0,
+        221.866667
+      ],
+      "2": [
+        0.0,
+        118.0
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-41-54_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 11339208,
+    "video_mtime_ns": 1789377667139138229,
+    "frame_count": 3664,
+    "duration_s": 122.2,
+    "analyzed_samples": 611,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 24.5,
+    "detection_pct": {
+      "0": 43.86252045826514,
+      "1": 93.78068739770868,
+      "2": 70.54009819967267
+    },
+    "longest_missing_gap_s": {
+      "0": 68.80000000000001,
+      "1": 1.4000000000000057,
+      "2": 35.400000000000006
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-41-54_base.mp4",
+    "original_size": 38356421,
+    "original_mtime_ns": 1789296237831450438,
+    "original_fallback_detections": {
+      "0": 225,
+      "1": 42,
+      "2": 9
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 100.0,
+      "1": 93.78068739770868,
+      "2": 99.08045977011494
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.20000000000000284,
+      "1": 1.4000000000000057,
+      "2": 0.5999999999999943
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        53.4
+      ],
+      "1": [
+        0.0,
+        122.0
+      ],
+      "2": [
+        0.0,
+        86.8
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-45-21_llm_best.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 11989053,
+    "video_mtime_ns": 1789377691600547242,
+    "frame_count": 3916,
+    "duration_s": 130.53333333333333,
+    "analyzed_samples": 653,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 14.5,
+    "detection_pct": {
+      "0": 41.65390505359878,
+      "1": 70.44410413476264,
+      "2": 98.77488514548239
+    },
+    "longest_missing_gap_s": {
+      "0": 74.93333333333334,
+      "1": 36.93333333333334,
+      "2": 1.0
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-45-21_llm_best.mp4",
+    "original_size": 40963263,
+    "original_mtime_ns": 1789296454100329271,
+    "original_fallback_detections": {
+      "0": 320,
+      "1": 14,
+      "2": 9
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 97.4910394265233,
+      "1": 98.08102345415779,
+      "2": 98.77488514548239
+    },
+    "max_internal_missing_gap_s": {
+      "0": 1.6000000000000014,
+      "1": 0.6000000000000085,
+      "2": 1.0
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        55.6
+      ],
+      "1": [
+        0.0,
+        93.6
+      ],
+      "2": [
+        0.0,
+        130.4
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-53-56_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 20519704,
+    "video_mtime_ns": 1789377771149879328,
+    "frame_count": 6157,
+    "duration_s": 205.23333333333332,
+    "analyzed_samples": 1027,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 11,
+    "final_coverage_pct": 91.66666666666667,
+    "time_to_100_pct_s": null,
+    "detection_pct": {
+      "0": 66.50438169425512,
+      "1": 99.4157740993184,
+      "2": 93.37877312560857
+    },
+    "longest_missing_gap_s": {
+      "0": 68.23333333333332,
+      "1": 0.5999999999999943,
+      "2": 11.633333333333326
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-53-56_base.mp4",
+    "original_size": 64406612,
+    "original_mtime_ns": 1789297043336507957,
+    "original_fallback_detections": {
+      "0": 36,
+      "1": 39,
+      "2": 25
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.56268221574344,
+      "1": 99.4157740993184,
+      "2": 98.96800825593395
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.5999999999999979,
+      "1": 0.5999999999999943,
+      "2": 1.4000000000000057
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        137.0
+      ],
+      "1": [
+        0.0,
+        205.2
+      ],
+      "2": [
+        0.0,
+        193.6
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-59-50_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 26285424,
+    "video_mtime_ns": 1789377855403293082,
+    "frame_count": 8601,
+    "duration_s": 286.7666666666667,
+    "analyzed_samples": 1434,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 20.5,
+    "detection_pct": {
+      "0": 69.31659693165969,
+      "1": 36.95955369595537,
+      "2": 99.581589958159
+    },
+    "longest_missing_gap_s": {
+      "0": 81.56666666666672,
+      "1": 180.7666666666667,
+      "2": 0.5999999999999659
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-59-50_llm.mp4",
+    "original_size": 89986391,
+    "original_mtime_ns": 1789297478565358914,
+    "original_fallback_detections": {
+      "0": 51,
+      "1": 877,
+      "2": 28
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 96.78675754625122,
+      "1": 99.81167608286252,
+      "2": 99.581589958159
+    },
+    "max_internal_missing_gap_s": {
+      "0": 2.4000000000000057,
+      "1": 0.3999999999999915,
+      "2": 0.5999999999999659
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        205.2
+      ],
+      "1": [
+        0.0,
+        106.0
+      ],
+      "2": [
+        0.0,
+        286.6
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-06-27_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 18392903,
+    "video_mtime_ns": 1789377861413394032,
+    "frame_count": 5767,
+    "duration_s": 192.29999999999998,
+    "analyzed_samples": 962,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 59.5,
+    "detection_pct": {
+      "0": 85.44698544698545,
+      "1": 73.28482328482329,
+      "2": 96.04989604989605
+    },
+    "longest_missing_gap_s": {
+      "0": 28.099999999999994,
+      "1": 51.099999999999994,
+      "2": 2.799999999999997
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-06-27_base.mp4",
+    "original_size": 60424698,
+    "original_mtime_ns": 1789297781401043671,
+    "original_fallback_detections": {
+      "0": 129,
+      "1": 12,
+      "2": 28
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 100.0,
+      "1": 99.71711456859971,
+      "2": 96.04989604989605
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.20000000000001705,
+      "1": 0.3999999999999915,
+      "2": 2.799999999999997
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        164.2
+      ],
+      "1": [
+        0.0,
+        141.2
+      ],
+      "2": [
+        0.0,
+        192.266667
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-11-04_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 28974705,
+    "video_mtime_ns": 1789378719277883883,
+    "frame_count": 9764,
+    "duration_s": 325.53333333333336,
+    "analyzed_samples": 1628,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 31.0,
+    "detection_pct": {
+      "0": 26.65847665847666,
+      "1": 99.63144963144963,
+      "2": 46.13022113022113
+    },
+    "longest_missing_gap_s": {
+      "0": 238.93333333333337,
+      "1": 0.4000000000000341,
+      "2": 169.33333333333337
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-11-04_llm.mp4",
+    "original_size": 102250775,
+    "original_mtime_ns": 1789298191635683789,
+    "original_fallback_detections": {
+      "0": 1160,
+      "1": 28,
+      "2": 766
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 100.0,
+      "1": 99.63144963144963,
+      "2": 96.03580562659846
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.20000000000000284,
+      "1": 0.4000000000000341,
+      "2": 2.6000000000000085
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        86.6
+      ],
+      "1": [
+        0.0,
+        325.4
+      ],
+      "2": [
+        0.0,
+        156.2
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-18-40_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 12150102,
+    "video_mtime_ns": 1789377817639659079,
+    "frame_count": 3687,
+    "duration_s": 122.89999999999999,
+    "analyzed_samples": 615,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 45.0,
+    "detection_pct": {
+      "0": 49.26829268292683,
+      "1": 99.51219512195122,
+      "2": 62.764227642276424
+    },
+    "longest_missing_gap_s": {
+      "0": 62.49999999999999,
+      "1": 0.4000000000000057,
+      "2": 42.499999999999986
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-18-40_base.mp4",
+    "original_size": 38568631,
+    "original_mtime_ns": 1789298445298842974,
+    "original_fallback_detections": {
+      "0": 6,
+      "1": 21,
+      "2": 170
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 100.0,
+      "1": 99.51219512195122,
+      "2": 95.78163771712158
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.20000000000000284,
+      "1": 0.4000000000000057,
+      "2": 1.0
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        60.4
+      ],
+      "1": [
+        0.0,
+        122.8
+      ],
+      "2": [
+        0.0,
+        80.4
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-22-01_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 29566253,
+    "video_mtime_ns": 1789378686748332729,
+    "frame_count": 8709,
+    "duration_s": 290.3666666666667,
+    "analyzed_samples": 1452,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 7.0,
+    "detection_pct": {
+      "0": 61.570247933884296,
+      "1": 90.97796143250689,
+      "2": 97.65840220385675
+    },
+    "longest_missing_gap_s": {
+      "0": 96.36666666666667,
+      "1": 25.966666666666697,
+      "2": 3.0
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-22-01_llm.mp4",
+    "original_size": 91116248,
+    "original_mtime_ns": 1789298813701693577,
+    "original_fallback_detections": {
+      "0": 84,
+      "1": 116,
+      "2": 34
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 92.07003089598352,
+      "1": 99.848828420257,
+      "2": 97.65840220385675
+    },
+    "max_internal_missing_gap_s": {
+      "0": 2.0,
+      "1": 0.40000000000000036,
+      "2": 3.0
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        194.0
+      ],
+      "1": [
+        0.0,
+        264.4
+      ],
+      "2": [
+        0.0,
+        290.2
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-31-31_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 17010035,
+    "video_mtime_ns": 1789377962080086678,
+    "frame_count": 4275,
+    "duration_s": 142.5,
+    "analyzed_samples": 713,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 27.0,
+    "detection_pct": {
+      "0": 46.70406732117812,
+      "1": 100.0,
+      "2": 62.97335203366059
+    },
+    "longest_missing_gap_s": {
+      "0": 75.3,
+      "1": 0.20000000000001705,
+      "2": 52.7
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-31-31_base.mp4",
+    "original_size": 44803711,
+    "original_mtime_ns": 1789310036949959509,
+    "original_fallback_detections": {
+      "0": 2,
+      "1": 4,
+      "2": 2
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.81305637982196,
+      "1": 100.0,
+      "2": 99.77777777777777
+    },
+    "max_internal_missing_gap_s": {
+      "0": 1.0,
+      "1": 0.20000000000001705,
+      "2": 0.4000000000000057
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        67.2
+      ],
+      "1": [
+        0.0,
+        142.4
+      ],
+      "2": [
+        0.0,
+        89.8
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-35-23_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 25789795,
+    "video_mtime_ns": 1789378639369530115,
+    "frame_count": 7636,
+    "duration_s": 254.53333333333333,
+    "analyzed_samples": 1273,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 42.5,
+    "detection_pct": {
+      "0": 42.96936370777691,
+      "1": 66.06441476826394,
+      "2": 99.528672427337
+    },
+    "longest_missing_gap_s": {
+      "0": 145.33333333333331,
+      "1": 85.33333333333334,
+      "2": 0.4000000000000057
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-35-23_llm.mp4",
+    "original_size": 79897663,
+    "original_mtime_ns": 1789310379915978413,
+    "original_fallback_detections": {
+      "0": 694,
+      "1": 26,
+      "2": 23
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 100.0,
+      "1": 99.29161747343565,
+      "2": 99.528672427337
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.20000000000000284,
+      "1": 0.4000000000000057,
+      "2": 0.4000000000000057
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        109.2
+      ],
+      "1": [
+        0.0,
+        169.2
+      ],
+      "2": [
+        0.0,
+        254.4
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-41-51_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 37044507,
+    "video_mtime_ns": 1789378735776163444,
+    "frame_count": 9716,
+    "duration_s": 323.90000000000003,
+    "analyzed_samples": 1620,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 60.5,
+    "detection_pct": {
+      "0": 85.8641975308642,
+      "1": 98.88888888888889,
+      "2": 68.20987654320987
+    },
+    "longest_missing_gap_s": {
+      "0": 40.700000000000045,
+      "1": 1.0,
+      "2": 97.30000000000004
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-41-51_base.mp4",
+    "original_size": 101637001,
+    "original_mtime_ns": 1789310836649160959,
+    "original_fallback_detections": {
+      "0": 208,
+      "1": 20,
+      "2": 66
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 98.1651376146789,
+      "1": 98.88888888888889,
+      "2": 97.44268077601411
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.6000000000000227,
+      "1": 1.0,
+      "2": 1.4000000000000057
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        283.2
+      ],
+      "1": [
+        0.0,
+        323.8
+      ],
+      "2": [
+        0.0,
+        226.6
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-49-26_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 11415144,
+    "video_mtime_ns": 1789378487186953342,
+    "frame_count": 3895,
+    "duration_s": 129.83333333333334,
+    "analyzed_samples": 650,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 44.0,
+    "detection_pct": {
+      "0": 83.07692307692308,
+      "1": 100.0,
+      "2": 32.76923076923077
+    },
+    "longest_missing_gap_s": {
+      "0": 17.23333333333335,
+      "1": 0.20000000000001705,
+      "2": 85.63333333333334
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-49-26_llm.mp4",
+    "original_size": 40745980,
+    "original_mtime_ns": 1789311098016554335,
+    "original_fallback_detections": {
+      "0": 26,
+      "1": 1,
+      "2": 384
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 95.74468085106383,
+      "1": 100.0,
+      "2": 95.94594594594595
+    },
+    "max_internal_missing_gap_s": {
+      "0": 2.0,
+      "1": 0.20000000000001705,
+      "2": 0.5999999999999996
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        112.6
+      ],
+      "1": [
+        0.0,
+        129.8
+      ],
+      "2": [
+        0.0,
+        44.2
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-55-09_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 15528521,
+    "video_mtime_ns": 1789378522145545077,
+    "frame_count": 4559,
+    "duration_s": 152.03333333333333,
+    "analyzed_samples": 761,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 11,
+    "final_coverage_pct": 91.66666666666667,
+    "time_to_100_pct_s": null,
+    "detection_pct": {
+      "0": 93.42969776609723,
+      "1": 52.69382391590013,
+      "2": 91.98423127463863
+    },
+    "longest_missing_gap_s": {
+      "0": 9.633333333333326,
+      "1": 71.63333333333333,
+      "2": 1.5999999999999999
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 1.2
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-55-09_base.mp4",
+    "original_size": 47743115,
+    "original_mtime_ns": 1789311462549856950,
+    "original_fallback_detections": {
+      "0": 54,
+      "1": 345,
+      "2": 44
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.71949509116409,
+      "1": 99.50372208436724,
+      "2": 92.71523178807946
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.4000000000000057,
+      "1": 0.5999999999999943,
+      "2": 1.5999999999999999
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        142.4
+      ],
+      "1": [
+        0.0,
+        80.4
+      ],
+      "2": [
+        1.2,
+        152.0
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-02-34_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 29891673,
+    "video_mtime_ns": 1789378836221865834,
+    "frame_count": 9330,
+    "duration_s": 311.06666666666666,
+    "analyzed_samples": 1556,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 105.0,
+    "detection_pct": {
+      "0": 90.29562982005142,
+      "1": 100.0,
+      "2": 36.18251928020565
+    },
+    "longest_missing_gap_s": {
+      "0": 29.666666666666686,
+      "1": 0.23333333333329165,
+      "2": 196.46666666666667
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-02-34_llm.mp4",
+    "original_size": 97624024,
+    "original_mtime_ns": 1789312066784288617,
+    "original_fallback_detections": {
+      "0": 69,
+      "1": 6,
+      "2": 981
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 99.78693181818181,
+      "1": 100.0,
+      "2": 98.08362369337979
+    },
+    "max_internal_missing_gap_s": {
+      "0": 0.5999999999999659,
+      "1": 0.233333000000016,
+      "2": 1.1999999999999886
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        281.4
+      ],
+      "1": [
+        0.0,
+        311.033333
+      ],
+      "2": [
+        0.0,
+        114.6
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-10-48_baseline.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 32648771,
+    "video_mtime_ns": 1789378853908165646,
+    "frame_count": 9392,
+    "duration_s": 313.06666666666666,
+    "analyzed_samples": 1566,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 82.0,
+    "detection_pct": {
+      "0": 39.01660280970626,
+      "1": 95.8492975734355,
+      "2": 17.177522349936144
+    },
+    "longest_missing_gap_s": {
+      "0": 183.26666666666665,
+      "1": 1.1999999999999886,
+      "2": 258.6666666666667
+    },
+    "first_detection_s": {
+      "0": 0.8,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-10-48_baseline.mp4",
+    "original_size": 98247305,
+    "original_mtime_ns": 1789312562717731075,
+    "original_fallback_detections": {
+      "0": 60,
+      "1": 95,
+      "2": 1103
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 94.58204334365325,
+      "1": 95.8492975734355,
+      "2": 98.53479853479854
+    },
+    "max_internal_missing_gap_s": {
+      "0": 1.3999999999999915,
+      "1": 1.200000000000017,
+      "2": 0.8000000000000043
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.8,
+        129.8
+      ],
+      "1": [
+        0.0,
+        313.0
+      ],
+      "2": [
+        0.0,
+        54.4
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-17-42_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 24698855,
+    "video_mtime_ns": 1789378848222069256,
+    "frame_count": 5992,
+    "duration_s": 199.79999999999998,
+    "analyzed_samples": 999,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 44.0,
+    "detection_pct": {
+      "0": 82.08208208208208,
+      "1": 70.47047047047047,
+      "2": 88.78878878878879
+    },
+    "longest_missing_gap_s": {
+      "0": 3.799999999999983,
+      "1": 58.79999999999998,
+      "2": 21.799999999999983
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-17-42_llm.mp4",
+    "original_size": 62713954,
+    "original_mtime_ns": 1789312863785232268,
+    "original_fallback_detections": {
+      "0": 144,
+      "1": 276,
+      "2": 18
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 82.08208208208208,
+      "1": 99.71671388101983,
+      "2": 99.55106621773288
+    },
+    "max_internal_missing_gap_s": {
+      "0": 3.799999999999983,
+      "1": 0.5999999999999943,
+      "2": 1.0
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        199.6
+      ],
+      "1": [
+        0.0,
+        141.0
+      ],
+      "2": [
+        0.0,
+        178.0
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "baseline",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-23-51_base.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 14091035,
+    "video_mtime_ns": 1789378822308629994,
+    "frame_count": 3887,
+    "duration_s": 129.63333333333333,
+    "analyzed_samples": 649,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 28.5,
+    "detection_pct": {
+      "0": 72.26502311248073,
+      "1": 46.99537750385208,
+      "2": 100.0
+    },
+    "longest_missing_gap_s": {
+      "0": 31.433333333333323,
+      "1": 68.03333333333333,
+      "2": 0.20000000000001705
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-23-51_base.mp4",
+    "original_size": 40681087,
+    "original_mtime_ns": 1789313162427091729,
+    "original_fallback_detections": {
+      "0": 34,
+      "1": 320,
+      "2": 5
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 95.32520325203252,
+      "1": 98.70550161812298,
+      "2": 100.0
+    },
+    "max_internal_missing_gap_s": {
+      "0": 1.1999999999999957,
+      "1": 1.0,
+      "2": 0.20000000000001705
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        98.2
+      ],
+      "1": [
+        0.0,
+        61.6
+      ],
+      "2": [
+        0.0,
+        129.6
+      ]
+    }
+  },
+  {
+    "task": "patrolling",
+    "condition": "llm",
+    "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-30-52_llm.mp4",
+    "analysis_version": 3,
+    "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+    "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+    "video_size": 21478521,
+    "video_mtime_ns": 1789378870049439281,
+    "frame_count": 6297,
+    "duration_s": 209.96666666666667,
+    "analyzed_samples": 1050,
+    "pose_interval_s": 0.2,
+    "grid_size_m": 1.0,
+    "robot_footprint_radius_m": 0.36,
+    "arena_area_m2": 12.0,
+    "free_cells": 12,
+    "blocked_cells": [],
+    "visited_cells": 12,
+    "final_coverage_pct": 100.0,
+    "time_to_100_pct_s": 12.0,
+    "detection_pct": {
+      "0": 49.904761904761905,
+      "1": 40.666666666666664,
+      "2": 100.0
+    },
+    "longest_missing_gap_s": {
+      "0": 93.16666666666667,
+      "1": 123.36666666666667,
+      "2": 0.20000000000001705
+    },
+    "first_detection_s": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "rejected_jump_detections": 0,
+    "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-30-52_llm.mp4",
+    "original_size": 65955324,
+    "original_mtime_ns": 1789313664218752961,
+    "original_fallback_detections": {
+      "0": 52,
+      "1": 598,
+      "2": 12
+    },
+    "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+    "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+    "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+    "active_span_detection_pct": {
+      "0": 89.57264957264957,
+      "1": 98.38709677419355,
+      "2": 100.0
+    },
+    "max_internal_missing_gap_s": {
+      "0": 3.0,
+      "1": 1.5999999999999943,
+      "2": 0.20000000000001705
+    },
+    "observed_arena_spans_s": {
+      "0": [
+        0.0,
+        116.8
+      ],
+      "1": [
+        0.0,
+        86.6
+      ],
+      "2": [
+        0.0,
+        209.8
+      ]
+    }
+  }
+]

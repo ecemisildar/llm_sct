@@ -1,0 +1,5 @@
+{
+  "source_inner_wall_corners_tl_tr_br_bl_px": [[250, 88], [1003, 76], [1028, 620], [272, 639]],
+  "basis": "Inner white-wall/floor edges visually checked in original 1280 x 720 frames; the cropped video quad is slightly inset.",
+  "scale": "Original-to-cropped calibration with approximately 4 x 3 m arena; marker height and wall-edge uncertainty are not corrected."
+}

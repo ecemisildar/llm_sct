@@ -1,0 +1,61 @@
+/**/image_processor:
+  ros__parameters:
+    depth_topic: camera/depth/image_rect_raw
+    obstacle_threshold: 0.50
+    min_depth: 0.20
+    max_depth: 6.00
+    crop_y0_frac: 0.30
+    crop_y1_frac: 0.80
+
+/**/color_detector:
+  ros__parameters:
+    rgb_topic: camera/color/image_raw
+    depth_topic: camera/aligned_depth_to_color/image_raw
+    odom_topic: merged_odom
+    # Must be greater than image_processor.obstacle_threshold (0.50 m) so a
+    # colored cone is registered as reached before avoidance takes control.
+    reached_distance: 1.00
+    depth_scale: 0.001
+    depth_min_m: 0.10
+    depth_max_m: 6.0
+    depth_min_samples: 20
+    depth_max_age_s: 0.50
+    # Target visibility is based only on 5x5 ArUco markers, not HSV color.
+    min_color_pixels: 12
+    color_min_area_ratio: 0.001
+    # Dictionary is DICT_5X5_100. All physical markers are 100 mm wide.
+    red_aruco_marker_id: 0
+    green_aruco_marker_id: 1
+    blue_aruco_marker_id: 2
+    aruco_marker_size_m: 0.10
+
+/**/robot_supervisor:
+  ros__parameters:
+    # Route commands through stuck_recovery. Change this to cmd_vel when the
+    # recovery node is not running.
+    cmd_vel_topic: cmd_vel_supervisor
+    odom_topic: merged_odom
+    forward_linear_x: 0.30
+    backward_linear_x: -0.20
+    completion_retreat_linear_x: -0.20
+    completion_retreat_duration_s: 1.50
+    # After the final target: reverse, turn left once by about 90 degrees,
+    # search for a wall, escape blocked approaches, then stop facing it at 0.50 m.
+    completion_parking_linear_x: 0.20
+    completion_parking_turn_angular_z: 1.00
+    completion_parking_stop_distance_m: 0.50
+    completion_parking_timeout_s: 60.0
+    approach_linear_x: 0.20
+    rotate_90_omega: 1.00
+    full_rotate_omega: 1.00
+    escape_linear_x: -0.20
+    escape_angular_z: 1.20
+
+/**/stuck_recovery:
+  ros__parameters:
+    supervisor_cmd_vel_topic: cmd_vel_supervisor
+    cmd_vel_topic: /cmd_vel
+    odom_topic: merged_odom
+    escape_angular_z: 1.20
+    reverse_linear_x: -0.20
+    forward_linear_x: 0.30

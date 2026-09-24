@@ -1,0 +1,45 @@
+{
+  "arena_width_m": 4.0,
+  "arena_height_m": 3.0,
+  "arena_area_m2": 12.0,
+  "area_basis": "User specified approximately 12 square metres; 4 x 3 dimensions follow existing corners.json.",
+  "output_width_px": 800,
+  "output_height_px": 600,
+  "pixels_per_metre": 200.0,
+  "square_metres_per_pixel": 2.5e-05,
+  "source_floor_corners_tl_tr_br_bl": [
+    [
+      258.0,
+      90.0
+    ],
+    [
+      1000.0,
+      78.0
+    ],
+    [
+      1020.0,
+      617.0
+    ],
+    [
+      275.0,
+      633.0
+    ]
+  ],
+  "source_to_cropped_homography": [
+    [
+      1.0679425157977125,
+      -0.03343466439882339,
+      -272.5200492799157
+    ],
+    [
+      0.0179054549727797,
+      1.1071539658168874,
+      -104.26346430649703
+    ],
+    [
+      -9.613354215242577e-06,
+      8.09689209747773e-06,
+      1.0
+    ]
+  ]
+}

@@ -1,0 +1,3 @@
+condition,trials,successful_trials,success_rate_pct,task_progression_mean_pct,task_progression_sd_pct,successful_completion_proxy_mean_s,successful_completion_proxy_sd_s,collisions_mean,collisions_sd,collisions_total
+baseline,10,8,80.0,94.44444444444444,12.00137166371826,152.0375,31.14364281992776,0.2,0.4216370213557839,2
+llm,10,8,80.0,90.0,22.49828525701843,215.4625,62.202119183773654,0.6,0.699205898780101,6

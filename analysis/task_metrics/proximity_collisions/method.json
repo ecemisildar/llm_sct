@@ -1,0 +1,12 @@
+{
+  "robot_marker_distance_m": 0.6,
+  "marker_wall_distance_m": 0.1,
+  "wall_reference": "Distance to inner white-wall edges in ORIGINAL frames; see white_wall_calibration.json. Crop border is not the wall.",
+  "pillars_counted": false,
+  "sample_interval_s": 0.2,
+  "robot_episode_gap_s": 0.8,
+  "wall_episode_gap_s": 0.5,
+  "setup_policy": "Start each robot after 0.05 m observed displacement from its first position",
+  "completion_policy": "Exclude observed ordered blue completions, reviewed completion parking, and visible handling/removal. Cutoffs documented in robot_exclusions.csv.",
+  "limitations": "Missing marker observations and unobserved completion times can affect counts; wall distances use approximate arena calibration. These are user-defined proximity episodes, not verified physical contacts."
+}

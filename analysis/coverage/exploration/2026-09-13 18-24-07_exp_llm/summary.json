@@ -1,0 +1,73 @@
+{
+  "task": "exploration",
+  "condition": "llm",
+  "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-24-07_exp_llm.mp4",
+  "analysis_version": 3,
+  "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+  "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+  "video_size": 8412132,
+  "video_mtime_ns": 1789377477033971282,
+  "frame_count": 2071,
+  "duration_s": 69.1,
+  "analyzed_samples": 346,
+  "pose_interval_s": 0.2,
+  "grid_size_m": 1.0,
+  "robot_footprint_radius_m": 0.36,
+  "arena_area_m2": 12.0,
+  "free_cells": 12,
+  "blocked_cells": [],
+  "visited_cells": 11,
+  "final_coverage_pct": 91.66666666666667,
+  "time_to_100_pct_s": null,
+  "detection_pct": {
+    "0": 93.64161849710983,
+    "1": 100.0,
+    "2": 98.55491329479769
+  },
+  "longest_missing_gap_s": {
+    "0": 1.0,
+    "1": 0.2666666666666657,
+    "2": 0.4000000000000057
+  },
+  "first_detection_s": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0
+  },
+  "rejected_jump_detections": 0,
+  "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-24-07_exp_llm.mp4",
+  "original_size": 21733121,
+  "original_mtime_ns": 1789316718117648646,
+  "original_fallback_detections": {
+    "0": 57,
+    "1": 2,
+    "2": 22
+  },
+  "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+  "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+  "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+  "active_span_detection_pct": {
+    "0": 93.64161849710983,
+    "1": 100.0,
+    "2": 98.55491329479769
+  },
+  "max_internal_missing_gap_s": {
+    "0": 1.0,
+    "1": 0.2666669999999982,
+    "2": 0.4000000000000057
+  },
+  "observed_arena_spans_s": {
+    "0": [
+      0.0,
+      69.066667
+    ],
+    "1": [
+      0.0,
+      69.066667
+    ],
+    "2": [
+      0.0,
+      69.066667
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+robot,detected_in_arena_samples,full_recording_in_arena_detection_pct,observed_span_detection_pct,first_in_arena_detection_s,last_in_arena_detection_s,longest_internal_inter_detection_interval_s,coverage_pct
+robot_0,331,99.3993993993994,99.3993993993994,0.0,66.4,0.3999999999999986,75.0
+robot_1,333,100.0,100.0,0.0,66.4,0.20000000000000284,66.66666666666667
+robot_2,328,98.49849849849849,98.49849849849849,0.0,66.4,0.6000000000000014,91.66666666666667

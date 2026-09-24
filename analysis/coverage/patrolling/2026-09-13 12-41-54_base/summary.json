@@ -1,0 +1,73 @@
+{
+  "task": "patrolling",
+  "condition": "baseline",
+  "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-41-54_base.mp4",
+  "analysis_version": 3,
+  "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+  "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+  "video_size": 11339208,
+  "video_mtime_ns": 1789377667139138229,
+  "frame_count": 3664,
+  "duration_s": 122.2,
+  "analyzed_samples": 611,
+  "pose_interval_s": 0.2,
+  "grid_size_m": 1.0,
+  "robot_footprint_radius_m": 0.36,
+  "arena_area_m2": 12.0,
+  "free_cells": 12,
+  "blocked_cells": [],
+  "visited_cells": 12,
+  "final_coverage_pct": 100.0,
+  "time_to_100_pct_s": 24.5,
+  "detection_pct": {
+    "0": 43.86252045826514,
+    "1": 93.78068739770868,
+    "2": 70.54009819967267
+  },
+  "longest_missing_gap_s": {
+    "0": 68.80000000000001,
+    "1": 1.4000000000000057,
+    "2": 35.400000000000006
+  },
+  "first_detection_s": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0
+  },
+  "rejected_jump_detections": 0,
+  "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-41-54_base.mp4",
+  "original_size": 38356421,
+  "original_mtime_ns": 1789296237831450438,
+  "original_fallback_detections": {
+    "0": 225,
+    "1": 42,
+    "2": 9
+  },
+  "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+  "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+  "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+  "active_span_detection_pct": {
+    "0": 100.0,
+    "1": 93.78068739770868,
+    "2": 99.08045977011494
+  },
+  "max_internal_missing_gap_s": {
+    "0": 0.20000000000000284,
+    "1": 1.4000000000000057,
+    "2": 0.5999999999999943
+  },
+  "observed_arena_spans_s": {
+    "0": [
+      0.0,
+      53.4
+    ],
+    "1": [
+      0.0,
+      122.0
+    ],
+    "2": [
+      0.0,
+      86.8
+    ]
+  }
+}

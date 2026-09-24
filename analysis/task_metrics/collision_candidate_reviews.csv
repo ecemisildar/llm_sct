@@ -1,0 +1,82 @@
+candidate_id,task,condition,video,elapsed_s,contact_type,robot,other,distance_m,review_status,review_reason,review_png
+1,exploration,baseline,2026-09-13 17-58-52_exp_base.mp4,64.4,wall,1,right,0.1488290000000001,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+2,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,11.0,wall,1,right,0.14836099999999997,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+3,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,17.2,wall,2,right,0.14952299999999985,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+4,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,23.4,wall,2,right,0.1435719999999998,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+5,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,25.6,wall,2,right,0.050727999999999884,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+6,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,38.6,wall,0,left,0.148932,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+7,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,45.8,wall,0,left,0.147434,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+8,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,51.6,wall,1,right,0.1437590000000002,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+9,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,54.6,wall,0,top,0.13573600000000008,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_01.jpg
+10,exploration,baseline,2026-09-13 18-14-32_exp_base.mp4,57.8,wall,0,top,0.1412049999999998,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+11,exploration,llm,2026-09-13 18-17-02_exp_llm.mp4,3.8,wall,2,right,0.13233400000000017,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+12,exploration,llm,2026-09-13 18-17-02_exp_llm.mp4,16.2,wall,1,right,0.14785799999999982,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+13,exploration,llm,2026-09-13 18-17-02_exp_llm.mp4,24.0,wall,1,right,0.14264600000000005,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+14,exploration,llm,2026-09-13 18-17-02_exp_llm.mp4,30.2,wall,1,right,0.14800600000000008,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+15,exploration,llm,2026-09-13 18-17-02_exp_llm.mp4,31.8,wall,1,right,0.13323099999999988,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+16,exploration,llm,2026-09-13 18-17-02_exp_llm.mp4,40.0,wall,1,right,0.14614800000000017,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+17,exploration,baseline,2026-09-13 18-21-51_exp_base.mp4,8.8,wall,2,left,0.144528,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+18,exploration,baseline,2026-09-13 18-21-51_exp_base.mp4,57.6,wall,1,right,0.10295999999999994,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_02.jpg
+19,exploration,baseline,2026-09-13 18-21-51_exp_base.mp4,63.4,wall,1,right,0.1479680000000001,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+20,exploration,baseline,2026-09-13 18-26-08_exp_base.mp4,30.2,wall,2,right,0.11668700000000021,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+21,exploration,llm,2026-09-13 18-28-52_exp_llm.mp4,0.0,wall,0,left,0.05322,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+22,exploration,llm,2026-09-13 18-28-52_exp_llm.mp4,8.4,wall,0,left,0.149519,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+23,exploration,llm,2026-09-13 18-28-52_exp_llm.mp4,49.2,wall,2,right,0.14609899999999998,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+24,exploration,baseline,2026-09-13 18-31-50_exp_base.mp4,29.4,wall,0,right,0.1493000000000002,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+25,exploration,llm,2026-09-13 18-34-45_exp_llm.mp4,61.6,wall,1,right,0.11843100000000018,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+26,exploration,baseline,2026-09-13 18-37-15_exp_base.mp4,0.0,wall,2,right,0.1252559999999998,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+27,exploration,baseline,2026-09-13 18-37-15_exp_base.mp4,5.4,wall,2,right,0.1479569999999999,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_03.jpg
+28,exploration,baseline,2026-09-13 18-37-15_exp_base.mp4,45.0,wall,1,right,0.12936499999999995,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_04.jpg
+29,exploration,llm,2026-09-13 18-39-43_exp_llm.mp4,10.8,wall,2,right,0.1489410000000002,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_04.jpg
+30,exploration,llm,2026-09-13 18-39-43_exp_llm.mp4,14.0,wall,2,right,0.1464859999999999,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_04.jpg
+31,exploration,llm,2026-09-13 18-44-36_exp_lm.mp4,60.0,wall,2,right,0.1358579999999998,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_04.jpg
+32,exploration,baseline,2026-09-13 18-48-05_exp_base.mp4,8.4,wall,1,right,0.13091600000000003,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_04.jpg
+33,exploration,llm,2026-09-13 18-50-42_exp_llm.mp4,7.6,wall,1,right,0.14196700000000018,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_04.jpg
+34,exploration,llm,2026-09-13 18-50-42_exp_llm.mp4,49.6,wall,0,left,0.149169,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_04.jpg
+35,patrolling,baseline,2026-09-13 12-25-28_base.mp4,57.8,wall,0,bottom,0.14973,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_04.jpg
+36,patrolling,baseline,2026-09-13 12-25-28_base.mp4,130.0,wall,1,bottom,0.071818,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_04.jpg
+37,patrolling,llm,2026-09-13 12-36-00_llm.mp4,53.6,wall,0,right,0.1148889999999998,rejected,User rejected all seven events in the example: no collision.,collision_review/candidate_review_05.jpg
+38,patrolling,llm,2026-09-13 12-36-00_llm.mp4,57.2,wall,0,right,0.11403499999999989,rejected,User rejected all seven events in the example: no collision.,collision_review/candidate_review_05.jpg
+39,patrolling,llm,2026-09-13 12-36-00_llm.mp4,63.0,wall,0,right,0.12022399999999989,rejected,User rejected all seven events in the example: no collision.,collision_review/candidate_review_05.jpg
+40,patrolling,llm,2026-09-13 12-36-00_llm.mp4,72.0,wall,0,right,0.14790599999999987,rejected,User rejected all seven events in the example: no collision.,collision_review/candidate_review_05.jpg
+41,patrolling,llm,2026-09-13 12-36-00_llm.mp4,81.8,wall,0,right,0.13510100000000014,rejected,User rejected all seven events in the example: no collision.,collision_review/candidate_review_05.jpg
+42,patrolling,llm,2026-09-13 12-36-00_llm.mp4,117.4,wall,2,bottom,0.106551,rejected,Completed robot being handled/removed; excluded.,collision_review/candidate_review_05.jpg
+43,patrolling,llm,2026-09-13 12-36-00_llm.mp4,179.6,wall,0,bottom,0.143919,rejected,Completed robot being handled/removed; excluded.,collision_review/candidate_review_05.jpg
+44,patrolling,baseline,2026-09-13 12-41-54_base.mp4,51.0,wall,0,bottom,0.149835,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_05.jpg
+45,patrolling,baseline,2026-09-13 12-41-54_base.mp4,86.6,wall,2,bottom,0.122024,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_05.jpg
+46,patrolling,llm,2026-09-13 12-45-21_llm_best.mp4,27.6,wall,1,right,0.12958800000000004,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_06.jpg
+47,patrolling,llm,2026-09-13 12-45-21_llm_best.mp4,41.6,wall,1,right,0.14934199999999986,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_06.jpg
+48,patrolling,llm,2026-09-13 12-45-21_llm_best.mp4,93.4,wall,1,bottom,0.088792,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_06.jpg
+49,patrolling,llm,2026-09-13 12-45-21_llm_best.mp4,100.6,wall,2,right,0.14392899999999997,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_06.jpg
+50,patrolling,baseline,2026-09-13 12-53-56_base.mp4,135.4,wall,0,right,0.0700639999999999,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_06.jpg
+51,patrolling,baseline,2026-09-13 12-53-56_base.mp4,136.2,wall,0,right,0.0601560000000001,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_06.jpg
+52,patrolling,baseline,2026-09-13 12-53-56_base.mp4,136.4,pillar,0,green,0.033794331477334995,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_06.jpg
+53,patrolling,llm,2026-09-13 13-11-04_llm.mp4,0.0,wall,0,left,0.104359,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_06.jpg
+54,patrolling,llm,2026-09-13 13-11-04_llm.mp4,4.6,wall,1,top,0.14438400000000007,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_06.jpg
+55,patrolling,llm,2026-09-13 13-11-04_llm.mp4,95.0,wall,2,right,0.1493549999999999,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_07.jpg
+56,patrolling,llm,2026-09-13 13-11-04_llm.mp4,156.0,wall,2,left,0.060259,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_07.jpg
+57,patrolling,llm,2026-09-13 13-11-04_llm.mp4,166.8,wall,1,right,0.14233299999999982,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_07.jpg
+58,patrolling,baseline,2026-09-13 13-18-40_base.mp4,60.2,wall,0,bottom,0.113563,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_07.jpg
+59,patrolling,baseline,2026-09-13 13-18-40_base.mp4,80.2,wall,2,left,0.055124,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_07.jpg
+60,patrolling,baseline,2026-09-13 13-18-40_base.mp4,80.2,wall,2,bottom,0.144371,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_07.jpg
+61,patrolling,llm,2026-09-13 13-22-01_llm.mp4,0.0,wall,0,top,0.12410500000000013,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_07.jpg
+62,patrolling,llm,2026-09-13 13-22-01_llm.mp4,194.0,wall,0,bottom,0.052372,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_07.jpg
+63,patrolling,llm,2026-09-13 13-22-01_llm.mp4,257.0,wall,2,right,0.1499999999999999,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_07.jpg
+64,patrolling,baseline,2026-09-13 16-31-31_base.mp4,67.0,wall,0,bottom,0.084244,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_08.jpg
+65,patrolling,baseline,2026-09-13 16-31-31_base.mp4,89.6,wall,2,bottom,0.112683,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_08.jpg
+66,patrolling,llm,2026-09-13 16-35-23_llm.mp4,216.4,pillar,2,green,0.32277899698245577,rejected,User confirmed this pillar approach is not a collision.,collision_review/candidate_review_08.jpg
+67,patrolling,llm,2026-09-13 16-35-23_llm.mp4,219.8,pillar,2,green,0.3191571357466414,rejected,User confirmed this pillar approach is not a collision.,collision_review/candidate_review_08.jpg
+68,patrolling,baseline,2026-09-13 16-41-51_base.mp4,279.2,pillar,1,red,0.29077512718422094,rejected,User confirmed this pillar approach is not a collision.,collision_review/candidate_review_08.jpg
+69,patrolling,baseline,2026-09-13 16-41-51_base.mp4,280.6,pillar,1,red,0.18393593378673953,rejected,User confirmed this pillar approach is not a collision.,collision_review/candidate_review_08.jpg
+70,patrolling,llm,2026-09-13 16-49-26_llm.mp4,74.0,pillar,0,green,0.29358568856298145,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_08.jpg
+71,patrolling,llm,2026-09-13 16-49-26_llm.mp4,112.4,wall,0,left,0.030318,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_08.jpg
+72,patrolling,llm,2026-09-13 16-49-26_llm.mp4,112.4,wall,0,bottom,0.110449,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_08.jpg
+73,patrolling,baseline,2026-09-13 16-55-09_base.mp4,1.2,wall,2,right,0.08767300000000011,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_09.jpg
+74,patrolling,baseline,2026-09-13 17-10-48_baseline.mp4,2.4,wall,2,top,0.1471079999999998,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_09.jpg
+75,patrolling,baseline,2026-09-13 17-10-48_baseline.mp4,54.4,wall,2,bottom,0.035349,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_09.jpg
+76,patrolling,llm,2026-09-13 17-17-42_llm.mp4,2.2,wall,2,top,0.1385909999999999,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_09.jpg
+77,patrolling,llm,2026-09-13 17-30-52_llm.mp4,0.0,wall,2,left,0.058582,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_09.jpg
+78,patrolling,llm,2026-09-13 17-30-52_llm.mp4,58.6,wall,0,right,0.13036899999999996,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_09.jpg
+79,patrolling,llm,2026-09-13 17-30-52_llm.mp4,75.4,wall,0,right,0.14285399999999981,rejected,Proximity/avoidance or setup; no visible physical contact established.,collision_review/candidate_review_09.jpg
+80,patrolling,llm,2026-09-13 17-30-52_llm.mp4,86.4,wall,1,left,0.027933,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_09.jpg
+81,patrolling,llm,2026-09-13 17-30-52_llm.mp4,86.4,wall,1,bottom,0.08722,rejected,Human handling/removal; excluded from autonomous collisions.,collision_review/candidate_review_09.jpg

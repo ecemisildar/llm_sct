@@ -1,0 +1,5 @@
+task,condition,n,common_cutoff_s,coverage_at_cutoff_mean_pct,coverage_at_cutoff_sd_pct,final_coverage_mean_pct,trials_reaching_100_pct,mean_time_to_100_pct_s
+exploration,baseline,10,64.56666666666666,100.0,0.0,100.0,10,31.15
+exploration,llm,10,64.56666666666666,97.5,5.6245713142546085,97.5,8,35.6875
+patrolling,baseline,10,122.2,97.5,5.6245713142546085,98.33333333333333,8,44.25
+patrolling,llm,10,122.2,100.0,0.0,100.0,10,34.05

@@ -1,0 +1,73 @@
+{
+  "task": "patrolling",
+  "condition": "llm",
+  "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-22-01_llm.mp4",
+  "analysis_version": 3,
+  "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+  "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+  "video_size": 29566253,
+  "video_mtime_ns": 1789378686748332729,
+  "frame_count": 8709,
+  "duration_s": 290.3666666666667,
+  "analyzed_samples": 1452,
+  "pose_interval_s": 0.2,
+  "grid_size_m": 1.0,
+  "robot_footprint_radius_m": 0.36,
+  "arena_area_m2": 12.0,
+  "free_cells": 12,
+  "blocked_cells": [],
+  "visited_cells": 12,
+  "final_coverage_pct": 100.0,
+  "time_to_100_pct_s": 7.0,
+  "detection_pct": {
+    "0": 61.570247933884296,
+    "1": 90.97796143250689,
+    "2": 97.65840220385675
+  },
+  "longest_missing_gap_s": {
+    "0": 96.36666666666667,
+    "1": 25.966666666666697,
+    "2": 3.0
+  },
+  "first_detection_s": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0
+  },
+  "rejected_jump_detections": 0,
+  "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-22-01_llm.mp4",
+  "original_size": 91116248,
+  "original_mtime_ns": 1789298813701693577,
+  "original_fallback_detections": {
+    "0": 84,
+    "1": 116,
+    "2": 34
+  },
+  "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+  "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+  "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+  "active_span_detection_pct": {
+    "0": 92.07003089598352,
+    "1": 99.848828420257,
+    "2": 97.65840220385675
+  },
+  "max_internal_missing_gap_s": {
+    "0": 2.0,
+    "1": 0.40000000000000036,
+    "2": 3.0
+  },
+  "observed_arena_spans_s": {
+    "0": [
+      0.0,
+      194.0
+    ],
+    "1": [
+      0.0,
+      264.4
+    ],
+    "2": [
+      0.0,
+      290.2
+    ]
+  }
+}

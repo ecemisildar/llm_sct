@@ -1,0 +1,5 @@
+task,condition,trials,total_collision_estimates,mean_collision_estimates,mean_robot_collision_estimates,mean_wall_collision_estimates,mean_pillar_collision_estimates,mean_collisions_at_common_cutoff,verified_completed_trials,mean_completion_time_verified_s,mean_task_progression_points,mean_task_progression_pct,successful_trials_under_5_min_rule,success_rate_pct,mean_successful_recording_duration_proxy_s
+exploration,baseline,10,19,1.9,0,1.9,0,1.9,,,,,,,
+exploration,llm,10,15,1.5,0,1.5,0,1.5,,,,,,,
+patrolling,baseline,10,17,1.7,0,1.4,0.3,1.1,0,,2.8333333333333335,94.44444444444444,8,80.0,152.0375
+patrolling,llm,10,30,3,0,2.7,0.3,2.3,1,211.6,2.7,90.0,8,80.0,215.4625

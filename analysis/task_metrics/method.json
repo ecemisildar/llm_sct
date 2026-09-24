@@ -1,0 +1,48 @@
+{
+  "zone_radius_m": 1.0,
+  "order": [
+    "red",
+    "green",
+    "blue"
+  ],
+  "robot_pair_threshold_m": 0.45,
+  "wall_threshold_m": 0.15,
+  "pillar_threshold_m": 0.325,
+  "robot_contact_gap_s": 0.8,
+  "obstacle_contact_gap_s": 0.5,
+  "pose_interval_s": 0.2,
+  "arena_dimensions_m": [
+    4,
+    3
+  ],
+  "collision_scope": "Whole recording; unique pair episodes; simultaneous wall and robot contacts count separately.",
+  "missing_data": "No interpolation; a tracking gap can hide events or split a contact episode.",
+  "completion": "Last of three robots to reach blue after red then green, measured from video start; blank if unverified.",
+  "pillar_centers": "First-frame HSV component centroids, manually reviewed in target_calibration_sheet.jpg; approximate floor positions.",
+  "robot_position": "ArUco center proxy; no camera-height or marker-to-body correction.",
+  "success_rule": "User instruction: patrolling recording duration strictly below 300 s implies success and all nine ordered reaches credited.",
+  "progression": "Successful clips receive 3 points per robot; other clips retain observed ordered 1 m scores.",
+  "completion_proxy": "Successful recording duration is provided separately as a proxy, not the measured last blue arrival. No timestamps are invented for credited reaches.",
+  "collision_policy": "Actual physical contact only, confirmed by review. Completed robots, parking, human handling, setup and proximity alone are excluded. Distance thresholds generate candidates, never collision counts.",
+  "collision_validation": "81 original candidates rejected; 0 uncertain. Full-video collision totals are unvalidated and blank, not zero.",
+  "completed_robot_policy": "Exclude either robot at or after its observed ordered blue reach; review must additionally exclude completion/parking missed by geometric tracking.",
+  "robot_robot_review": {
+    "encounters": 257,
+    "candidate_radius_m": 0.85,
+    "confirmed_contacts": 0,
+    "scope": "Closest original frame per encounter; +/-0.6 s temporal frames for the 19 closest encounters. Not a full-frame audit."
+  },
+  "current_collision_policy": {
+    "robot_marker_distance_m": 0.6,
+    "marker_wall_distance_m": 0.1,
+    "wall_reference": "Distance to inner white-wall edges in ORIGINAL frames; see white_wall_calibration.json. Crop border is not the wall.",
+    "pillars_counted": false,
+    "sample_interval_s": 0.2,
+    "robot_episode_gap_s": 0.8,
+    "wall_episode_gap_s": 0.5,
+    "setup_policy": "Start each robot after 0.05 m observed displacement from its first position",
+    "completion_policy": "Exclude observed ordered blue completions, reviewed completion parking, and visible handling/removal. Cutoffs documented in robot_exclusions.csv.",
+    "limitations": "Missing marker observations and unobserved completion times can affect counts; wall distances use approximate arena calibration. These are user-defined proximity episodes, not verified physical contacts."
+  },
+  "collision_count_basis": "Current user-approved proximity definition; supersedes physical-contact-only counting for reported collision metrics."
+}

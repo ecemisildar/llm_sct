@@ -1,0 +1,11 @@
+# 4K ArUco Robot Tracker — Python dependencies
+#
+# Install with:
+#   pip install -r requirements.txt
+#
+# NOTE: use opencv-contrib-python, NOT opencv-python.
+#       Both cannot coexist; uninstall opencv-python first if present:
+#         pip uninstall opencv-python && pip install opencv-contrib-python
+
+opencv-contrib-python>=4.8.0
+numpy>=1.24.0

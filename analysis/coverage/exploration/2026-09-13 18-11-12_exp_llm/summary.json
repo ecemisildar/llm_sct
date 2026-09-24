@@ -1,0 +1,73 @@
+{
+  "task": "exploration",
+  "condition": "llm",
+  "video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-11-12_exp_llm.mp4",
+  "analysis_version": 3,
+  "simulation_source": "/home/ecem/sct_ws/src/llm_sct/evaluation/evaluation/coverage_counter.py",
+  "simulation_sha256": "aa9c3cc285bf68664806541f737f5bb4329af2416d017fbe44260a5f37a63082",
+  "video_size": 7640643,
+  "video_mtime_ns": 1789377400877709672,
+  "frame_count": 1985,
+  "duration_s": 66.16666666666666,
+  "analyzed_samples": 331,
+  "pose_interval_s": 0.2,
+  "grid_size_m": 1.0,
+  "robot_footprint_radius_m": 0.36,
+  "arena_area_m2": 12.0,
+  "free_cells": 12,
+  "blocked_cells": [],
+  "visited_cells": 12,
+  "final_coverage_pct": 100.0,
+  "time_to_100_pct_s": 40.0,
+  "detection_pct": {
+    "0": 98.48942598187311,
+    "1": 98.48942598187311,
+    "2": 96.07250755287009
+  },
+  "longest_missing_gap_s": {
+    "0": 0.4000000000000057,
+    "1": 0.6000000000000014,
+    "2": 0.8000000000000043
+  },
+  "first_detection_s": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0
+  },
+  "rejected_jump_detections": 0,
+  "original_video": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-11-12_exp_llm.mp4",
+  "original_size": 20805659,
+  "original_mtime_ns": 1789315940149457507,
+  "original_fallback_detections": {
+    "0": 50,
+    "1": 11,
+    "2": 21
+  },
+  "coordinates": "metres; origin bottom left; ArUco marker centre approximates robot centre",
+  "missing_detections": "No coverage is invented or interpolated during tracking gaps.",
+  "obstacle_policy": "All 12 arena floor cells are counted; no surveyed obstacle mask available.",
+  "active_span_detection_pct": {
+    "0": 98.48942598187311,
+    "1": 98.48942598187311,
+    "2": 96.07250755287009
+  },
+  "max_internal_missing_gap_s": {
+    "0": 0.4000000000000057,
+    "1": 0.6000000000000014,
+    "2": 0.8000000000000043
+  },
+  "observed_arena_spans_s": {
+    "0": [
+      0.0,
+      66.0
+    ],
+    "1": [
+      0.0,
+      66.0
+    ],
+    "2": [
+      0.0,
+      66.0
+    ]
+  }
+}

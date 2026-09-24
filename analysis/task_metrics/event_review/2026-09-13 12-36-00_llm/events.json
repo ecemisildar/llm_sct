@@ -1,0 +1,130 @@
+[
+  {
+    "event": "rejected_proximity_candidate",
+    "robot": 0,
+    "target": "right",
+    "elapsed_s": 53.6,
+    "distance_m": 0.1148889999999998,
+    "png": "bump_01_53.6s.png"
+  },
+  {
+    "event": "rejected_proximity_candidate",
+    "robot": 0,
+    "target": "right",
+    "elapsed_s": 57.2,
+    "distance_m": 0.11403499999999989,
+    "png": "bump_02_57.2s.png"
+  },
+  {
+    "event": "rejected_proximity_candidate",
+    "robot": 0,
+    "target": "right",
+    "elapsed_s": 63.0,
+    "distance_m": 0.12022399999999989,
+    "png": "bump_03_63.0s.png"
+  },
+  {
+    "event": "rejected_proximity_candidate",
+    "robot": 0,
+    "target": "right",
+    "elapsed_s": 72.0,
+    "distance_m": 0.14790599999999987,
+    "png": "bump_04_72.0s.png"
+  },
+  {
+    "event": "rejected_proximity_candidate",
+    "robot": 0,
+    "target": "right",
+    "elapsed_s": 81.8,
+    "distance_m": 0.13510100000000014,
+    "png": "bump_05_81.8s.png"
+  },
+  {
+    "event": "rejected_proximity_candidate",
+    "robot": 2,
+    "target": "bottom",
+    "elapsed_s": 117.4,
+    "distance_m": 0.106551,
+    "png": "bump_06_117.4s.png"
+  },
+  {
+    "event": "rejected_proximity_candidate",
+    "robot": 0,
+    "target": "bottom",
+    "elapsed_s": 179.6,
+    "distance_m": 0.143919,
+    "png": "bump_07_179.6s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 0,
+    "target": "red",
+    "elapsed_s": 4.0,
+    "distance_m": 0.9633742728161264,
+    "png": "reach_01_R0_red_4.0s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 2,
+    "target": "red",
+    "elapsed_s": 20.0,
+    "distance_m": 0.9393588250035235,
+    "png": "reach_02_R2_red_20.0s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 2,
+    "target": "green",
+    "elapsed_s": 35.6,
+    "distance_m": 0.9750841284453359,
+    "png": "reach_03_R2_green_35.6s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 2,
+    "target": "blue",
+    "elapsed_s": 100.8,
+    "distance_m": 0.9631173352323174,
+    "png": "reach_04_R2_blue_100.8s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 0,
+    "target": "green",
+    "elapsed_s": 106.0,
+    "distance_m": 0.9847724522289402,
+    "png": "reach_05_R0_green_106.0s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 1,
+    "target": "red",
+    "elapsed_s": 131.8,
+    "distance_m": 0.9958919476619943,
+    "png": "reach_06_R1_red_131.8s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 0,
+    "target": "blue",
+    "elapsed_s": 165.8,
+    "distance_m": 0.9980387514610843,
+    "png": "reach_07_R0_blue_165.8s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 1,
+    "target": "green",
+    "elapsed_s": 166.8,
+    "distance_m": 0.9697726604117072,
+    "png": "reach_08_R1_green_166.8s.png"
+  },
+  {
+    "event": "observed_ordered_reach",
+    "robot": 1,
+    "target": "blue",
+    "elapsed_s": 211.6,
+    "distance_m": 0.9774825911232384,
+    "png": "reach_09_R1_blue_211.6s.png"
+  }
+]

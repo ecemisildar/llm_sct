@@ -1,0 +1,1155 @@
+{
+  "inner_floor_corners_tl_tr_br_bl": [
+    [
+      258,
+      90
+    ],
+    [
+      1000,
+      78
+    ],
+    [
+      1020,
+      617
+    ],
+    [
+      275,
+      633
+    ]
+  ],
+  "arena_width_m": 4.0,
+  "arena_height_m": 3.0,
+  "arena_area_m2": 12.0,
+  "source_resolution": [
+    1280,
+    720
+  ],
+  "output_resolution": [
+    800,
+    600
+  ],
+  "filter": "crop=780:568:250:72,perspective=x0=8:y0=18:x1=750:y1=6:x2=25:y2=561:x3=770:y3=545:sense=source,scale=800:600,setsar=1",
+  "note": "Manually selected floor corners, slightly inset to exclude walls. Arena represents approximately 12 square metres as specified by the user, using 4 x 3 m dimensions from existing corners.json.",
+  "videos": [
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 17-58-52_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 17-58-52_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "1937"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3024"
+          }
+        ],
+        "format": {
+          "duration": "64.567000"
+        }
+      },
+      "original_size": 20280235,
+      "original_mtime_ns": 1789315198185433576
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-01-11_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-01-11_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2005"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3130"
+          }
+        ],
+        "format": {
+          "duration": "66.900000"
+        }
+      },
+      "original_size": 21168900,
+      "original_mtime_ns": 1789315339718007961
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-03-08_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-03-08_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "1989"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3105"
+          }
+        ],
+        "format": {
+          "duration": "66.367000"
+        }
+      },
+      "original_size": 20849064,
+      "original_mtime_ns": 1789315456059281789
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-06-11_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-06-11_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "1973"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3080"
+          }
+        ],
+        "format": {
+          "duration": "65.767000"
+        }
+      },
+      "original_size": 20657391,
+      "original_mtime_ns": 1789315638483251385
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-08-41_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-08-41_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "1990"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3107"
+          }
+        ],
+        "format": {
+          "duration": "66.367000"
+        }
+      },
+      "original_size": 20844408,
+      "original_mtime_ns": 1789315789315860752
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-11-12_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-11-12_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "1985"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3099"
+          }
+        ],
+        "format": {
+          "duration": "66.167000"
+        }
+      },
+      "original_size": 20805659,
+      "original_mtime_ns": 1789315940149457507
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-14-32_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-14-32_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2026"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3163"
+          }
+        ],
+        "format": {
+          "duration": "67.600000"
+        }
+      },
+      "original_size": 21324806,
+      "original_mtime_ns": 1789316141164571323
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-17-02_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-17-02_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2090"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3263"
+          }
+        ],
+        "format": {
+          "duration": "69.700000"
+        }
+      },
+      "original_size": 21883159,
+      "original_mtime_ns": 1789316293318163571
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-21-51_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-21-51_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2014"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3144"
+          }
+        ],
+        "format": {
+          "duration": "67.200000"
+        }
+      },
+      "original_size": 21189689,
+      "original_mtime_ns": 1789316580615157987
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-24-07_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-24-07_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2071"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3233"
+          }
+        ],
+        "format": {
+          "duration": "69.100000"
+        }
+      },
+      "original_size": 21733121,
+      "original_mtime_ns": 1789316718117648646
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-26-08_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-26-08_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2665"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "4161"
+          }
+        ],
+        "format": {
+          "duration": "88.867000"
+        }
+      },
+      "original_size": 27893692,
+      "original_mtime_ns": 1789316858497281271
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-28-52_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-28-52_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2000"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3122"
+          }
+        ],
+        "format": {
+          "duration": "66.667000"
+        }
+      },
+      "original_size": 20921699,
+      "original_mtime_ns": 1789317002986922564
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-31-50_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-31-50_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "1996"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3116"
+          }
+        ],
+        "format": {
+          "duration": "66.567000"
+        }
+      },
+      "original_size": 20892205,
+      "original_mtime_ns": 1789317178215873501
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-34-45_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-34-45_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "1983"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3096"
+          }
+        ],
+        "format": {
+          "duration": "66.167000"
+        }
+      },
+      "original_size": 20758994,
+      "original_mtime_ns": 1789317353551794164
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-37-15_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-37-15_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2001"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3124"
+          }
+        ],
+        "format": {
+          "duration": "66.700000"
+        }
+      },
+      "original_size": 21081394,
+      "original_mtime_ns": 1789317503686420743
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-39-43_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-39-43_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2022"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3157"
+          }
+        ],
+        "format": {
+          "duration": "67.400000"
+        }
+      },
+      "original_size": 21390938,
+      "original_mtime_ns": 1789317656173060351
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-42-20_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-42-20_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2001"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3124"
+          }
+        ],
+        "format": {
+          "duration": "66.700000"
+        }
+      },
+      "original_size": 21108052,
+      "original_mtime_ns": 1789317809052694822
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-44-36_exp_lm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-44-36_exp_lm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2744"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "4285"
+          }
+        ],
+        "format": {
+          "duration": "91.467000"
+        }
+      },
+      "original_size": 28705250,
+      "original_mtime_ns": 1789317969619404024
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-48-05_exp_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-48-05_exp_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2307"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3602"
+          }
+        ],
+        "format": {
+          "duration": "76.934000"
+        }
+      },
+      "original_size": 24216772,
+      "original_mtime_ns": 1789318163949465278
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/2026-09-13 18-50-42_exp_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/exploration/cropped/2026-09-13 18-50-42_exp_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "2016"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "3147"
+          }
+        ],
+        "format": {
+          "duration": "67.200000"
+        }
+      },
+      "original_size": 21233496,
+      "original_mtime_ns": 1789318316452078817
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-25-28_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-25-28_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "4484"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "7004"
+          }
+        ],
+        "format": {
+          "duration": "149.500000"
+        }
+      },
+      "original_size": 46914041,
+      "original_mtime_ns": 1789295279866611776
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-36-00_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-36-00_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "6655"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "10396"
+          }
+        ],
+        "format": {
+          "duration": "221.900000"
+        }
+      },
+      "original_size": 69643229,
+      "original_mtime_ns": 1789295983599270787
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-41-54_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-41-54_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "3664"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "5722"
+          }
+        ],
+        "format": {
+          "duration": "122.200000"
+        }
+      },
+      "original_size": 38356421,
+      "original_mtime_ns": 1789296237831450438
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-45-21_llm_best.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-45-21_llm_best.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "3916"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "6116"
+          }
+        ],
+        "format": {
+          "duration": "130.534000"
+        }
+      },
+      "original_size": 40963263,
+      "original_mtime_ns": 1789296454100329271
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-53-56_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-53-56_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "6157"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "9618"
+          }
+        ],
+        "format": {
+          "duration": "205.234000"
+        }
+      },
+      "original_size": 64406612,
+      "original_mtime_ns": 1789297043336507957
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 12-59-50_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 12-59-50_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "8601"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "13436"
+          }
+        ],
+        "format": {
+          "duration": "286.767000"
+        }
+      },
+      "original_size": 89986391,
+      "original_mtime_ns": 1789297478565358914
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-06-27_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-06-27_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "5767"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "9008"
+          }
+        ],
+        "format": {
+          "duration": "192.300000"
+        }
+      },
+      "original_size": 60424698,
+      "original_mtime_ns": 1789297781401043671
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-11-04_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-11-04_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "9764"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "15254"
+          }
+        ],
+        "format": {
+          "duration": "325.534000"
+        }
+      },
+      "original_size": 102250775,
+      "original_mtime_ns": 1789298191635683789
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-18-40_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-18-40_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "3687"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "5758"
+          }
+        ],
+        "format": {
+          "duration": "122.900000"
+        }
+      },
+      "original_size": 38568631,
+      "original_mtime_ns": 1789298445298842974
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 13-22-01_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 13-22-01_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "8709"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "13605"
+          }
+        ],
+        "format": {
+          "duration": "290.367000"
+        }
+      },
+      "original_size": 91116248,
+      "original_mtime_ns": 1789298813701693577
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-31-31_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-31-31_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "4275"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "6677"
+          }
+        ],
+        "format": {
+          "duration": "142.500000"
+        }
+      },
+      "original_size": 44803711,
+      "original_mtime_ns": 1789310036949959509
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-35-23_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-35-23_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "7636"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "11929"
+          }
+        ],
+        "format": {
+          "duration": "254.534000"
+        }
+      },
+      "original_size": 79897663,
+      "original_mtime_ns": 1789310379915978413
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-41-51_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-41-51_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "9716"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "15179"
+          }
+        ],
+        "format": {
+          "duration": "323.900000"
+        }
+      },
+      "original_size": 101637001,
+      "original_mtime_ns": 1789310836649160959
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-49-26_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-49-26_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "3895"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "6083"
+          }
+        ],
+        "format": {
+          "duration": "129.834000"
+        }
+      },
+      "original_size": 40745980,
+      "original_mtime_ns": 1789311098016554335
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 16-55-09_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 16-55-09_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "4559"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "7121"
+          }
+        ],
+        "format": {
+          "duration": "152.034000"
+        }
+      },
+      "original_size": 47743115,
+      "original_mtime_ns": 1789311462549856950
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-02-34_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-02-34_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "9330"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "14575"
+          }
+        ],
+        "format": {
+          "duration": "311.067000"
+        }
+      },
+      "original_size": 97624024,
+      "original_mtime_ns": 1789312066784288617
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-10-48_baseline.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-10-48_baseline.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "9392"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "14672"
+          }
+        ],
+        "format": {
+          "duration": "313.067000"
+        }
+      },
+      "original_size": 98247305,
+      "original_mtime_ns": 1789312562717731075
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-17-42_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-17-42_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "5992"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "9360"
+          }
+        ],
+        "format": {
+          "duration": "199.800000"
+        }
+      },
+      "original_size": 62713954,
+      "original_mtime_ns": 1789312863785232268
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-23-51_base.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-23-51_base.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "3887"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "6071"
+          }
+        ],
+        "format": {
+          "duration": "129.634000"
+        }
+      },
+      "original_size": 40681087,
+      "original_mtime_ns": 1789313162427091729
+    },
+    {
+      "original": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/2026-09-13 17-30-52_llm.mp4",
+      "cropped": "/home/ecem/sct_ws/src/leo_real_experiments/videos/patrolling/cropped/2026-09-13 17-30-52_llm.mp4",
+      "metadata": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_type": "video",
+            "width": 800,
+            "height": 600,
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "nb_read_packets": "6297"
+          },
+          {
+            "codec_type": "audio",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "nb_read_packets": "9836"
+          }
+        ],
+        "format": {
+          "duration": "209.967000"
+        }
+      },
+      "original_size": 65955324,
+      "original_mtime_ns": 1789313664218752961
+    }
+  ]
+}
