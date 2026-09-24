@@ -1,0 +1,1 @@
+[INFO] [1789489730.673908610] [robot_2.stuck_recovery]: Shared stuck recovery active: cmd_vel_supervisor -> cmd_vel (reverse -> turn -> forward)

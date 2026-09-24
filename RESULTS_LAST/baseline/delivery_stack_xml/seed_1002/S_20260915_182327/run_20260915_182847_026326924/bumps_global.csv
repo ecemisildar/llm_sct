@@ -1,0 +1,4 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+24,"('robot_0', 'generic_delivery_box_2::link::collision')",left,,EV_approach_color,
+30,"('robot_0', 'generic_delivery_box_2::link::collision')",right,,ZONE_ESCAPE_REVERSE,
+33,"('robot_0', 'generic_delivery_box_2::link::collision')",front,,ZONE_ESCAPE_TURN,

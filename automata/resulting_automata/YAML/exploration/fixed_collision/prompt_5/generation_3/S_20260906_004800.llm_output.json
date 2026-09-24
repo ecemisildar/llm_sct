@@ -1,0 +1,44 @@
+{
+  "automata": [
+    {
+      "name": "area_coverage_specification",
+      "initial_state": "sweep_left",
+      "marked_states": [
+        "sweep_left",
+        "sweep_right"
+      ],
+      "transitions": [
+        [
+          "sweep_left",
+          "move_forward",
+          "sweep_left"
+        ],
+        [
+          "sweep_left",
+          "rotate_counterclockwise",
+          "sweep_right"
+        ],
+        [
+          "sweep_left",
+          "u_turn",
+          "sweep_right"
+        ],
+        [
+          "sweep_right",
+          "move_forward",
+          "sweep_right"
+        ],
+        [
+          "sweep_right",
+          "rotate_clockwise",
+          "sweep_left"
+        ],
+        [
+          "sweep_right",
+          "u_turn",
+          "sweep_left"
+        ]
+      ]
+    }
+  ]
+}

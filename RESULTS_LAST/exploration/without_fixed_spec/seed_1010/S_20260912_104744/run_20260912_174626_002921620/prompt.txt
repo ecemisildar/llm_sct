@@ -1,0 +1,1 @@
+As a member of a team of robots, explore the area while not colliding with obstacles (i.e., walls or other robots).

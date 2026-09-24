@@ -1,0 +1,1 @@
+As a member of a team, pick up an object and drop it at a delivery zone if the last object was not delivered there.

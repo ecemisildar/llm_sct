@@ -1,0 +1,15 @@
+prompt,collision_control,prompt_text,runs,successes,success_rate_pct,task_success_mean_pct,task_success_sd_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
+1,without_fixed_spec,Move within the environment to maximize the area covered while avoiding obstacles.,50,0,0.0,0.0,0.0,59.52508,0.3842406974801084,,,66.62506,10.932859088838564,,,607,12.14,4.409126897697548
+1,with_fixed_spec,Move within the environment to maximize the area covered while avoiding obstacles.,50,0,0.0,0.0,0.0,59.39426,0.3558737871774203,,,75.5416,9.849605326103173,,,18,0.36,0.5919459434779497
+2,without_fixed_spec,"As a member of a team of robots, explore the area while not colliding with obstacles (i.e., walls or other robots).",50,0,0.0,0.0,0.0,59.35312,0.3167309040810509,,,67.54166,10.061300891256558,,,662,13.24,5.120781190404449
+2,with_fixed_spec,"As a member of a team of robots, explore the area while not colliding with obstacles (i.e., walls or other robots).",50,0,0.0,0.0,0.0,59.24502,0.32276663334365907,,,72.25,10.796730475472655,,,14,0.28,0.6013318551349163
+3,without_fixed_spec,Move to maximize the area covered.,50,0,0.0,0.0,0.0,59.26896,0.3577700915392457,,,72.25,12.86576421981998,,,644,12.88,3.8504025763548415
+3,with_fixed_spec,Move to maximize the area covered.,50,0,0.0,0.0,0.0,59.2209,0.28983707492313704,,,72.91664,9.354219195122596,,,17,0.34,0.6514598989960932
+4,without_fixed_spec,"As a member of a team, explore the area.",50,0,0.0,0.0,0.0,59.3828,0.3378934743376969,,,66.79168,9.08499431687219,,,582,11.64,3.5707702250354894
+4,with_fixed_spec,"As a member of a team, explore the area.",50,0,0.0,0.0,0.0,59.25576,0.2847605703042469,,,76.45834,10.131441438630537,,,19,0.38,0.6289674077406555
+5,without_fixed_spec,Explore the environment to gain points: Receive 1 point per square meter visited. Lose -1 point for every obstacle you collide with.,50,0,0.0,0.0,0.0,59.3744,0.3705522365335281,,,66.62502,11.437377275389668,,,640,12.8,5.524490926773253
+5,with_fixed_spec,Explore the environment to gain points: Receive 1 point per square meter visited. Lose -1 point for every obstacle you collide with.,50,0,0.0,0.0,0.0,59.23538,0.3091308389662864,,,73.25,8.430300841607018,,,23,0.46,0.8991106717195609
+6,without_fixed_spec,"As a member of a team of robots, explore the environment while collecting objects (i.e., touching them).",50,0,0.0,0.0,0.0,59.24004,0.4691133747826852,,,66.95836,9.071685104235046,,,660,13.2,4.58257569495584
+6,with_fixed_spec,"As a member of a team of robots, explore the environment while collecting objects (i.e., touching them).",50,0,0.0,0.0,0.0,59.20868,0.3862055639164202,,,74.20836,8.983818822215863,,,14,0.28,0.6013318551349163
+7,without_fixed_spec,Move only forward,10,0,0.0,0.0,0.0,59.3381,0.28101902070856194,,,83.3332,13.176025157838762,,,148,14.8,4.621688003316537
+7,with_fixed_spec,Move only forward,10,0,0.0,0.0,0.0,59.1636,0.2917523607445188,,,40.4168,11.071230236970054,,,0,0.0,0.0

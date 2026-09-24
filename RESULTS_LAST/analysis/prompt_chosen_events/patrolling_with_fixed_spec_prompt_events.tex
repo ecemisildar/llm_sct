@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for patrolling (LLM + fixed specification). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:patrolling-with-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_approach\_color} & 17.31 & 18.56 & 17.32 & 19.13 & 19.04 & 15.79 & 16.54 \\
+\texttt{EV\_full\_rotate} & 4.86 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_move\_backward} & 0.47 & 0.47 & 0.43 & 0.38 & 0.41 & 0.42 & 0.37 \\
+\texttt{EV\_move\_forward} & 45.12 & 46.26 & 46.02 & 46.57 & 46.57 & 59.32 & 58.86 \\
+\texttt{EV\_rotate\_clockwise} & 2.52 & 1.90 & 1.72 & 1.34 & 1.42 & 1.55 & 1.46 \\
+\texttt{EV\_rotate\_counterclockwise} & 2.39 & 1.90 & 1.96 & 1.79 & 1.94 & 2.08 & 1.87 \\
+\texttt{EV\_search\_color} & 27.33 & 27.61 & 29.19 & 28.07 & 27.61 & 17.51 & 17.82 \\
+\texttt{EV\_u\_turn} & 0.00 & 3.30 & 3.37 & 2.72 & 3.01 & 3.33 & 3.09 \\
+\hline
+\end{tabular}
+\end{table}

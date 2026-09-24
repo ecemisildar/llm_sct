@@ -1,0 +1,7 @@
+drop,unix_time_s,robot,zone,red_count,blue_count,difference,within_limit
+1,1789250148.493646,robot_2,red,1,0,1,True
+2,1789250152.7595284,robot_1,blue,1,1,0,True
+3,1789250161.0977464,robot_2,blue,1,2,-1,True
+4,1789250262.159284,robot_1,red,2,2,0,True
+5,1789250262.1769404,robot_0,blue,2,3,-1,True
+6,1789250317.37979,robot_0,red,3,3,0,True

@@ -1,0 +1,11 @@
+[INFO] [1789489917.016506302] [robot_2.robot_state_publisher]: got segment robot_2/antenna_link
+[INFO] [1789489917.016630209] [robot_2.robot_state_publisher]: got segment robot_2/base_footprint
+[INFO] [1789489917.016647442] [robot_2.robot_state_publisher]: got segment robot_2/base_link
+[INFO] [1789489917.016657876] [robot_2.robot_state_publisher]: got segment robot_2/realsense_link
+[INFO] [1789489917.016667119] [robot_2.robot_state_publisher]: got segment robot_2/rocker_L_link
+[INFO] [1789489917.016675889] [robot_2.robot_state_publisher]: got segment robot_2/rocker_R_link
+[INFO] [1789489917.016684517] [robot_2.robot_state_publisher]: got segment robot_2/wheel_FL_link
+[INFO] [1789489917.016693760] [robot_2.robot_state_publisher]: got segment robot_2/wheel_FR_link
+[INFO] [1789489917.016701889] [robot_2.robot_state_publisher]: got segment robot_2/wheel_RL_link
+[INFO] [1789489917.016709940] [robot_2.robot_state_publisher]: got segment robot_2/wheel_RR_link
+[INFO] [1789490100.467872277] [rclcpp]: signal_handler(SIGINT/SIGTERM)

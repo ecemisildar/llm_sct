@@ -1,0 +1,20 @@
+Node started
+run_id: run_20260914_131505_140196934
+results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/delivery/with_fixed_spec/seed_1005/S_20260913_181551/run_20260914_131505_140196934
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_5/YAML/delivery/with_fixed_spec/prompt_1/generation_5/S_20260913_181551.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /tmp/leo_delivery_no_overhead_camera_l4kqdldw.sdf
+  headless: true
+  auto_start: true
+  run_duration: 600.0
+  total_robots: 3
+  random_seed: 1005
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/delivery/with_fixed_spec/seed_1005
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_5/YAML/delivery/with_fixed_spec/prompt_1/generation_5/S_20260913_181551.yaml
+KeyboardInterrupt received. Saving + shutdown.
+Saving started...
+Task success: false
+Task duration: 35.763s
+Saving OK

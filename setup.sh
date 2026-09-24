@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Set up and build llm_sct on a fresh Ubuntu 22.04 PC.
+# Set up and build llm_sct with Gazebo GUI support on Ubuntu 24.04.
 
 set -Eeuo pipefail
 
-readonly ROS_DISTRO="humble"
-readonly REQUIRED_CODENAME="jammy"
-readonly IGNITION_MAJOR="6"
+readonly ROS_DISTRO="jazzy"
+readonly REQUIRED_CODENAME="noble"
+readonly GAZEBO_RELEASE="harmonic"
+readonly GAZEBO_SIM_MAJOR="8"
 readonly OPENAI_PYTHON_VERSION="1.90.0"
 readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -15,17 +16,22 @@ if [[ "${EUID}" -eq 0 ]]; then
 fi
 
 if [[ ! -r /etc/os-release ]]; then
-  echo "Cannot identify the operating system. Ubuntu 22.04 is required." >&2
+  echo "Cannot identify the operating system. Ubuntu 24.04 is required." >&2
   exit 1
 fi
 
 # shellcheck disable=SC1091
 source /etc/os-release
 if [[ "${ID:-}" != "ubuntu" || "${VERSION_CODENAME:-}" != "${REQUIRED_CODENAME}" ]]; then
-  echo "This setup targets Ubuntu 22.04 (${REQUIRED_CODENAME})." >&2
+  echo "This setup targets Ubuntu 24.04 (${REQUIRED_CODENAME})." >&2
   echo "Detected: ${PRETTY_NAME:-unknown operating system}." >&2
   exit 1
 fi
+
+# Gazebo Harmonic is the supported Gazebo release paired with ROS 2 Jazzy.
+# This is also consumed by the conditional dependencies and CMake logic in
+# leo_gz_plugins.
+export GZ_VERSION="${GAZEBO_RELEASE}"
 
 # Support both recommended layouts:
 #   ~/sct_ws/src/llm_sct/setup.sh
@@ -45,22 +51,19 @@ sudo locale-gen en_US en_US.UTF-8
 sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 sudo add-apt-repository -y universe
 
-if [[ ! -f /etc/apt/sources.list.d/ros2.list ]]; then
-  echo "Adding the official ROS 2 apt repository..."
-  sudo curl -fsSL \
-    https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-    -o /usr/share/keyrings/ros-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu ${REQUIRED_CODENAME} main" \
-    | sudo tee /etc/apt/sources.list.d/ros2.list >/dev/null
-fi
+echo "Configuring the official ROS 2 apt repository for ${REQUIRED_CODENAME}..."
+sudo curl -fsSL \
+  https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+  -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu ${REQUIRED_CODENAME} main" \
+  | sudo tee /etc/apt/sources.list.d/ros2.list >/dev/null
 
 sudo apt-get update
 sudo apt-get install -y \
-  ros-humble-desktop \
-  ignition-fortress \
-  ros-humble-ros-gz \
-  ros-humble-cv-bridge \
-  ros-humble-image-transport \
+  "ros-${ROS_DISTRO}-desktop" \
+  "ros-${ROS_DISTRO}-ros-gz" \
+  "ros-${ROS_DISTRO}-cv-bridge" \
+  "ros-${ROS_DISTRO}-image-transport" \
   ros-dev-tools \
   python3-colcon-common-extensions \
   python3-matplotlib \
@@ -69,22 +72,31 @@ sudo apt-get install -y \
   python3-pip \
   python3-rosdep \
   python3-tk \
+  python3-venv \
   python3-vcstool \
   python3-yaml \
   libopencv-dev \
   ffmpeg
 
-# Required by llm_part/llm_input.py. A user installation avoids modifying
-# Ubuntu's system-managed Python packages.
-python3 -m pip install --user "openai==${OPENAI_PYTHON_VERSION}"
+# Ubuntu 24.04 treats its system Python as externally managed. Keep the OpenAI
+# dependency in a project virtual environment while retaining access to the
+# apt-installed ROS Python packages.
+VENV_DIR="${WORKSPACE_DIR}/.venv-${ROS_DISTRO}"
+python3 -m venv --system-site-packages "${VENV_DIR}"
+touch "${VENV_DIR}/COLCON_IGNORE"
+# shellcheck disable=SC1091
+source "${VENV_DIR}/bin/activate"
+python3 -m pip install --upgrade pip
+python3 -m pip install "openai==${OPENAI_PYTHON_VERSION}"
 
-# ROS 2 Humble targets Ignition Fortress, whose simulator major version is 6.
-INSTALLED_IGNITION_VERSION="$(ign gazebo --versions | head -n 1)"
-if [[ "${INSTALLED_IGNITION_VERSION%%.*}" != "${IGNITION_MAJOR}" ]]; then
-  echo "Expected Ignition Gazebo ${IGNITION_MAJOR}.x (Fortress), but found ${INSTALLED_IGNITION_VERSION}." >&2
+# ROS 2 Jazzy targets Gazebo Harmonic, whose gz-sim major version is 8.
+INSTALLED_GAZEBO_VERSION="$(gz sim --versions | head -n 1)"
+INSTALLED_GAZEBO_MAJOR="$(grep -Eo '[0-9]+(\.[0-9]+){1,2}' <<<"${INSTALLED_GAZEBO_VERSION}" | head -n 1 | cut -d. -f1)"
+if [[ "${INSTALLED_GAZEBO_MAJOR}" != "${GAZEBO_SIM_MAJOR}" ]]; then
+  echo "Expected Gazebo Sim ${GAZEBO_SIM_MAJOR}.x (${GAZEBO_RELEASE}), but found ${INSTALLED_GAZEBO_VERSION}." >&2
   exit 1
 fi
-echo "Using Ignition Gazebo ${INSTALLED_IGNITION_VERSION} (Fortress)."
+echo "Using Gazebo Sim ${INSTALLED_GAZEBO_VERSION} (${GAZEBO_RELEASE})."
 
 python3 - <<'PY'
 import cv2
@@ -125,9 +137,25 @@ rosdep install \
 
 echo "Building the workspace at ${WORKSPACE_DIR}..."
 cd "${WORKSPACE_DIR}"
-colcon build --symlink-install
+# Keep Jazzy/Python 3.12 artifacts separate from any existing Humble/Python
+# 3.10 build in the same workspace.
+BUILD_DIR="build/${ROS_DISTRO}"
+INSTALL_DIR="install/${ROS_DISTRO}"
+LOG_DIR="log/${ROS_DISTRO}"
+colcon --log-base "${LOG_DIR}" build \
+  --build-base "${BUILD_DIR}" \
+  --install-base "${INSTALL_DIR}" \
+  --symlink-install
 
 echo
 echo "Setup complete. In each new terminal, run:"
 echo "  source /opt/ros/${ROS_DISTRO}/setup.bash"
-echo "  source ${WORKSPACE_DIR}/install/setup.bash"
+echo "  source ${VENV_DIR}/bin/activate"
+echo "  export GZ_VERSION=${GAZEBO_RELEASE}"
+echo "  source ${WORKSPACE_DIR}/${INSTALL_DIR}/setup.bash"
+echo
+echo "Example Gazebo GUI launch:"
+echo "  ros2 launch leo_exploration leo_gz.launch.py headless:=false"
+echo
+echo "Example headless launch:"
+echo "  ros2 launch leo_exploration leo_gz.launch.py headless:=true"

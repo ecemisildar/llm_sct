@@ -25,7 +25,7 @@ _TEMP_COMPLEX_WORLDS = []
 def _create_nine_box_world(context):
     """Clone each compact pickup box twice before Gazebo starts."""
     package_share = get_package_share_directory("leo_delivery")
-    source = os.path.join(package_share, "worlds", "delivery_world.sdf")
+    source = os.path.join(package_share, "worlds", "delivery_arena_6x8.sdf")
     tree = ET.parse(source)
     world = tree.getroot().find("world")
     if world is None:

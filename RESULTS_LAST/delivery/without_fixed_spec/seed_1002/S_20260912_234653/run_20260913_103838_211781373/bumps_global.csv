@@ -1,0 +1,8 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+407,"('robot_2', 'generic_delivery_box_3::link::collision')",left,,ZONE_ESCAPE_REVERSE,
+409,"('robot_2', 'generic_delivery_box_3::link::collision')",right,,ZONE_ESCAPE_TURN,
+431,"('robot_2', 'generic_delivery_box_3::link::collision')",right,,EV_u_turn,
+434,"('robot_2', 'generic_delivery_box_3::link::collision')",back,,EV_u_turn,
+444,"('robot_2', 'generic_delivery_box_3::link::collision')",front,,EV_u_turn,
+445,"('robot_2', 'generic_delivery_box_3::link::collision')",right,,EV_rotate_clockwise,
+448,"('robot_2', 'generic_delivery_box_3::link::collision')",left,,EV_u_turn,

@@ -1,0 +1,68 @@
+{
+  "automata": [
+    {
+      "name": "explore_collect_specification",
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "transitions": [
+        [
+          "exploring",
+          "path_clear",
+          "exploring"
+        ],
+        [
+          "exploring",
+          "move_forward",
+          "exploring"
+        ],
+        [
+          "exploring",
+          "obstacle_front",
+          "approach_front"
+        ],
+        [
+          "exploring",
+          "obstacle_left",
+          "align_left"
+        ],
+        [
+          "exploring",
+          "obstacle_right",
+          "align_right"
+        ],
+        [
+          "align_left",
+          "rotate_counterclockwise",
+          "approach_side"
+        ],
+        [
+          "align_right",
+          "rotate_clockwise",
+          "approach_side"
+        ],
+        [
+          "approach_front",
+          "move_forward",
+          "retreating"
+        ],
+        [
+          "approach_side",
+          "move_forward",
+          "retreating"
+        ],
+        [
+          "retreating",
+          "move_backward",
+          "reorienting"
+        ],
+        [
+          "reorienting",
+          "u_turn",
+          "exploring"
+        ]
+      ]
+    }
+  ]
+}

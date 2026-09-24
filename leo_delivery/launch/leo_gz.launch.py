@@ -19,6 +19,7 @@
 # THE SOFTWARE.
 
 
+import importlib.util
 import os
 import sys
 import tempfile
@@ -43,16 +44,25 @@ def _configure_overhead_camera(context):
     enabled = LaunchConfiguration("overhead_camera").perform(context).lower() in (
         "1", "true", "yes", "on"
     )
-    if enabled:
-        return [SetLaunchConfiguration("effective_sim_world", world_path)]
-
     tree = ET.parse(world_path)
     world = tree.getroot().find("world")
     if world is None:
         raise RuntimeError(f"No <world> element found in {world_path}")
-    for model in list(world.findall("model")):
-        if model.get("name") == "top_view_camera":
-            world.remove(model)
+    helper_path = os.path.join(
+        get_package_share_directory("leo_gz_bringup"),
+        "launch", "world_randomization.py",
+    )
+    spec = importlib.util.spec_from_file_location("leo_world_randomization", helper_path)
+    helper = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(helper)
+    used_seed = helper.randomize_task_models(
+        world, "delivery", LaunchConfiguration("random_seed").perform(context)
+    )
+    print(f"[leo_delivery] randomized task layout with seed {used_seed}")
+    if not enabled:
+        for model in list(world.findall("model")):
+            if model.get("name") == "top_view_camera":
+                world.remove(model)
 
     handle = tempfile.NamedTemporaryFile(
         prefix="leo_delivery_no_overhead_camera_", suffix=".sdf", delete=False
@@ -97,7 +107,7 @@ def generate_launch_description():
 
     sim_world = DeclareLaunchArgument(
         "sim_world",
-        default_value=os.path.join(pkg_project_gazebo, "worlds", "delivery_world.sdf"),
+        default_value=os.path.join(pkg_project_gazebo, "worlds", "delivery_arena_6x8.sdf"),
         description="Path to the Gazebo world file",
     )
     headless = DeclareLaunchArgument(
@@ -117,7 +127,7 @@ def generate_launch_description():
     )
     run_duration = DeclareLaunchArgument(
         "run_duration",
-        default_value="600.0",
+        default_value="300.0",
         description="Seconds before shutting down the launch",
     )
     total_robots = DeclareLaunchArgument(
@@ -131,6 +141,11 @@ def generate_launch_description():
         description="Base seed for per-robot supervisor random choices. Use 'auto' for a fresh seed each run.",
     )
     record_video = DeclareLaunchArgument("record_video", default_value="false")
+    target_detector_executable = DeclareLaunchArgument(
+        "target_detector_executable",
+        default_value="delivery_shape_detector",
+        description="Target detector executable used for delivery observations",
+    )
     supervisor_executable = DeclareLaunchArgument(
         "supervisor_executable",
         default_value="robot_supervisor",
@@ -183,7 +198,7 @@ def generate_launch_description():
         LaunchConfiguration("headless"),
         "' == 'true' else '') + (' -r' if '",
         LaunchConfiguration("auto_start"),
-        "' == 'true' else '')",
+        "' == 'true' else '') + ' -z 200'",
     ])
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -211,6 +226,9 @@ def generate_launch_description():
             "evaluation_mission": LaunchConfiguration("evaluation_mission"),
             "object_cluster_half_width": LaunchConfiguration(
                 "object_cluster_half_width"
+            ),
+            "target_detector_executable": LaunchConfiguration(
+                "target_detector_executable"
             ),
         }.items(),
     )
@@ -245,6 +263,7 @@ def generate_launch_description():
             total_robots,
             random_seed,
             record_video,
+            target_detector_executable,
             supervisor_executable,
             task_progress_on_complete,
             object_cluster_half_width,

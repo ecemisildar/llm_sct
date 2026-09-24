@@ -16,7 +16,7 @@
 	<event id="8" name="rotate_counterclockwise" controllable="True" observable="True"/>
 	<event id="9" name="search_object" controllable="True" observable="True"/>
 	<event id="10" name="move_backward" controllable="True" observable="True"/>
-	<event id="11" name="full_rotate" controllable="True" observable="True"/>
+	<event id="11" name="u_turn" controllable="True" observable="True"/>
 	<event id="12" name="move_forward" controllable="True" observable="True"/>
 	<transition source="0" target="3" event="0"/>
 	<transition source="0" target="0" event="12"/>

@@ -1,1 +1,0 @@
-Each robot should patrol red, green and blue zones respectively

@@ -1,0 +1,53 @@
+{
+  "automata": [
+    {
+      "name": "area_coverage_specification",
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "transitions": [
+        [
+          "exploring",
+          "path_clear",
+          "exploring"
+        ],
+        [
+          "exploring",
+          "move_forward",
+          "exploring"
+        ],
+        [
+          "exploring",
+          "obstacle_left",
+          "turn_right"
+        ],
+        [
+          "exploring",
+          "obstacle_right",
+          "turn_left"
+        ],
+        [
+          "exploring",
+          "obstacle_front",
+          "turn_around"
+        ],
+        [
+          "turn_right",
+          "rotate_clockwise",
+          "exploring"
+        ],
+        [
+          "turn_left",
+          "rotate_counterclockwise",
+          "exploring"
+        ],
+        [
+          "turn_around",
+          "u_turn",
+          "exploring"
+        ]
+      ]
+    }
+  ]
+}

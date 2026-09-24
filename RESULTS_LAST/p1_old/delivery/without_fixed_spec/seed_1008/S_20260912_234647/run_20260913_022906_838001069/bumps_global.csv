@@ -1,0 +1,12 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+28,"('robot_1', 'robot_2')",right,back,EV_u_turn,EV_u_turn
+32,"('robot_1', 'robot_2')",front,front,EV_approach_object,EV_move_backward
+121,"('robot_1', 'robot_2')",back,right,EV_move_forward,EV_u_turn
+126,"('robot_1', 'robot_2')",right,back,EV_u_turn,EV_move_forward
+139,"('robot_2', 'generic_delivery_box_4::link::collision')",back,,EV_u_turn,
+153,"('robot_1', 'robot_2')",back,back,EV_search_color,EV_u_turn
+154,"('robot_1', 'robot_2')",front,right,CONTACT_RECOVERY,CONTACT_RECOVERY
+155,"('robot_1', 'robot_2')",right,front,EV_u_turn,EV_move_forward
+159,"('robot_1', 'robot_2')",left,front,EV_u_turn,EV_search_color
+166,"('robot_1', 'robot_2')",left,back,EV_u_turn,EV_u_turn
+168,"('robot_1', 'robot_2')",left,back,EV_u_turn,EV_approach_color

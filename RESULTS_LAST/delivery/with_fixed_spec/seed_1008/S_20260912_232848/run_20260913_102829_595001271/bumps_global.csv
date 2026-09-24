@@ -1,0 +1,6 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+286,"('robot_1', 'generic_delivery_box_3::link::collision')",left,,EV_move_forward,
+298,"('robot_1', 'generic_delivery_box_3::link::collision')",back,,EV_u_turn,
+301,"('robot_1', 'generic_delivery_box_3::link::collision')",right,,EV_search_color,
+308,"('robot_1', 'generic_delivery_box_3::link::collision')",front,,EV_move_forward,
+427,"('robot_1', 'robot_2')",front,front,EV_move_forward,EV_move_forward

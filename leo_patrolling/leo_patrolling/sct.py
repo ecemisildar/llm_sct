@@ -23,12 +23,15 @@ class SCT:
     def read_supervisor(self, filename):
         try:
             with open(filename, 'r') as stream:
-                self.f = yaml.safe_load(stream)
-        except yaml.YAMLError as e:
-            print(e) 
+                supervisor = yaml.safe_load(stream)
+        except (OSError, yaml.YAMLError) as error:
+            raise ValueError(
+                f"Failed to load supervisor YAML '{filename}': {error}"
+            ) from error
 
-        if not self.f:
+        if not isinstance(supervisor, dict) or not supervisor:
             raise ValueError(f"Supervisor YAML '{filename}' is empty or invalid.")
+        self.f = supervisor
 
         self.num_events = self.f['num_events']
         self.num_supervisors = self.f['num_supervisors']

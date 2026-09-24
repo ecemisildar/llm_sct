@@ -1,1 +1,0 @@
-Deliver nine boxes to matching colored zones with payload limits red equals one, green equals two, and blue equals three. Coordinate claims and completed batches using only the supplied event alphabet and fixed collision avoidance.

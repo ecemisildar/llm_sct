@@ -1,0 +1,15 @@
+#Local Modular Supervisors
+
+# 1) Synchronize free behavior models
+
+G = Sync(obstacle_sensor, motion_plant,generic_target_sensor,pickup_drop_plant,serialized_drop_plant)
+
+
+# 2) Synchronize specifications
+
+K = Sync(G, collision_avoidance, delivery_cycle_specification)
+
+
+# 3) Remove bad states
+
+S = SupC(G, K)

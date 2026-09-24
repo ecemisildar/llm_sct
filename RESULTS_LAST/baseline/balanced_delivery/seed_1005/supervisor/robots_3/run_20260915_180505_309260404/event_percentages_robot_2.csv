@@ -1,0 +1,12 @@
+robot,selected_event,count,percentage
+robot_2,EV_approach_object,20,3.824
+robot_2,EV_approach_zone,75,14.340
+robot_2,EV_move_backward,1,0.191
+robot_2,EV_move_forward,251,47.992
+robot_2,EV_pick_up_object,1,0.191
+robot_2,EV_rotate_clockwise,4,0.765
+robot_2,EV_rotate_counterclockwise,13,2.486
+robot_2,EV_search_object,6,1.147
+robot_2,EV_search_zone,126,24.092
+robot_2,EV_u_turn,26,4.971
+robot_2,TOTAL,523,100.000

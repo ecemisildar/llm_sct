@@ -1,0 +1,1 @@
+Collect and deliver all three boxes of every color without adding or changing events or behavior plants. Interpret one pickup event as loading a batch of one red, up to two green, or up to three blue boxes before visiting the corresponding delivery zone.

@@ -1,0 +1,50 @@
+[
+  {
+    "generation": 2,
+    "collision_control": "with_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/with_fixed_spec/prompt_7/generation_2/S_20260916_041529.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_2/llm_output.json"
+  },
+  {
+    "generation": 2,
+    "collision_control": "without_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/without_fixed_spec/prompt_7/generation_2/S_20260916_041529.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_2/llm_output.json"
+  },
+  {
+    "generation": 3,
+    "collision_control": "with_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/with_fixed_spec/prompt_7/generation_3/S_20260916_041532.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_3/llm_output.json"
+  },
+  {
+    "generation": 3,
+    "collision_control": "without_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/without_fixed_spec/prompt_7/generation_3/S_20260916_041532.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_3/llm_output.json"
+  },
+  {
+    "generation": 4,
+    "collision_control": "with_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/with_fixed_spec/prompt_7/generation_4/S_20260916_041540.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_4/llm_output.json"
+  },
+  {
+    "generation": 4,
+    "collision_control": "without_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/without_fixed_spec/prompt_7/generation_4/S_20260916_041540.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_4/llm_output.json"
+  },
+  {
+    "generation": 5,
+    "collision_control": "with_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/with_fixed_spec/prompt_7/generation_5/S_20260916_041548.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_5/llm_output.json"
+  },
+  {
+    "generation": 5,
+    "collision_control": "without_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/YAML/patrolling/without_fixed_spec/prompt_7/generation_5/S_20260916_041548.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/patrolling_api4_20260916_041525/llm_outputs/patrolling/with_fixed_spec/prompt_7/generation_5/llm_output.json"
+  }
+]

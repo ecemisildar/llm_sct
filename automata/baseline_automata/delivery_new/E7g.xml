@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="0.0" type="FSA" id="Untitled">
+<data>
+	<state id="0" name="4" initial ="False" marked="True" x="394" y="484" />
+	<state id="1" name="3" initial ="False" marked="True" x="889" y="523" />
+	<state id="2" name="2" initial ="False" marked="True" x="913" y="294" />
+	<state id="3" name="1" initial ="True" marked="True" x="297" y="250" />
+	<event id="0" name="pick_up_object" controllable="True" observable="True"/>
+	<event id="1" name="claim_green" controllable="True" observable="True"/>
+	<event id="2" name="unclaim_green" controllable="True" observable="True"/>
+	<event id="3" name="green_object_visible" controllable="False" observable="True"/>
+	<event id="4" name="green_object_not_visible" controllable="False" observable="True"/>
+	<transition source="0" target="3" event="4"/>
+	<transition source="0" target="1" event="1"/>
+	<transition source="1" target="2" event="4"/>
+	<transition source="1" target="0" event="2"/>
+	<transition source="1" target="1" event="0"/>
+	<transition source="2" target="1" event="3"/>
+	<transition source="2" target="3" event="2"/>
+	<transition source="3" target="0" event="3"/>
+	<transition source="3" target="3" event="0"/>
+	<transition source="3" target="2" event="1"/>
+</data>
+</model>

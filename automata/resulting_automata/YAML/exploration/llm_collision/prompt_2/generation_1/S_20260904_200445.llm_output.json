@@ -1,0 +1,69 @@
+{
+  "automata": [
+    {
+      "name": "exploration_avoidance_specification",
+      "initial_state": "clear_path",
+      "marked_states": [
+        "clear_path",
+        "obstacle_detected"
+      ],
+      "transitions": [
+        [
+          "clear_path",
+          "move_forward",
+          "clear_path"
+        ],
+        [
+          "clear_path",
+          "rotate_clockwise",
+          "clear_path"
+        ],
+        [
+          "clear_path",
+          "rotate_counterclockwise",
+          "clear_path"
+        ],
+        [
+          "clear_path",
+          "u_turn",
+          "clear_path"
+        ],
+        [
+          "clear_path",
+          "obstacle_front",
+          "obstacle_detected"
+        ],
+        [
+          "clear_path",
+          "obstacle_left",
+          "obstacle_detected"
+        ],
+        [
+          "clear_path",
+          "obstacle_right",
+          "obstacle_detected"
+        ],
+        [
+          "obstacle_detected",
+          "rotate_clockwise",
+          "obstacle_detected"
+        ],
+        [
+          "obstacle_detected",
+          "rotate_counterclockwise",
+          "obstacle_detected"
+        ],
+        [
+          "obstacle_detected",
+          "u_turn",
+          "obstacle_detected"
+        ],
+        [
+          "obstacle_detected",
+          "path_clear",
+          "clear_path"
+        ]
+      ]
+    }
+  ]
+}

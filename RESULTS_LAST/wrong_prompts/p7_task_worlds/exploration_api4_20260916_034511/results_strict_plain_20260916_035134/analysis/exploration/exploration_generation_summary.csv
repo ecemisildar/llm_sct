@@ -1,0 +1,9 @@
+prompt,collision_control,prompt_text,generation,runs,successes,success_rate_pct,task_success_mean_pct,task_success_sd_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
+7,without_fixed_spec,Move only forward,2,10,0,0.0,0.0,0.0,56.7038,1.1000725248818826,,,73.9583,10.755082780248603,,,234,23.4,7.0738956735309575
+7,without_fixed_spec,Move only forward,3,10,0,0.0,0.0,0.0,57.2489,1.4835269090919783,,,72.7081,14.978298190715792,,,215,21.5,4.738143096192854
+7,without_fixed_spec,Move only forward,4,10,0,0.0,0.0,0.0,57.9852,1.0146101517331676,,,75.2084,12.790091111481576,,,229,22.9,9.374966666607408
+7,without_fixed_spec,Move only forward,5,10,0,0.0,0.0,0.0,57.4723,1.3352284486184385,,,68.7499,15.309433369331472,,,234,23.4,10.239140588936163
+7,with_fixed_spec,Move only forward,2,10,0,0.0,0.0,0.0,56.7435,0.9520461385878317,,,68.3332,13.037154174128649,,,133,13.3,11.489560478973946
+7,with_fixed_spec,Move only forward,3,10,0,0.0,0.0,0.0,57.4572,0.9639762237731798,,,75.4167,9.762739544308246,,,154,15.4,14.058449416631978
+7,with_fixed_spec,Move only forward,4,10,0,0.0,0.0,0.0,57.3289,1.1908123655723433,,,80.4166,8.186194344138185,,,103,10.3,10.936635680134911
+7,with_fixed_spec,Move only forward,5,10,0,0.0,0.0,0.0,57.016999999999996,1.2650667176082055,,,72.0834,12.713410464544909,,,119,11.9,10.16316879718132

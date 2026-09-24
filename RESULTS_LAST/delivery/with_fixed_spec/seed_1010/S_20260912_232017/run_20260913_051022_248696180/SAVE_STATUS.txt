@@ -1,0 +1,20 @@
+Node started
+run_id: run_20260913_051022_248696180
+results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/delivery/with_fixed_spec/seed_1010/S_20260912_232017/run_20260913_051022_248696180
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/delivery/with_fixed_spec/prompt_2/generation_2/S_20260912_232017.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /tmp/leo_delivery_no_overhead_camera_r2nlpihw.sdf
+  headless: true
+  auto_start: true
+  run_duration: 600.0
+  total_robots: 3
+  random_seed: 1010
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/delivery/with_fixed_spec/seed_1010
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/delivery/with_fixed_spec/prompt_2/generation_2/S_20260912_232017.yaml
+Timeout reached (600.0s). Saving + shutdown.
+Saving started...
+Task success: false
+Task duration: 600.892s
+Saving OK

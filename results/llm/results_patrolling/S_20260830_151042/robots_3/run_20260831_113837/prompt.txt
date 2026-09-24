@@ -1,1 +1,0 @@
-Patrol the red, green, and blue zones in that order, while avoiding obstacles.

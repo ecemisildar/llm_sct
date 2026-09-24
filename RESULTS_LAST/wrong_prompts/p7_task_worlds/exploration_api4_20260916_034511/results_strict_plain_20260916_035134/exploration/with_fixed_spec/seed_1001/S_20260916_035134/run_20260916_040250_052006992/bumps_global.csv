@@ -1,0 +1,5 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+1456,"('robot_0', 'east_wall::link::collision')",back,,,
+1456,"('robot_1', 'west_wall::link::collision')",front,,,
+1456,"('robot_2', 'east_wall::link::collision')",right,,,
+1466,"('robot_1', 'west_wall::link::collision')",back,,CONTACT_RECOVERY,

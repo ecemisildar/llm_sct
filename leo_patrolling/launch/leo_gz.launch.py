@@ -19,6 +19,7 @@
 # THE SOFTWARE.
 
 
+import importlib.util
 import os
 import sys
 import tempfile
@@ -43,16 +44,25 @@ def _configure_overhead_camera(context):
     enabled = LaunchConfiguration("overhead_camera").perform(context).lower() in (
         "1", "true", "yes", "on"
     )
-    if enabled:
-        return [SetLaunchConfiguration("effective_sim_world", world_path)]
-
     tree = ET.parse(world_path)
     world = tree.getroot().find("world")
     if world is None:
         raise RuntimeError(f"No <world> element found in {world_path}")
-    for model in list(world.findall("model")):
-        if model.get("name") == "top_view_camera":
-            world.remove(model)
+    helper_path = os.path.join(
+        get_package_share_directory("leo_gz_bringup"),
+        "launch", "world_randomization.py",
+    )
+    spec = importlib.util.spec_from_file_location("leo_world_randomization", helper_path)
+    helper = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(helper)
+    used_seed = helper.randomize_task_models(
+        world, "patrolling", LaunchConfiguration("random_seed").perform(context)
+    )
+    print(f"[leo_patrolling] randomized target layout with seed {used_seed}")
+    if not enabled:
+        for model in list(world.findall("model")):
+            if model.get("name") == "top_view_camera":
+                world.remove(model)
 
     handle = tempfile.NamedTemporaryFile(
         prefix="leo_patrolling_no_overhead_camera_", suffix=".sdf", delete=False
@@ -97,9 +107,7 @@ def generate_launch_description():
 
     sim_world = DeclareLaunchArgument(
         "sim_world",
-        default_value=os.path.join(
-            pkg_project_gazebo, "worlds", "common_walls_patrolling_world.sdf"
-        ),
+        default_value=os.path.join(pkg_project_gazebo, "worlds", "patrolling_arena_6x8.sdf"),
         description="Path to the Gazebo world file",
     )
     headless = DeclareLaunchArgument(
@@ -119,7 +127,7 @@ def generate_launch_description():
     )
     run_duration = DeclareLaunchArgument(
         "run_duration",
-        default_value="600.0",
+        default_value="300.0",
         description="Seconds before shutting down the launch",
     )
     total_robots = DeclareLaunchArgument(
@@ -170,7 +178,7 @@ def generate_launch_description():
         LaunchConfiguration("headless"),
         "' == 'true' else '') + (' -r' if '",
         LaunchConfiguration("auto_start"),
-        "' == 'true' else '')",
+        "' == 'true' else '') + ' -z 200'",
     ])
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(

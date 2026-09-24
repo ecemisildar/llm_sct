@@ -1,0 +1,10 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+5,"('robot_0', 'robot_1')",back,back,EV_move_forward,EV_move_forward
+6,"('robot_0', 'robot_2')",left,back,CONTACT_RECOVERY,EV_move_forward
+21,"('robot_1', 'east_wall::link::collision')",left,,EV_move_forward,
+24,"('robot_0', 'robot_2')",back,front,EV_move_forward,EV_move_forward
+26,"('robot_0', 'robot_2')",front,left,EV_move_forward,EV_move_forward
+28,"('robot_1', 'south_wall::link::collision')",back,,EV_move_forward,
+38,"('robot_0', 'east_wall::link::collision')",back,,EV_move_forward,
+57,"('robot_1', 'robot_2')",right,back,EV_move_forward,EV_move_forward
+59,"('robot_0', 'south_wall::link::collision')",back,,EV_move_forward,

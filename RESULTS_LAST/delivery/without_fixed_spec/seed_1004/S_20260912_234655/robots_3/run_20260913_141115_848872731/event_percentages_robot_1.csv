@@ -1,0 +1,10 @@
+robot,selected_event,count,percentage
+robot_1,EV_approach_color,94,7.378
+robot_1,EV_move_backward,192,15.071
+robot_1,EV_move_forward,229,17.975
+robot_1,EV_pick_up_object,1,0.078
+robot_1,EV_rotate_clockwise,205,16.091
+robot_1,EV_rotate_counterclockwise,215,16.876
+robot_1,EV_search_color,127,9.969
+robot_1,EV_u_turn,211,16.562
+robot_1,TOTAL,1274,100.000

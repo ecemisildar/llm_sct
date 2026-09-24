@@ -1,0 +1,13 @@
+prompt,collision_control,selection,generation,seeds,mean_task_progression_pct
+1,with_fixed_spec,best,4,10,100.0
+1,with_fixed_spec,median,2,10,95.55555555555556
+2,with_fixed_spec,best,1,10,97.77777777777777
+2,with_fixed_spec,median,2,10,94.44444444444444
+3,with_fixed_spec,best,1,10,100.0
+3,with_fixed_spec,median,3,10,91.11111111111111
+4,with_fixed_spec,best,2,10,100.0
+4,with_fixed_spec,median,4,10,92.22222222222223
+5,with_fixed_spec,best,3,10,87.77777777777777
+5,with_fixed_spec,median,1,10,84.44444444444444
+6,with_fixed_spec,best,1,10,91.11111111111111
+6,with_fixed_spec,median,2,10,87.77777777777777

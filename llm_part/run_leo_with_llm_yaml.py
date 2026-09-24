@@ -21,15 +21,12 @@ INSTALL_SETUP = WORKSPACE_ROOT / "install" / "setup.bash"
 MISSIONS = {
     "exploration": {
         "package": "leo_exploration",
-        "results": "results_exploration",
     },
     "patrolling": {
         "package": "leo_patrolling",
-        "results": "results_patrolling",
     },
     "delivery": {
         "package": "leo_delivery",
-        "results": "results_delivery",
     },
 }
 
@@ -87,28 +84,49 @@ def build_launch_command(args: argparse.Namespace) -> tuple[list[str], Path, Pat
         raise ValueError(f"Supervisor must be a YAML file: {yaml_path}")
 
     results_root = Path(args.results_root).expanduser().resolve()
-    mission_results = results_root / str(mission["results"])
+    # Collision mode is always 3 levels above the YAML file:
+    # .../collision_mode/prompt_N/generation_N/S_*.yaml
+    # Supports any naming (fixed_collision, llm_collision, without_fixed_spec, etc.)
+    collision_mode = yaml_path.parents[2].name
+    seed_group = f"seed_{args.random_seed}"
+    mission_results = (
+        results_root / args.mission / collision_mode / seed_group
+    )
     mission_results.mkdir(parents=True, exist_ok=True)
 
-    command = [
-        "ros2",
-        "launch",
-        str(mission["package"]),
-        "leo_gz.launch.py",
-        f"metadata_yaml_path:={yaml_path}",
-        f"results_dir:={mission_results}",
-        f"total_robots:={args.total_robots}",
-        f"run_duration:={args.run_duration}",
-        f"headless:={'true' if args.headless else 'false'}",
-        "overhead_camera:=false",
-        f"random_seed:={args.random_seed}",
-        f"forward_probability:={args.forward_probability}",
-        f"record_video:={'true' if args.record_video else 'false'}",
-    ]
-    if args.mission == "patrolling":
-        command.append(
-            "target_color_order:=" + ",".join(color_order_for_run(args, yaml_path))
-        )
+    if args.balanced and args.mission == "delivery":
+        # Use the 6-box 2-zone balanced delivery world
+        command = [
+            "ros2",
+            "launch",
+            "leo_delivery",
+            "balanced_delivery.launch.py",
+            f"supervisor_yaml_path:={yaml_path}",
+            f"results_dir:={mission_results}",
+            f"run_duration:={args.run_duration}",
+            f"headless:={'true' if args.headless else 'false'}",
+            f"random_seed:={args.random_seed}",
+        ]
+    else:
+        command = [
+            "ros2",
+            "launch",
+            str(mission["package"]),
+            "leo_gz.launch.py",
+            f"metadata_yaml_path:={yaml_path}",
+            f"results_dir:={mission_results}",
+            f"total_robots:={args.total_robots}",
+            f"run_duration:={args.run_duration}",
+            f"headless:={'true' if args.headless else 'false'}",
+            "overhead_camera:=false",
+            f"random_seed:={args.random_seed}",
+            f"forward_probability:={args.forward_probability}",
+            f"record_video:={'true' if args.record_video else 'false'}",
+        ]
+        if args.mission == "patrolling":
+            command.append(
+                "target_color_order:=" + ",".join(color_order_for_run(args, yaml_path))
+            )
     return command, yaml_path, mission_results
 
 
@@ -169,6 +187,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--results-root", default=str(DEFAULT_RESULTS_ROOT))
     parser.add_argument(
+        "--balanced", action="store_true",
+        help="Use balanced_delivery.launch.py (6 boxes, 2 zones) instead of leo_gz.launch.py. "
+             "Only applies to the delivery mission.",
+    )
+    parser.add_argument(
         "--dry-run", action="store_true", help="Print paths and command without launching"
     )
     return parser
@@ -189,7 +212,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         command, yaml_path, results_dir = build_launch_command(args)
         print(f"Mission:    {args.mission}")
         print(f"Supervisor: {yaml_path}")
-        print(f"Results:    {results_dir / yaml_path.stem / f'robots_{args.total_robots}'}")
+        print(f"Results:    {results_dir / yaml_path.stem}")
         print("Command:    " + " ".join(command))
         if args.dry_run:
             return 0

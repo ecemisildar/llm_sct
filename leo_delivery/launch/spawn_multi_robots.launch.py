@@ -21,4 +21,7 @@ def generate_launch_description():
         evaluation_mission=LaunchConfiguration("evaluation_mission"),
         shutdown_on_task_complete=True,
         task_progress_on_complete=LaunchConfiguration("task_progress_on_complete"),
+        target_detector_executable=LaunchConfiguration(
+            "target_detector_executable"
+        ),
     )

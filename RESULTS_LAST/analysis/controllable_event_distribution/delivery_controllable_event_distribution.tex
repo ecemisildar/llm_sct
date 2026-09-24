@@ -1,0 +1,30 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Controllable event distribution for delivery. Values are mean $\pm$ population standard deviation in percent across completed runs (Baseline: $n=10$; LLM: $n=280$; LLM + fixed specification: $n=300$). Each run pools its robots and receives equal weight; absent events count as zero.}
+\label{tab:delivery-controllable-events}
+\begin{tabular}{lrrr}
+\hline
+Controllable event & Baseline (\%) & LLM (\%) & LLM + fixed spec. (\%) \\
+\hline
+\texttt{EV\_approach\_color} & $0.00 \pm 0.00$ & $3.02 \pm 2.23$ & $4.99 \pm 4.54$ \\
+\texttt{EV\_approach\_object} & $7.96 \pm 2.57$ & $2.77 \pm 2.50$ & $1.41 \pm 1.60$ \\
+\texttt{EV\_approach\_zone} & $11.72 \pm 4.16$ & $0.00 \pm 0.00$ & $0.00 \pm 0.00$ \\
+\texttt{EV\_claim\_blue} & $0.11 \pm 0.03$ & $0.00 \pm 0.00$ & $0.00 \pm 0.00$ \\
+\texttt{EV\_claim\_green} & $0.11 \pm 0.03$ & $0.00 \pm 0.00$ & $0.00 \pm 0.00$ \\
+\texttt{EV\_claim\_red} & $0.11 \pm 0.03$ & $0.00 \pm 0.00$ & $0.00 \pm 0.00$ \\
+\texttt{EV\_drop\_object} & $0.31 \pm 0.12$ & $0.02 \pm 0.03$ & $0.11 \pm 0.14$ \\
+\texttt{EV\_drop\_zone\_blue} & $0.00 \pm 0.00$ & $0.02 \pm 0.02$ & $0.07 \pm 0.07$ \\
+\texttt{EV\_drop\_zone\_red} & $0.00 \pm 0.00$ & $0.03 \pm 0.02$ & $0.07 \pm 0.08$ \\
+\texttt{EV\_move\_backward} & $0.20 \pm 0.17$ & $16.86 \pm 0.90$ & $0.41 \pm 0.34$ \\
+\texttt{EV\_move\_forward} & $45.95 \pm 2.16$ & $16.93 \pm 1.03$ & $53.38 \pm 13.05$ \\
+\texttt{EV\_pick\_up\_object} & $0.31 \pm 0.11$ & $0.08 \pm 0.03$ & $0.13 \pm 0.13$ \\
+\texttt{EV\_rotate\_clockwise} & $1.33 \pm 0.52$ & $16.97 \pm 0.97$ & $1.67 \pm 0.94$ \\
+\texttt{EV\_rotate\_counterclockwise} & $1.69 \pm 0.87$ & $16.98 \pm 0.98$ & $2.48 \pm 1.23$ \\
+\texttt{EV\_search\_color} & $0.00 \pm 0.00$ & $7.05 \pm 3.88$ & $18.05 \pm 15.86$ \\
+\texttt{EV\_search\_object} & $14.60 \pm 6.92$ & $2.32 \pm 2.78$ & $13.48 \pm 13.17$ \\
+\texttt{EV\_search\_zone} & $12.59 \pm 5.21$ & $0.00 \pm 0.00$ & $0.00 \pm 0.00$ \\
+\texttt{EV\_u\_turn} & $3.03 \pm 1.41$ & $16.94 \pm 1.01$ & $3.76 \pm 1.71$ \\
+\hline
+\end{tabular}
+\end{table}

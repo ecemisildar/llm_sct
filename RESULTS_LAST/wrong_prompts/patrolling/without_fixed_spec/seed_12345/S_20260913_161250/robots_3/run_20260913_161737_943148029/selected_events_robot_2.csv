@@ -1,0 +1,15 @@
+elapsed_s,robot,selected_event,uncontrollable_events,raw_zone
+0.106,robot_2,EV_move_forward,EV_path_clear,CLEAR
+0.406,robot_2,EV_rotate_clockwise,EV_path_clear,CLEAR
+0.606,robot_2,EV_u_turn,EV_path_clear,CLEAR
+2.606,robot_2,EV_move_forward,EV_blue_not_visible|EV_obstacle_right|EV_red_not_visible|EV_green_not_visible,RIGHT
+2.906,robot_2,EV_u_turn,EV_blue_not_visible|EV_obstacle_right|EV_red_not_visible|EV_green_not_visible,RIGHT
+3.006,robot_2,EV_move_forward,EV_obstacle_right,RIGHT
+4.206,robot_2,EV_search_color,EV_blue_not_visible|EV_obstacle_right|EV_red_not_visible|EV_green_not_visible,RIGHT
+4.406,robot_2,EV_move_forward,EV_blue_not_visible|EV_obstacle_right|EV_red_not_visible|EV_green_not_visible,CLEAR
+4.706,robot_2,EV_u_turn,EV_blue_not_visible|EV_path_clear|EV_red_not_visible|EV_green_not_visible,CLEAR
+4.806,robot_2,EV_u_turn,EV_path_clear,CLEAR
+6.806,robot_2,EV_rotate_clockwise,EV_blue_not_visible|EV_obstacle_left|EV_red_not_visible|EV_green_not_visible,LEFT
+7.006,robot_2,EV_rotate_clockwise,EV_blue_not_visible|EV_obstacle_left|EV_red_not_visible|EV_green_not_visible,LEFT
+7.206,robot_2,EV_search_color,EV_blue_not_visible|EV_obstacle_left|EV_red_not_visible|EV_green_not_visible,LEFT
+7.406,robot_2,EV_search_color,EV_blue_not_visible|EV_obstacle_left|EV_red_not_visible|EV_green_not_visible,LEFT

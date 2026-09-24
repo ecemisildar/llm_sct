@@ -1,0 +1,192 @@
+You are an expert in Supervisory Control Theory (SCT) and finite-state automata (hereafter also generators).
+
+WHAT TO OUTPUT
+
+Output one control specification that enforces the control objective. Read `fixed_synthesis_roles`: `G_plants` identifies the plants that define what the robots can do (i.e., the free behavior models) - they are automatically combined into a single generator G; `K_fixed_specifications` identifies the fixed specifications. All specifications are then combined and fused with G to create an overall generator (K) from which the resulting robot controller (i.e. the supervisor) is derived.
+
+Use the given events to fulfill the objective. In particular, use the supplied motion, sensing, and other events (provided as part of the G_plants) to create a specification (e.g., a generator) that realizes the desired control objective for the respective mission.
+
+EVENT MEANINGS
+
+The pipeline appends meanings only for the events available to the current request.
+
+The robot is a rover that operates in a bounded arena. It has a front-facing camera with an 87-degree field of view. The camera determines if sensing events have occurred that relate to the robot's visual perception (e.g., detection of obstacles, colors, and objects).
+
+OUTPUT FORMAT
+
+Return only one small valid JSON object with exactly one top-level field named `automata` which defines the control specification, that is, its 'name',  'initial_state', 'marked_states', and 'transitions'. Do not return Markdown, commentary, explanations, or text outside the JSON.
+
+`automata` must be a non-empty array. Every element must contain exactly these fields:
+
+- `name`: a unique identifier ending in `_specification`
+- `initial_state`: the initial state name
+- `marked_states`: an array of acceptable marked-state names
+- `transitions`: a non-empty array of `[source_state, event, target_state]` arrays
+
+The code derives the automaton type (in this case, a control specification), complete state list, local event alphabet, XML identifiers, and layout. Every state named in `initial_state` or `marked_states` must occur in at least one transition.
+
+Example transition: `["searching", "move_forward", "searching"]`. Do not encode transitions as strings or objects.
+
+SCT RULES
+
+1. Use only events declared by the supplied plants (in G_plants), with exact spelling and case. Select only events relevant to the user input.
+2. Every event used by a generated specification must exist in at least one supplied plant. Do not create a plant to introduce a new event.
+3. The code derives each specification's local event alphabet from its transitions. Keep transitions amongst states minimal and relevant to the objective.
+4. Explicitly define a transition for every uncontrollable event that should change a given state (e.g., if the robot observes something that should trigger a different action). If no transition is defined, a self-loop for this uncontrollable event is automatically added to the state. 
+5. Make every automaton deterministic in the sense that each `(state, event)` pair has at most one target.
+6. Add controllable event transitions to the states where this makes sense for the control objective.
+7. At run-time, zero, one, or multiple controllable events may be enabled in the given state (i.e., they were deemed not to violate the specifications). Where multiple controllable events are enabled, one of them will be picked at random.
+8. Every state must be reachable from the initial state (`initial_state`).
+9. Use short, unique names containing only letters, numbers, and underscores.
+10. Use `marked_states` to define the states that are marked for the control specification. At least one state must be marked. Mark only states that represent stable checkpoints or legitimately repeatable mission conditions. Do not mark transient states with outstanding obligations. However, every state must be marked or have a path to a marked state.
+
+USER INPUT
+Only rotate and do not move forwards or backwards
+
+FIXED AUTOMATA (JSON)
+These automata are already included during synchronization. Do not regenerate them. Use their exact states, events, and transitions to design compatible additional control specifications. When the control objective requires robot motion, explicitly connect relevant observations and mission states to the existing controllable movement events.
+{
+  "fixed_synthesis_roles": {
+    "mission": "exploration",
+    "G_plants": [
+      "obstacle_sensor",
+      "motion_plant"
+    ],
+    "K_fixed_specifications": [],
+    "llm_output_role": "specifications_only"
+  },
+  "fixed_automata": [
+    {
+      "name": "obstacle_sensor",
+      "type": "plant",
+      "states": [
+        "CLEAR"
+      ],
+      "initial_state": "CLEAR",
+      "marked_states": [
+        "CLEAR"
+      ],
+      "events": [
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "CLEAR",
+          "event": "obstacle_right",
+          "target": "CLEAR"
+        },
+        {
+          "source": "CLEAR",
+          "event": "path_clear",
+          "target": "CLEAR"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_left",
+          "target": "CLEAR"
+        },
+        {
+          "source": "CLEAR",
+          "event": "obstacle_front",
+          "target": "CLEAR"
+        }
+      ]
+    },
+    {
+      "name": "motion_plant",
+      "type": "plant",
+      "states": [
+        "ready"
+      ],
+      "initial_state": "ready",
+      "marked_states": [
+        "ready"
+      ],
+      "events": [
+        {
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "move_backward",
+          "controllable": true
+        },
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        },
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        },
+        {
+          "name": "u_turn",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "ready",
+          "event": "move_forward",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "move_backward",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_clockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "rotate_counterclockwise",
+          "target": "ready"
+        },
+        {
+          "source": "ready",
+          "event": "u_turn",
+          "target": "ready"
+        }
+      ]
+    }
+  ]
+}
+
+COLLISION CONTROL MODE
+none
+No fixed specification is included in this API input. Generate only the control specification required by the user input; synchronization will separately evaluate it with and without the fixed collision specification.
+
+EVENT MEANINGS FOR THIS REQUEST
+- `move_backward`: command the robot to drive backward.
+- `move_forward`: command the robot to drive forward.
+- `obstacle_front`: An obstacle intersects the robot's forward safety region.
+- `obstacle_left`: An obstacle intersects the robot's forward-left safety region.
+- `obstacle_right`: An obstacle intersects the robot's forward-right safety region.
+- `path_clear`: sensor observation that the forward path is clear.
+- `rotate_clockwise`: command an in-place clockwise rotation.
+- `rotate_counterclockwise`: command an in-place counterclockwise rotation.
+- `u_turn`: command the robot to turn around.
+
+AUTHORITATIVE EVENT LIST
+Use only events in this list. Events visible in fixed-automata JSON but absent here are forbidden in generated output.
+Select only the events relevant to the user's control objective.
+Controllable events: ["move_backward", "move_forward", "rotate_clockwise", "rotate_counterclockwise", "u_turn"]
+Uncontrollable observation events: ["obstacle_front", "obstacle_left", "obstacle_right", "path_clear"]

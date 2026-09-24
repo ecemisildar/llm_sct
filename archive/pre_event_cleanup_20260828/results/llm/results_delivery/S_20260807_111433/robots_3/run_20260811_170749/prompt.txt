@@ -1,1 +1,0 @@
-Choose a box, pick it up and deliver it to its delivery zone, they have to be same color. To pick the box up, the robot has to search it and approach to it, then search the delivery zone and approach to it to drop the box.

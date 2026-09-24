@@ -75,6 +75,79 @@ def _world_obstacle_circles(world_path: str):
     return obstacles
 
 
+def _world_spawn_limits(world_path: str):
+    """Return safe X/Y limits inferred from the ground footprint."""
+    fallback = (4.35, 4.35)
+    try:
+        root = ET.parse(world_path).getroot()
+        ground = root.find(".//world/model[@name='ground_plane']")
+        size_text = ground.findtext(".//collision/geometry/box/size")
+        if not size_text:
+            return fallback
+        values = [float(value) for value in size_text.split()]
+        if len(values) < 2:
+            return fallback
+        robot_wall_clearance = 0.65
+        return (
+            max(0.0, values[0] / 2.0 - robot_wall_clearance),
+            max(0.0, values[1] / 2.0 - robot_wall_clearance),
+        )
+    except (AttributeError, ET.ParseError, OSError, TypeError, ValueError):
+        return fallback
+
+
+def _world_task_pose_parameters(world_path: str, mission_package: str):
+    """Read detector target coordinates from the randomized effective world."""
+    try:
+        world = ET.parse(world_path).getroot().find("world")
+    except (ET.ParseError, OSError):
+        return {}
+    if world is None:
+        return {}
+    models = {model.get("name", ""): model for model in world.findall("model")}
+    parameters = {}
+    for color in ("red", "green", "blue"):
+        zone = models.get(f"{color}_box")
+        if zone is not None:
+            values = (zone.findtext("pose") or "0 0 0 0 0 0").split()
+            pose = [float(values[0]), float(values[1]), float(values[5])]
+            if mission_package == "leo_delivery":
+                parameters[f"{color}_zone_pose"] = pose
+                # Also supports delivery missions using the plain color
+                # detector instead of shape classification.
+                parameters[f"{color}_target_pose"] = pose
+            else:
+                parameters[f"{color}_target_pose"] = pose
+        if mission_package == "leo_delivery":
+            delivery_object = models.get(f"{color}_delivery_box")
+            if delivery_object is not None:
+                values = (delivery_object.findtext("pose") or "0 0 0 0 0 0").split()
+                parameters[f"{color}_object_pose"] = [
+                    float(values[0]), float(values[1]), float(values[5])
+                ]
+    if mission_package == "leo_delivery":
+        generic_boxes = [
+            model for name, model in models.items()
+            if name.startswith("generic_delivery_box_")
+        ]
+        if generic_boxes:
+            poses = [
+                (model.findtext("pose") or "0 0 0 0 0 0").split()
+                for model in generic_boxes
+            ]
+            center = [
+                sum(float(pose[index]) for pose in poses) / len(poses)
+                for index in (0, 1)
+            ]
+            parameters["green_target_pose"] = [center[0], center[1], 0.0]
+            parameters["green_target_poses"] = [
+                value
+                for pose in poses
+                for value in (float(pose[0]), float(pose[1]), 0.0)
+            ]
+    return parameters
+
+
 def _build_robot_spawn_slots(
     total_robots: int,
     world_path: str,
@@ -82,15 +155,15 @@ def _build_robot_spawn_slots(
 ):
     minimum_spacing = 1.0
     obstacle_clearance = 0.55
-    spawn_limit = 4.35
+    spawn_limit_x, spawn_limit_y = _world_spawn_limits(world_path)
     obstacles = _world_obstacle_circles(world_path)
     slots = []
 
     for _ in range(10000):
         if len(slots) == total_robots:
             return slots
-        x = rng.uniform(-spawn_limit, spawn_limit)
-        y = rng.uniform(-spawn_limit, spawn_limit)
+        x = rng.uniform(-spawn_limit_x, spawn_limit_x)
+        y = rng.uniform(-spawn_limit_y, spawn_limit_y)
         if any(
             math.hypot(x - slot["x"], y - slot["y"]) < minimum_spacing
             for slot in slots
@@ -138,6 +211,7 @@ def generate_multi_robot_launch(
     shutdown_on_task_complete: bool = False,
     wait_for_all_task_completion: bool = False,
     task_progress_on_complete: int = 1,
+    target_detector_executable=None,
 ):
 
     leo_description = get_package_share_directory("leo_description")
@@ -173,6 +247,15 @@ def generate_multi_robot_launch(
         "object_cluster_half_width",
         default_value="0.125",
         description="Half-width in metres of a delivery pickup cluster.",
+    )
+    target_detector_arg = DeclareLaunchArgument(
+        "target_detector_executable",
+        default_value=(
+            target_detector_executable
+            or ("delivery_shape_detector" if mission_package == "leo_delivery"
+                else "color_detector")
+        ),
+        description="Color target detector executable for this mission.",
     )
 
     evaluation_parameters = [
@@ -244,6 +327,9 @@ def generate_multi_robot_launch(
         total_robots_value = int(LaunchConfiguration("total_robots").perform(context))
         total_robots = max(1, total_robots_value)
         world_path = LaunchConfiguration("sim_world").perform(context)
+        task_pose_parameters = _world_task_pose_parameters(
+            world_path, mission_package
+        )
         random_seed = _resolve_seed(LaunchConfiguration("random_seed").perform(context), "random_seed")
 
         print(
@@ -369,6 +455,7 @@ def generate_multi_robot_launch(
 
             behavior_parameters = [
                 {"motion_hold_duration": 0.2},
+                {"pickup_world_path": LaunchConfiguration("sim_world")},
                 {"supervisor_yaml_path": LaunchConfiguration("metadata_yaml_path")},
                 {"random_seed": random_seed},
                 {"run_id": run_id},
@@ -381,11 +468,11 @@ def generate_multi_robot_launch(
                     )
                 },
             ]
-            if shutdown_on_task_complete:
-                # The evaluation node saves the final completion timestamp and
-                # exits first. Its OnProcessExit handler then shuts down Gazebo.
-                # Keep the final robot stopped in place until that shutdown.
-                behavior_parameters.append({"remove_completed_robot": False})
+            if mission_package in {"leo_patrolling", "leo_delivery"}:
+                # Runtime deletion of a sensor-equipped model can crash Gazebo
+                # Fortress. The mission supervisor safely removes each
+                # completed robot from play by moving it below the world.
+                behavior_parameters.append({"remove_completed_robot": True})
             if enable_color_order:
                 behavior_parameters.append(
                     {"target_color_order": LaunchConfiguration("target_color_order")}
@@ -453,22 +540,17 @@ def generate_multi_robot_launch(
                 delayed_nodes.append(
                     Node(
                         package="leo_image_processing",
-                        executable=(
-                            "delivery_shape_detector"
-                            if mission_package == "leo_delivery"
-                            else "color_detector"
+                        executable=LaunchConfiguration(
+                            "target_detector_executable"
                         ),
-                        name=(
-                            "delivery_shape_detector"
-                            if mission_package == "leo_delivery"
-                            else "color_detector"
-                        ),
+                        name="target_detector",
                         namespace=ns,
                         parameters=[
                             {"use_sim_time": True},
                             {"rgb_topic": f"/{ns}/depth_camera/image"},
                             {"robot_name": ns},
                             {"reached_distance": 1.0},
+                            task_pose_parameters,
                             *(
                                 [
                                     {
@@ -517,6 +599,7 @@ def generate_multi_robot_launch(
         forward_probability_arg,
         record_video_arg,
         object_cluster_half_width_arg,
+        target_detector_arg,
     ]
     if shutdown_on_task_complete:
         actions.append(

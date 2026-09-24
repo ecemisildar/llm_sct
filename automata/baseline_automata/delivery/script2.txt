@@ -2,12 +2,12 @@
 
 # 1) Synchronize free behavior models
 
-G = Sync(obstacle_sensor,color_sensor, motion_plant,red_availability,green_availability,blue_availability, pickup_and_drop_plant)
+G = Sync(obstacle_sensor,color_sensor, motion_plant, pickup_and_drop_plant,claiming_receiving_plant)
 
 
 # 2) Synchronize specifications
 
-K = Sync(G, collision_avoidance, delivery_task_specification_corrected, red_robot_delivery_task, green_robot_delivery_task, blue_robot_delivery_task)
+K = Sync(G, collision_avoidance, red_robot_delivery_task, green_robot_delivery_task, blue_robot_delivery_task,red_claiming,green_claiming,blue_claiming)
 
 
 # 3) Remove bad states

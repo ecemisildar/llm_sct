@@ -1,0 +1,5 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+34,"('robot_1', 'generic_delivery_box_5::link::collision')",left,,EV_rotate_counterclockwise,
+90,"('robot_1', 'generic_delivery_box_5::link::collision')",right,,EV_search_object,
+410,"('robot_0', 'generic_delivery_box_4::link::collision')",front,,ZONE_ESCAPE_TURN,
+416,"('robot_0', 'generic_delivery_box_4::link::collision')",back,,EV_u_turn,

@@ -22,10 +22,7 @@ ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
     "move_backward",
     "rotate_clockwise",
     "rotate_counterclockwise",
-    "full_rotate",
-    "task_move_forward",
-    "task_rotate_clockwise",
-    "task_rotate_counterclockwise",
+    "u_turn",
 
     # Patrolling task-level commands from the mission baseline.
     "search_color",
@@ -41,13 +38,16 @@ ALLOWED_GENERATED_CONTROLLABLE_EVENTS = {
     "claim_red",
     "claim_green",
     "claim_blue",
+    "drop_zone_red",
+    "drop_zone_green",
+    "drop_zone_blue",
 }
 
 
 def baseline_dir_for_mission(mission: str) -> Path:
     """Return the authoritative baseline directory for a mission."""
     mission_key = str(mission).strip().casefold()
-    if mission_key == "complex_task":
+    if mission_key in {"complex_task", "payload_delivery"}:
         mission_key = "delivery"
     if mission_key not in {"exploration", "patrolling", "delivery"}:
         raise ValueError(f"Unsupported mission: {mission!r}")
@@ -72,10 +72,13 @@ def string_list(value: Any, field: str) -> list[str]:
 
 
 def parse_transition(value: Any) -> tuple[str, str, str]:
+    if isinstance(value, list) and len(value) == 3:
+        if all(isinstance(item, str) and item for item in value):
+            return value[0], value[1], value[2]
+        raise ValueError("Transition array values must be non-empty strings")
     if not isinstance(value, str):
         raise ValueError(
-            "Every transition must be a JSON string formatted as "
-            "'(\"state\", \"event\", \"next\")'; "
+            "Every transition must be [source, event, target] or a legacy string; "
             f"received {type(value).__name__}: {value!r}"
         )
     match = re.fullmatch(
@@ -246,6 +249,7 @@ def build_xml(
     allowed_generated_events: set[str] | None = None,
     complete_event_alphabet: dict[str, bool] | None = None,
     globally_selected_events: set[str] | None = None,
+    protected_self_loop_events: set[str] | None = None,
 ) -> tuple[str, bytes]:
     raw_transitions = payload.get("transitions")
     if not isinstance(raw_transitions, list) or not raw_transitions:
@@ -271,8 +275,10 @@ def build_xml(
         state_names.extend((source, target))
     state_names = ordered_unique(state_names)
     declared_events = payload.get("events")
+    if declared_events is None:
+        declared_events = ordered_unique(event for _, event, _ in transitions)
     if not isinstance(declared_events, list) or not declared_events:
-        raise ValueError("'events' must be a non-empty list")
+        raise ValueError("The derived or supplied event list must not be empty")
     originally_declared_events = {
         str(
             event.get("name", event.get("id"))
@@ -310,6 +316,7 @@ def build_xml(
         if not controllable
         or (event in selected and event not in originally_declared_events)
     }
+    self_loop_events.update(protected_self_loop_events or set())
     transitions = complete_specification_events(
         state_names, transitions, self_loop_events
     )
@@ -359,11 +366,6 @@ def build_xml(
     if overlap:
         raise ValueError(f"Events are both controllable and uncontrollable: {sorted(overlap)}")
     event_names = ordered_unique(event for _, event, _ in transitions)
-    if "events" not in payload:
-        raise ValueError(
-            "Each generated automaton must explicitly contain an 'events' "
-            "list defining its local synchronization alphabet"
-        )
     declared_event_names: list[str] = []
     for event in declared_events:
         if isinstance(event, dict):
@@ -492,6 +494,7 @@ def convert(
     baseline_dir: Path,
     allowed_generated_events: set[str] | None = None,
     complete_event_alphabet: dict[str, bool] | None = None,
+    protected_self_loop_events: set[str] | None = None,
 ) -> list[Path]:
     try:
         document = json.loads(json_path.read_text(encoding="utf-8"))
@@ -520,6 +523,7 @@ def convert(
             allowed_generated_events=allowed_generated_events,
             complete_event_alphabet=complete_event_alphabet,
             globally_selected_events=globally_selected_events,
+            protected_self_loop_events=protected_self_loop_events,
         )
         filename = f"{name}.xml"
         if filename.casefold() in used_names:
@@ -548,7 +552,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--mission",
         required=True,
-        choices=("exploration", "patrolling", "delivery", "complex_task"),
+        choices=("exploration", "patrolling", "delivery", "payload_delivery", "complex_task"),
         help="Mission whose automata/baseline_automata/<mission> event definitions are used.",
     )
     return parser

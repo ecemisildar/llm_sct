@@ -1,0 +1,1 @@
+Complete a nine-box team delivery mission with three red, three green, and three blue boxes. With the plants unchanged, one pickup loads a batch of one red, up to two green, or up to three blue boxes; one drop unloads that batch. Retain the fixed safety specifications.

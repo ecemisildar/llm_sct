@@ -1,0 +1,6 @@
+[WARN] [1789489727.279970713] []: Old-style arguments are deprecated; see --help for new-style arguments
+[INFO] [1789489727.332560485] [robot_0_spawn_offset_tf]: Spinning until stopped - publishing transform
+translation: ('-1.789575', '1.463252', '0.000000')
+rotation: ('0.000000', '0.000000', '0.952603', '0.304218')
+from 'odom' to 'robot_0/odom'
+[INFO] [1789489911.592286263] [rclcpp]: signal_handler(SIGINT/SIGTERM)

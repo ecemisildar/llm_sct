@@ -457,16 +457,6 @@ class RobotSupervisor(
                 linear_x=linear_x,
                 angular_z=angular_z,
             )
-        if ev_name == "EV_task_rotate_clockwise":
-            return ActionSpec(
-                angular_z=-self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        if ev_name == "EV_task_rotate_counterclockwise":
-            return ActionSpec(
-                angular_z=self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
         return ActionSpec(linear_x=0.3)
 
     def publish_twist_for_event(self, ev_name: str):

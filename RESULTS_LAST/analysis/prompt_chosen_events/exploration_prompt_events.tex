@@ -1,0 +1,39 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for exploration (LLM). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:exploration-without-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_full\_rotate} & 6.81 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_move\_backward} & 0.12 & 2.61 & 2.83 & 2.25 & 2.84 & 2.62 & 2.71 \\
+\texttt{EV\_move\_forward} & 86.37 & 89.77 & 88.42 & 90.24 & 89.72 & 89.96 & 90.26 \\
+\texttt{EV\_rotate\_clockwise} & 3.08 & 2.62 & 2.74 & 2.68 & 2.67 & 2.57 & 2.21 \\
+\texttt{EV\_rotate\_counterclockwise} & 3.62 & 2.19 & 3.01 & 2.58 & 2.27 & 2.67 & 2.49 \\
+\texttt{EV\_u\_turn} & 0.00 & 2.82 & 2.99 & 2.25 & 2.50 & 2.18 & 2.33 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for exploration (LLM + fixed specification). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:exploration-with-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_full\_rotate} & 6.81 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_move\_backward} & 0.12 & 0.11 & 0.12 & 0.17 & 0.19 & 0.11 & 0.25 \\
+\texttt{EV\_move\_forward} & 86.37 & 89.03 & 90.39 & 89.96 & 90.27 & 88.92 & 89.64 \\
+\texttt{EV\_rotate\_clockwise} & 3.08 & 2.58 & 2.06 & 2.39 & 2.22 & 2.54 & 2.51 \\
+\texttt{EV\_rotate\_counterclockwise} & 3.62 & 2.92 & 2.64 & 2.61 & 2.59 & 2.96 & 2.73 \\
+\texttt{EV\_u\_turn} & 0.00 & 5.36 & 4.80 & 4.88 & 4.73 & 5.47 & 4.87 \\
+\hline
+\end{tabular}
+\end{table}

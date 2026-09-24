@@ -1,0 +1,5 @@
+G=Sync(G1,G2,G3,G9g,G7g,G9b,G7b,G8b,G6b,G8g,G6g,G9r,G7r,G8r,G6r,G5b,G5g,G5r,G10,G4b,G4g,G4r)
+
+K=Sync(G,E5r,E5g,E5b,E3g,E3b,E3r,E11r,E11g,E11b,E10r,E10g,E10b,E1,E9b,E9g,E9r,E8,E7g,E7b,E7r,E6,E4,E2,)
+
+S=SupC(G,K)

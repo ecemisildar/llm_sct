@@ -14,20 +14,95 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
+
+FIGURE_FONT_SIZE = 20
+plt.rcParams.update({"font.size": FIGURE_FONT_SIZE})
+
+
+def lowercase_plot_labels(figure):
+    """Use lowercase plot text while preserving the LLM abbreviation."""
+    def label(text):
+        return text.lower().replace("llm", "LLM")
+    for axis in figure.axes:
+        axis.set_xlabel(label(axis.get_xlabel()))
+        axis.set_ylabel(label(axis.get_ylabel()))
+        axis.set_title(label(axis.get_title()))
+        axis.set_xticks(axis.get_xticks(), [label(t.get_text()) for t in axis.get_xticklabels()])
+    for legend in figure.legends:
+        for text in legend.get_texts():
+            text.set_text(label(text.get_text()))
+    for text in figure.texts:
+        text.set_text(label(text.get_text()))
 
 from plot_paired_run import (
-    collisions,
     coverage_at,
     event_percentages,
     newest_completed_run_for_seed,
     read_result,
 )
+from plot_collisions_one_second import count_with_debounce
+
+
+def collisions(run: Path) -> int:
+    """Count at most one collision per entity pair in each one-second window."""
+    path = run / "bumps_global.csv"
+    return count_with_debounce(path) if path.is_file() else 0
 
 
 def seed_for_run(run: Path) -> int | None:
     text = (run / "SAVE_STATUS.txt").read_text(encoding="utf-8", errors="replace")
     match = re.search(r"^\s*random_seed:\s*(\d+)\s*$", text, re.MULTILINE)
     return int(match.group(1)) if match else None
+
+
+def selected_event_paths(run: Path) -> list[Path]:
+    paths = list(run.glob("selected_events_robot_*.csv"))
+    if paths:
+        return paths
+    return list(
+        run.parent.glob(f"robots_*/{run.name}/selected_events_robot_*.csv")
+    )
+
+
+def task_success_pct(run: Path, task: str, success: bool) -> float:
+    """Calculate partial credit from the task's recorded milestones."""
+    if task == "patrolling":
+        with (run / "task_progress.csv").open(newline="", encoding="utf-8") as stream:
+            progress_rows = list(csv.DictReader(stream))
+        completed_targets = sum(
+            int(row.get("completed_colors", 0) or 0) for row in progress_rows
+        )
+        total_targets = sum(
+            int(row.get("total_colors", 0) or 0) for row in progress_rows
+        )
+        return 100.0 * completed_targets / total_targets if total_targets else 0.0
+    if task == "delivery":
+        return 100.0 * delivery_counts(run)["delivered_boxes"] / 6.0
+    return 100.0 if success else 0.0
+
+
+def delivery_counts(run: Path) -> dict[str, int]:
+    """Count zone announcements; generic drop_object precedes announcement."""
+    counts: dict[str, int] = defaultdict(int)
+    for path in selected_event_paths(run):
+        with path.open(newline="", encoding="utf-8") as stream:
+            for row in csv.DictReader(stream):
+                counts[row.get("selected_event", "").strip()] += 1
+    red = counts["EV_drop_zone_red"] + counts["EV_drop_zone_a"]
+    blue = counts["EV_drop_zone_blue"] + counts["EV_drop_zone_b"]
+    # Progress records the team count on each robot, so take its maximum.
+    with (run / "task_progress.csv").open(newline="", encoding="utf-8") as stream:
+        progress = list(csv.DictReader(stream))
+    if not progress or any(int(r.get("total_colors", 0)) != 6 for r in progress):
+        raise ValueError(f"Delivery analysis requires the six-box task: {run}")
+    delivered = max(int(r.get("completed_colors", 0)) for r in progress)
+    return {
+        "delivered_boxes": delivered, "red_boxes": red, "blue_boxes": blue,
+        "zone_drop_events": red + blue,
+        "delivery_count_matches_events": delivered == red + blue,
+    }
 
 
 def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
@@ -54,8 +129,8 @@ def prompt_texts_for(
         texts = {
             path.read_text(encoding="utf-8").strip()
             for generation in generations
-            for path in (yaml_root / f"prompt_{prompt}" / f"generation_{generation}").glob(
-                "S_*.prompt.txt"
+            for path in yaml_root.glob(
+                f"*/prompt_{prompt}/generation_{generation}/S_*.prompt.txt"
             )
         }
         texts.discard("")
@@ -83,12 +158,16 @@ def summarize(group: list[dict[str, object]], prefix: dict[str, object]) -> dict
     coverage_mean, coverage_sd = mean_sd(coverage)
     successful_coverage_mean, successful_coverage_sd = mean_sd(successful_coverage)
     collision_mean, collision_sd = mean_sd(collision_values)
+    task_scores = [float(row["task_success_pct"]) for row in group]
+    task_score_mean, task_score_sd = mean_sd(task_scores)
     successes = sum(bool(row["success"]) for row in group)
-    return {
+    result = {
         **prefix,
         "runs": len(group),
         "successes": successes,
         "success_rate_pct": 100.0 * successes / len(group),
+        "task_success_mean_pct": task_score_mean,
+        "task_success_sd_pct": task_score_sd,
         "duration_all_mean_s": duration_mean,
         "duration_all_sd_s": duration_sd,
         "duration_success_mean_s": successful_mean,
@@ -101,6 +180,13 @@ def summarize(group: list[dict[str, object]], prefix: dict[str, object]) -> dict
         "collisions_mean": collision_mean,
         "collisions_sd": collision_sd,
     }
+    if "delivered_boxes" in group[0]:
+        result["delivered_boxes_mean"], result["delivered_boxes_sd"] = mean_sd(
+            [float(row["delivered_boxes"]) for row in group]
+        )
+        result["red_boxes_mean"] = statistics.mean(float(row["red_boxes"]) for row in group)
+        result["blue_boxes_mean"] = statistics.mean(float(row["blue_boxes"]) for row in group)
+    return result
 
 
 def main() -> int:
@@ -114,13 +200,53 @@ def main() -> int:
     parser.add_argument(
         "--repo-root", type=Path, default=Path(__file__).resolve().parents[2]
     )
+    parser.add_argument(
+        "--experiment-root",
+        type=Path,
+        help=(
+            "Experiment directory containing YAML/<task> and <task> run folders; "
+            "defaults to the repository's legacy result layout"
+        ),
+    )
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument(
+        "--allow-incomplete", action="store_true",
+        help="Analyze currently completed runs even when some cells are missing",
+    )
+    parser.add_argument(
+        "--no-baseline",
+        action="store_true",
+        help="Generate LLM prompt-sensitivity outputs without baseline runs",
+    )
+    parser.add_argument(
+        "--latest-per-cell",
+        action="store_true",
+        help=(
+            "Use only the newest YAML for each prompt/generation/collision-control "
+            "cell when multiple saved controllers exist"
+        ),
+    )
+    parser.add_argument(
+        "--collision-controls",
+        nargs="+",
+        choices=("without_fixed_spec", "with_fixed_spec", "llm_collision", "fixed_collision"),
+        help="Analyze only the selected collision-control result directories",
+    )
     args = parser.parse_args()
 
     root = args.repo_root.expanduser().resolve()
+    experiment_root = (
+        args.experiment_root.expanduser().resolve()
+        if args.experiment_root
+        else None
+    )
     output = args.output_dir.expanduser().resolve()
     output.mkdir(parents=True, exist_ok=True)
-    yaml_root = root / "automata" / "resulting_automata" / "YAML" / args.task
+    yaml_root = (
+        experiment_root / "YAML" / args.task
+        if experiment_root
+        else root / "automata" / "resulting_automata" / "YAML" / args.task
+    )
     prompt_texts = prompt_texts_for(yaml_root, args.prompts, args.generations)
     write_csv(
         output / f"{args.task}_prompts.csv",
@@ -129,313 +255,585 @@ def main() -> int:
             for prompt in args.prompts
         ],
     )
-    yaml_index: dict[str, tuple[int, int, Path]] = {}
-    for yaml_path in yaml_root.glob("prompt_*/generation_*/S_*.yaml"):
+    yaml_paths = list(
+        yaml_root.glob("*/prompt_*/generation_*/S_*.yaml")
+    )
+    if args.collision_controls:
+        yaml_paths = [
+            path for path in yaml_paths
+            if path.parents[2].name in args.collision_controls
+        ]
+    if args.latest_per_cell:
+        latest: dict[tuple[int, int, str], Path] = {}
+        for yaml_path in yaml_paths:
+            cell = (
+                int(yaml_path.parents[1].name.removeprefix("prompt_")),
+                int(yaml_path.parent.name.removeprefix("generation_")),
+                yaml_path.parents[2].name,
+            )
+            if cell not in latest or yaml_path.stat().st_mtime > latest[cell].stat().st_mtime:
+                latest[cell] = yaml_path
+        yaml_paths = list(latest.values())
+
+    yaml_index: dict[tuple[str, str], tuple[int, int, str, Path]] = {}
+    for yaml_path in yaml_paths:
         prompt = int(yaml_path.parents[1].name.removeprefix("prompt_"))
         generation = int(yaml_path.parent.name.removeprefix("generation_"))
         if prompt in args.prompts and generation in args.generations:
-            yaml_index[yaml_path.stem] = (prompt, generation, yaml_path)
+            mode = yaml_path.parents[2].name
+            yaml_index[(mode, str(yaml_path.resolve()))] = (
+                prompt, generation, mode, yaml_path
+            )
 
-    newest: dict[tuple[str, int], Path] = {}
-    result_root = root / "new_results" / "llm" / f"results_{args.task}"
-    for result_file in result_root.glob("S_*/robots_*/run_*/task_result.csv"):
+    newest: dict[tuple[str, str, int], Path] = {}
+    result_roots = (
+        (experiment_root / args.task,)
+        if experiment_root
+        else (
+            root / "new_results" / "llm" / args.task,
+            root / "new_results" / "llm" / f"results_{args.task}",
+        )
+    )
+    result_files = {
+        path.resolve(): path
+        for result_root in result_roots
+        if result_root.is_dir()
+        for path in result_root.rglob("task_result.csv")
+        if path.parent.name.startswith("run_")
+    }.values()
+    for result_file in result_files:
         run = result_file.parent
         status = run / "SAVE_STATUS.txt"
         if not status.is_file() or "Saving OK" not in status.read_text(
             encoding="utf-8", errors="replace"
         ):
             continue
-        supervisor = run.parents[1].name
+        supervisor = next(
+            (parent.name for parent in run.parents if parent.name.startswith("S_")),
+            "",
+        )
+        collision_control = (
+            run.relative_to(experiment_root / args.task).parts[0]
+            if experiment_root
+            else next(
+                (
+                    parent.name
+                    for parent in run.parents
+                    if parent.name in {
+                        "without_fixed_spec", "with_fixed_spec",
+                        "llm_collision", "fixed_collision",
+                    }
+                ),
+                "",
+            )
+        )
         seed = seed_for_run(run)
-        if supervisor not in yaml_index or seed not in args.seeds:
+        status_text = status.read_text(encoding="utf-8", errors="replace")
+        metadata = re.search(r"^metadata_yaml:\s*(.+)$", status_text, re.MULTILINE)
+        if metadata:
+            controller_key = (collision_control, str(Path(metadata.group(1).strip()).resolve()))
+        else:
+            candidates = [key for key in yaml_index if key[0] == collision_control
+                          and Path(key[1]).stem == supervisor]
+            if len(candidates) > 1:
+                raise SystemExit(f"Ambiguous controller attribution without metadata: {run}")
+            controller_key = candidates[0] if candidates else (collision_control, "")
+        if controller_key not in yaml_index or seed not in args.seeds:
             continue
-        key = (supervisor, int(seed))
+        key = (collision_control, controller_key[1], int(seed))
         if key not in newest or status.stat().st_mtime > (newest[key] / "SAVE_STATUS.txt").stat().st_mtime:
             newest[key] = run
 
-    expected = len(args.prompts) * len(args.generations) * len(args.seeds)
+    expected = len(yaml_index) * len(args.seeds)
     if len(newest) != expected:
-        raise SystemExit(f"Found {len(newest)} completed cells; expected {expected}")
+        message = f"Found {len(newest)} completed cells; expected {expected}"
+        if not args.allow_incomplete:
+            raise SystemExit(message)
+        print(message + "; analyzing available results only")
+    if not newest:
+        raise SystemExit("No completed runs found")
 
     rows: list[dict[str, object]] = []
     event_rows: list[dict[str, object]] = []
-    for (supervisor, seed), run in sorted(newest.items()):
-        prompt, generation, yaml_path = yaml_index[supervisor]
+    for (collision_control, controller_path, seed), run in sorted(newest.items()):
+        supervisor = Path(controller_path).stem
+        prompt, generation, collision_control, yaml_path = yaml_index[
+            (collision_control, controller_path)
+        ]
         success, duration = read_result(run)
         row = {
             "task": args.task,
             "prompt": prompt,
             "prompt_text": prompt_texts[prompt],
             "generation": generation,
+            "collision_control": collision_control,
             "seed": seed,
             "supervisor": supervisor,
             "success": success,
+            "task_success_pct": task_success_pct(run, args.task, success),
             "duration_s": duration,
             "coverage_pct": coverage_at(run, duration),
             "collisions": collisions(run),
             "yaml": str(yaml_path),
             "run": str(run),
         }
+        if args.task == "delivery":
+            row.update(delivery_counts(run))
         rows.append(row)
         for event, percentage in event_percentages(run).items():
             event_rows.append(
                 {
                     "prompt": prompt,
                     "generation": generation,
+                    "collision_control": collision_control,
                     "seed": seed,
                     "supervisor": supervisor,
                     "event": event,
                     "percentage": percentage,
                 }
             )
-    rows.sort(key=lambda row: (int(row["prompt"]), int(row["generation"]), int(row["seed"])))
+    rows.sort(key=lambda row: (
+        int(row["prompt"]), str(row["collision_control"]),
+        int(row["generation"]), int(row["seed"]),
+    ))
     write_csv(output / f"{args.task}_prompt_sensitivity_runs.csv", rows)
     write_csv(output / f"{args.task}_prompt_sensitivity_events.csv", event_rows)
 
+    if args.task == "delivery":
+        from delivery_timestep_analysis import analyze_timesteps
+        analyze_timesteps(rows, output, root / "new_results" / "llm_run_logs")
+
     generation_summary = []
     prompt_summary = []
+    preferred_modes = (
+        "without_fixed_spec", "with_fixed_spec", "llm_collision", "fixed_collision"
+    )
+    present_modes = {str(row["collision_control"]) for row in rows}
+    collision_controls = [mode for mode in preferred_modes if mode in present_modes]
     for prompt in args.prompts:
-        prompt_group = [row for row in rows if row["prompt"] == prompt]
-        prompt_summary.append(
-            summarize(
-                prompt_group,
-                {"prompt": prompt, "prompt_text": prompt_texts[prompt]},
-            )
-        )
-        for generation in args.generations:
-            group = [
-                row for row in prompt_group if row["generation"] == generation
+        for collision_control in collision_controls:
+            prompt_group = [
+                row for row in rows
+                if row["prompt"] == prompt
+                and row["collision_control"] == collision_control
             ]
-            generation_summary.append(
+            if not prompt_group:
+                continue
+            prompt_summary.append(
                 summarize(
-                    group,
+                    prompt_group,
                     {
                         "prompt": prompt,
+                        "collision_control": collision_control,
                         "prompt_text": prompt_texts[prompt],
-                        "generation": generation,
                     },
                 )
             )
+            for generation in args.generations:
+                group = [
+                    row for row in prompt_group if row["generation"] == generation
+                ]
+                if not group:
+                    continue
+                generation_summary.append(
+                    summarize(
+                        group,
+                        {
+                            "prompt": prompt,
+                            "collision_control": collision_control,
+                            "prompt_text": prompt_texts[prompt],
+                            "generation": generation,
+                        },
+                    )
+                )
     write_csv(output / f"{args.task}_prompt_summary.csv", prompt_summary)
     write_csv(output / f"{args.task}_generation_summary.csv", generation_summary)
 
     baseline_rows = []
-    for seed in args.seeds:
-        run = newest_completed_run_for_seed(
-            root / "new_results" / "baseline" / f"results_{args.task}", seed
-        )
-        success, duration = read_result(run)
-        baseline_rows.append(
-            {
-                "seed": seed,
-                "success": success,
-                "duration_s": duration,
-                "coverage_pct": coverage_at(run, duration),
-                "collisions": collisions(run),
-                "run": str(run),
-            }
-        )
-    baseline_summary = summarize(baseline_rows, {"prompt": "baseline"})
-    write_csv(output / f"{args.task}_baseline_summary.csv", [baseline_summary])
+    if not args.no_baseline:
+        for seed in args.seeds:
+            run = newest_completed_run_for_seed(
+                root / "new_results" / "baseline" / f"results_{args.task}", seed
+            )
+            success, duration = read_result(run)
+            baseline_rows.append(
+                {
+                    "seed": seed,
+                    "success": success,
+                    "task_success_pct": task_success_pct(
+                        run, args.task, success
+                    ),
+                    "duration_s": duration,
+                    "coverage_pct": coverage_at(run, duration),
+                    "collisions": collisions(run),
+                    "run": str(run),
+                }
+            )
+        baseline_summary = summarize(baseline_rows, {"prompt": "baseline"})
+        write_csv(output / f"{args.task}_baseline_summary.csv", [baseline_summary])
 
-    labels = ["Baseline", *[f"Prompt {prompt}" for prompt in args.prompts]]
-    groups = [
-        baseline_rows,
-        *[[row for row in rows if row["prompt"] == prompt] for prompt in args.prompts],
+    labels = [
+        f"P{prompt} {'With fixed spec' if mode in {'fixed_collision', 'with_fixed_spec'} else 'Without fixed spec'}"
+        for prompt in args.prompts for mode in collision_controls
     ]
+    groups = [
+        [
+            row for row in rows
+            if row["prompt"] == prompt and row["collision_control"] == mode
+        ]
+        for prompt in args.prompts for mode in collision_controls
+    ]
+    prompt_labels = [f"P{prompt}" for prompt in args.prompts]
+    prompt_centers = list(range(1, len(args.prompts) + 1))
+    mode_spacing = 0.32
+    group_positions = [
+        prompt_index
+        + (mode_index - (len(collision_controls) - 1) / 2) * mode_spacing
+        for prompt_index in prompt_centers
+        for mode_index in range(len(collision_controls))
+    ]
+    if baseline_rows:
+        labels.insert(0, "Baseline")
+        groups.insert(0, baseline_rows)
     if args.task == "exploration":
-        figure, axes = plt.subplots(2, 2, figsize=(14, 10))
+        figure, axes = plt.subplots(1, 2, figsize=(13, 5.5))
+        axes = axes.ravel()
+        plot_labels = labels[1:] if baseline_rows else labels
+        plot_groups = groups[1:] if baseline_rows else groups
+        group_colors = []
+        group_colors.extend(
+            "#7B2CBF" if mode in {"fixed_collision", "with_fixed_spec"} else "#00A896"
+            for _prompt in args.prompts
+            for mode in collision_controls
+        )
         for axis, field, title, ylabel in (
-            (axes[0, 0], "coverage_pct", "Coverage distribution", "Coverage (%)"),
-            (axes[0, 1], "collisions", "Collisions", "Collision count"),
+            (axes[0], "coverage_pct", "Coverage distribution", "Coverage (%)"),
+            (
+                axes[1], "collisions", "Collision distribution", "Collisions",
+            ),
         ):
-            values = [[float(row[field]) for row in group] for group in groups]
-            axis.boxplot(values, labels=labels, showmeans=True)
-            for index, group_values in enumerate(values, 1):
-                axis.scatter([index] * len(group_values), group_values, s=15, alpha=0.45)
+            values = [[float(row[field]) for row in group] for group in plot_groups]
+            boxes = axis.boxplot(
+                values, positions=group_positions, widths=0.26,
+                showmeans=True, patch_artist=True
+            )
+            for box, color in zip(boxes["boxes"], group_colors):
+                box.set_facecolor(color)
+                box.set_alpha(0.55)
+            for position, group_values, color in zip(
+                group_positions, values, group_colors
+            ):
+                axis.scatter(
+                    [position] * len(group_values), group_values,
+                    s=15, alpha=0.55, color=color,
+                )
+            axis.set_xticks(prompt_centers, prompt_labels)
             axis.set_ylabel(ylabel)
             axis.set_title(title)
-
-        baseline_coverage = {
-            int(row["seed"]): float(row["coverage_pct"]) for row in baseline_rows
-        }
-        relative_coverage = [[0.0 for _ in baseline_rows]]
-        relative_coverage.extend(
-            [
-                float(row["coverage_pct"]) - baseline_coverage[int(row["seed"])]
-                for row in group
-            ]
-            for group in groups[1:]
-        )
-        axes[1, 0].boxplot(relative_coverage, labels=labels, showmeans=True)
-        for index, group_values in enumerate(relative_coverage, 1):
-            axes[1, 0].scatter(
-                [index] * len(group_values), group_values, s=15, alpha=0.45
+            axis.set_ylim(bottom=0)
+            if field == "coverage_pct":
+                axis.set_ylim(0, 100)
+            axis.tick_params(
+                axis="x", labelrotation=45, labelsize=FIGURE_FONT_SIZE
             )
-        axes[1, 0].axhline(0.0, color="black", linestyle="--", linewidth=1)
-        axes[1, 0].set_ylabel("Coverage difference (percentage points)")
-        axes[1, 0].set_title("Coverage relative to matched baseline")
-
-        baseline_events = [event_percentages(Path(str(row["run"]))) for row in baseline_rows]
-        prompt_event_groups: dict[int, list[dict[str, float]]] = {
-            prompt: [] for prompt in args.prompts
-        }
-        by_run: dict[tuple[int, int, int, str], dict[str, float]] = defaultdict(dict)
-        for item in event_rows:
-            key = (
-                int(item["prompt"]), int(item["generation"]),
-                int(item["seed"]), str(item["supervisor"]),
+            axis.tick_params(axis="y", labelsize=FIGURE_FONT_SIZE)
+            axis.xaxis.label.set_size(FIGURE_FONT_SIZE)
+            axis.yaxis.label.set_size(FIGURE_FONT_SIZE)
+            axis.title.set_size(FIGURE_FONT_SIZE)
+            if baseline_rows:
+                baseline_mean = statistics.mean(
+                    float(row[field]) for row in baseline_rows
+                )
+                axis.axhline(
+                    baseline_mean,
+                    color="#333333",
+                    linestyle="--",
+                    linewidth=1.8,
+                    label=f"Baseline mean ({baseline_mean:.1f})",
+                )
+        for axis in axes:
+            axis.grid(False)
+            axis.spines["top"].set_visible(False)
+            axis.spines["right"].set_visible(False)
+        legend_handles = []
+        if any(mode in {"llm_collision", "without_fixed_spec"} for mode in collision_controls):
+            legend_handles.append(Patch(facecolor="#00A896", alpha=0.55, label="LLM"))
+        if any(mode in {"fixed_collision", "with_fixed_spec"} for mode in collision_controls):
+            legend_handles.append(
+                Patch(facecolor="#7B2CBF", alpha=0.55, label="LLM + Spec_col")
             )
-            by_run[key][str(item["event"])] = float(item["percentage"])
-        for key, values in by_run.items():
-            prompt_event_groups[key[0]].append(values)
-        all_event_groups = [
-            baseline_events,
-            *[prompt_event_groups[prompt] for prompt in args.prompts],
-        ]
-        events = sorted(
-            {event for group in all_event_groups for run in group for event in run},
-            key=lambda event: -max(
-                statistics.mean(run.get(event, 0.0) for run in group)
-                for group in all_event_groups
-            ),
-        )
-        positions = list(range(len(events)))
-        width = 0.82 / len(labels)
-        for index, (label, group) in enumerate(zip(labels, all_event_groups)):
-            means = [
-                statistics.mean(run.get(event, 0.0) for run in group)
-                for event in events
-            ]
-            axes[1, 1].bar(
-                [position - 0.41 + width / 2 + index * width for position in positions],
-                means, width, label=label,
+        if baseline_rows:
+            legend_handles.append(
+                Line2D(
+                    [0], [0], color="#333333", linestyle="--", linewidth=1.8,
+                    label="Baseline mean",
+                )
             )
-        axes[1, 1].set_xticks(
-            positions,
-            [event.replace("_", " ") for event in events],
-            rotation=28,
-            ha="right",
+        figure.legend(
+            handles=legend_handles,
+            loc="lower center",
+            bbox_to_anchor=(0.5, 0.01),
+            ncol=len(legend_handles),
+            frameon=False,
+            fontsize=FIGURE_FONT_SIZE,
         )
-        axes[1, 1].set_ylabel("Mean selected events (%)")
-        axes[1, 1].set_title("Event distribution")
-        axes[1, 1].legend(fontsize=8)
-
-        for axis in axes.flat:
-            axis.grid(axis="y", linestyle="--", alpha=0.3)
-        figure.suptitle(
+        title_artist = figure.suptitle(
             f"Exploration prompt sensitivity: {len(args.prompts)} prompts $\\times$ "
-            f"{len(args.generations)} generations $\\times$ {len(args.seeds)} seeds"
+            f"{len(args.generations)} generations $\\times$ {len(args.seeds)} seeds",
+            fontsize=FIGURE_FONT_SIZE,
         )
-        figure.tight_layout(rect=(0, 0, 1, 0.96))
+        figure.tight_layout(rect=(0, 0.12, 1, 0.93))
+        lowercase_plot_labels(figure)
         figure.savefig(
             output / "exploration_prompt_sensitivity.png",
             dpi=200,
             bbox_inches="tight",
         )
+        title_artist.set_visible(False)
+        for axis in axes:
+            axis.title.set_visible(False)
+        figure.tight_layout(rect=(0, 0.12, 1, 0.98))
+        figure.savefig(
+            output / "exploration_prompt_sensitivity_no_title.png",
+            dpi=200,
+            bbox_inches="tight",
+        )
         plt.close(figure)
-        print(f"Analyzed {len(rows)} LLM runs and {len(baseline_rows)} baseline runs")
+        print(f"Analyzed {len(rows)} LLM runs" + (
+            f" and {len(baseline_rows)} baseline runs" if baseline_rows else ""
+        ))
         print(f"Saved outputs under {output}")
         return 0
 
-    figure, axes = plt.subplots(2, 3, figsize=(18, 10))
-    success_rates = [100.0 * sum(bool(row["success"]) for row in group) / len(group) for group in groups]
-    axes[0, 0].bar(labels, success_rates, color=["#777777", *[plt.get_cmap("tab10")(i) for i in range(len(args.prompts))]])
-    axes[0, 0].set_ylabel("Success rate (%)")
-    axes[0, 0].set_ylim(0, 105)
-    axes[0, 0].set_title("Task success")
+    is_delivery = args.task == "delivery"
+    if is_delivery:
+        figure, axes = plt.subplots(2, 3, figsize=(18, 10))
+        axes.ravel()[-1].set_visible(False)
+        all_axes = axes.ravel()[:5]
+    else:
+        figure, axes = plt.subplots(1, 4, figsize=(24, 5.5))
+        all_axes = axes.ravel()
+    panel_axes = all_axes[1:] if is_delivery else all_axes
+    plot_labels = labels[1:] if baseline_rows else labels
+    plot_groups = groups[1:] if baseline_rows else groups
+    task_scores = [
+        statistics.mean(float(row["task_success_pct"]) for row in group) if group else float("nan")
+        for group in plot_groups
+    ]
+    group_colors = [
+        "#7B2CBF" if mode in {"fixed_collision", "with_fixed_spec"} else "#00A896"
+        for _prompt in args.prompts
+        for mode in collision_controls
+    ]
+    if args.task == "patrolling":
+        generation_selections = []
+        for position, group, color in zip(group_positions, plot_groups, group_colors):
+            by_generation = {}
+            for row in group:
+                by_generation.setdefault(int(row["generation"]), []).append(row)
+            ranked = sorted(
+                [(generation, statistics.mean(float(r["task_success_pct"]) for r in runs), runs)
+                 for generation, runs in by_generation.items()],
+                key=lambda item: (-round(item[1], 10), item[0]),
+            )
+            if not ranked:
+                continue
+            for selection, offset, hatch, item in (
+                ("best", -0.07, "", ranked[0]),
+                ("median", 0.07, "///", ranked[len(ranked) // 2]),
+            ):
+                generation, score, runs = item
+                panel_axes[0].bar(
+                    position + offset, score, width=0.12, color=color,
+                    alpha=0.7, hatch=hatch, edgecolor="#333333", linewidth=0.6,
+                )
+                generation_selections.append({
+                    "prompt": runs[0]["prompt"],
+                    "collision_control": runs[0]["collision_control"],
+                    "selection": selection,
+                    "generation": generation,
+                    "seeds": len(runs),
+                    "mean_task_progression_pct": score,
+                })
+        with (output / "patrolling_best_median_generations.csv").open("w", newline="") as stream:
+            fields = ["prompt", "collision_control", "selection", "generation", "seeds", "mean_task_progression_pct"]
+            writer = csv.DictWriter(stream, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(generation_selections)
+        panel_axes[0].legend(
+            handles=[
+                Patch(facecolor="white", edgecolor="#333333", label="best generation"),
+                Patch(facecolor="white", edgecolor="#333333", hatch="///", label="median generation"),
+            ],
+            loc="lower center", bbox_to_anchor=(0.5, 1.02),
+            ncol=2, frameon=False, fontsize=12,
+        )
+    else:
+        panel_axes[0].bar(
+            group_positions, task_scores, width=0.28,
+            color=group_colors, alpha=0.7,
+        )
+    panel_axes[0].set_xticks(prompt_centers, prompt_labels)
+    panel_axes[0].set_ylabel("mean task progression (%)")
+    panel_axes[0].set_ylim(0, 105)
+    panel_axes[0].set_title("task progression score")
+    if baseline_rows:
+        panel_axes[0].axhline(
+            statistics.mean(
+                float(row["task_success_pct"]) for row in baseline_rows
+            ),
+            color="#333333", linestyle="--", linewidth=1.8,
+        )
 
-    for axis, field, title, ylabel in (
-        (axes[0, 1], "duration_s", "Completion time / timeout", "Seconds"),
-        (axes[1, 0], "collisions", "Collisions", "Collision count"),
-    ):
-        values = [[float(row[field]) for row in group] for group in groups]
-        axis.boxplot(values, labels=labels, showmeans=True)
-        for index, group_values in enumerate(values, 1):
-            axis.scatter([index] * len(group_values), group_values, s=15, alpha=0.45)
+    distributions = [
+        (panel_axes[1], "duration_s", "Completion time / timeout", "completion time (s)"),
+        (
+            panel_axes[3] if is_delivery else panel_axes[2], "collisions", "Collision distribution", "Collisions",
+        ),
+    ]
+    if args.task == "patrolling":
+        binary_scores = [
+            [float(str(row["success"]).lower() == "true") for row in group]
+            for group in plot_groups
+        ]
+        score_axis = all_axes[3]
+        score_axis.bar(group_positions,
+                       [statistics.mean(values) if values else 0 for values in binary_scores],
+                       width=0.28, color=group_colors, alpha=0.7)
+        score_axis.set_xticks(prompt_centers, prompt_labels)
+        score_axis.set_ylabel("mean binary task score")
+        score_axis.set_title("All robots completed the required order")
+        score_axis.set_ylim(0, 1)
+        if baseline_rows:
+            baseline_path = output / "patrolling_baseline_summary.csv"
+            if baseline_path.exists():
+                with baseline_path.open(newline="") as stream:
+                    baseline_score = float(next(csv.DictReader(stream))["success_rate_pct"]) / 100
+                score_axis.axhline(baseline_score, color="#333333", linestyle="--", linewidth=1.8)
+    if is_delivery:
+        distributions.insert(1, (panel_axes[2], "red_box_percentage", "Final zone balance", "Red boxes (% of zone deliveries)"))
+        distributions.insert(0, (all_axes[0], "delivered_boxes", "Delivered boxes per run", "Delivered boxes"))
+    for axis, field, title, ylabel in distributions:
+        if field == "coverage_pct":
+            axis.set_ylim(0, 100)
+        if field == "red_box_percentage":
+            # Zero-delivery trials have no defined zone percentage.
+            values = [[100.0 * float(row["red_boxes"]) / (float(row["red_boxes"]) + float(row["blue_boxes"]))
+                       for row in group if float(row["red_boxes"]) + float(row["blue_boxes"]) > 0]
+                      for group in plot_groups]
+        else:
+            values = [[float(row[field]) for row in group] for group in plot_groups]
+        boxes = axis.boxplot(
+            values, positions=group_positions, widths=0.26,
+            showmeans=True, patch_artist=True
+        )
+        for box, color in zip(boxes["boxes"], group_colors):
+            box.set_facecolor(color)
+            box.set_alpha(0.55)
+        for position, group_values, color in zip(
+            group_positions, values, group_colors
+        ):
+            axis.scatter(
+                [position] * len(group_values), group_values,
+                s=15, alpha=0.55, color=color,
+            )
+        axis.set_xticks(prompt_centers, prompt_labels)
         axis.set_ylabel(ylabel)
         axis.set_title(title)
+        if field == "collisions":
+            # Logarithmic above one collision, with zero retained on the axis.
+            axis.set_yscale("symlog", linthresh=1, linscale=0.5)
+            maximum = max((value for group in values for value in group), default=1)
+            ticks = [0, 1]
+            power = 10
+            while power <= max(10, maximum):
+                ticks.append(power)
+                power *= 10
+            axis.set_yticks(ticks, [str(tick) for tick in ticks])
+            axis.set_ylabel("Collisions (log scale)")
+            # Leave room for outlier markers above the highest collision count.
+            axis.margins(y=0.12)
+        if field == "red_box_percentage":
+            axis.set_ylim(0, 105)
+            axis.axhline(50, color="#333333", linestyle="--", linewidth=1.8)
+            # Highlight final differences outside the allowed +/-1 range.
+            for position, group in zip(group_positions, plot_groups):
+                violations = [100.0 * float(row["red_boxes"]) / (float(row["red_boxes"]) + float(row["blue_boxes"]))
+                              for row in group if float(row["red_boxes"]) + float(row["blue_boxes"]) > 0
+                              and abs(float(row["red_boxes"]) - float(row["blue_boxes"])) > 1]
+                axis.scatter([position] * len(violations), violations, marker="x", s=45, color="#D62728", zorder=5)
+        if field in {"delivered_boxes", "red_boxes", "blue_boxes"}:
+            maximum_count = max(6, int(max((value for group in values for value in group), default=0)))
+            axis.set_ylim(0, maximum_count + 0.5)
+            axis.set_yticks(range(maximum_count + 1))
+        if baseline_rows:
+            axis.axhline(
+                statistics.mean(float(row[field]) for row in baseline_rows),
+                color="#333333", linestyle="--", linewidth=1.8,
+            )
 
-    coverage_values = [
-        [float(row["coverage_pct"]) for row in group]
-        for group in groups
-    ]
-    axes[0, 2].boxplot(coverage_values, labels=labels, showmeans=True)
-    for index, group_values in enumerate(coverage_values, 1):
-        axes[0, 2].scatter(
-            [index] * len(group_values), group_values, s=15, alpha=0.45
+    for axis in all_axes:
+        axis.grid(False)
+        axis.spines["top"].set_visible(False)
+        axis.spines["right"].set_visible(False)
+        axis.set_ylim(bottom=0)
+        axis.tick_params(
+            axis="x", labelrotation=45, labelsize=FIGURE_FONT_SIZE
         )
-    axes[0, 2].set_ylabel("Coverage (%)")
-    axes[0, 2].set_title("Coverage distribution")
-
-    baseline_coverage = {
-        int(row["seed"]): float(row["coverage_pct"]) for row in baseline_rows
-    }
-    relative_coverage = [[0.0 for _ in baseline_rows]]
-    relative_coverage.extend(
-        [
-            float(row["coverage_pct"]) - baseline_coverage[int(row["seed"])]
-            for row in group
-        ]
-        for group in groups[1:]
+        axis.tick_params(axis="y", labelsize=FIGURE_FONT_SIZE)
+        axis.xaxis.label.set_size(FIGURE_FONT_SIZE)
+        axis.yaxis.label.set_size(FIGURE_FONT_SIZE)
+        axis.title.set_size(FIGURE_FONT_SIZE)
+    legend_handles = []
+    if any(mode in {"llm_collision", "without_fixed_spec"} for mode in collision_controls):
+        legend_handles.append(Patch(facecolor="#00A896", alpha=0.55, label="LLM"))
+    if any(mode in {"fixed_collision", "with_fixed_spec"} for mode in collision_controls):
+        legend_handles.append(
+            Patch(facecolor="#7B2CBF", alpha=0.55, label="LLM + Spec_col")
+        )
+    if baseline_rows:
+        legend_handles.append(
+            Line2D(
+                [0], [0], color="#333333", linestyle="--", linewidth=1.8,
+                label="Baseline mean",
+            )
+        )
+    figure.legend(
+        handles=legend_handles,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.01),
+        ncol=len(legend_handles),
+        frameon=False,
+        fontsize=FIGURE_FONT_SIZE,
     )
-    axes[1, 1].boxplot(relative_coverage, labels=labels, showmeans=True)
-    for index, group_values in enumerate(relative_coverage, 1):
-        axes[1, 1].scatter(
-            [index] * len(group_values), group_values, s=15, alpha=0.45
-        )
-    axes[1, 1].axhline(0.0, color="black", linestyle="--", linewidth=1)
-    axes[1, 1].set_ylabel("Coverage difference (percentage points)")
-    axes[1, 1].set_title("Coverage relative to matched baseline")
-
-    baseline_events = [event_percentages(Path(str(row["run"]))) for row in baseline_rows]
-    prompt_event_groups: dict[int, list[dict[str, float]]] = {
-        prompt: [] for prompt in args.prompts
-    }
-    by_run: dict[tuple[int, int, int, str], dict[str, float]] = defaultdict(dict)
-    for item in event_rows:
-        key = (
-            int(item["prompt"]), int(item["generation"]),
-            int(item["seed"]), str(item["supervisor"]),
-        )
-        by_run[key][str(item["event"])] = float(item["percentage"])
-    for key, values in by_run.items():
-        prompt_event_groups[key[0]].append(values)
-    all_event_groups = [baseline_events, *[prompt_event_groups[prompt] for prompt in args.prompts]]
-    events = sorted(
-        {event for group in all_event_groups for run in group for event in run},
-        key=lambda event: -max(
-            statistics.mean(run.get(event, 0.0) for run in group)
-            for group in all_event_groups
-        ),
-    )
-    positions = list(range(len(events)))
-    width = 0.82 / len(labels)
-    for index, (label, group) in enumerate(zip(labels, all_event_groups)):
-        means = [statistics.mean(run.get(event, 0.0) for run in group) for event in events]
-        axes[1, 2].bar(
-            [position - 0.41 + width / 2 + index * width for position in positions],
-            means, width, label=label,
-        )
-    axes[1, 2].set_xticks(
-        positions, [event.replace("_", " ") for event in events], rotation=28, ha="right"
-    )
-    axes[1, 2].set_ylabel("Mean selected events (%)")
-    axes[1, 2].set_title("Event distribution")
-    axes[1, 2].legend(fontsize=8)
-
-    for axis in axes.flat:
-        axis.grid(axis="y", linestyle="--", alpha=0.3)
-        axis.tick_params(axis="x", labelrotation=15)
-    figure.suptitle(
-        f"{args.task.capitalize()} prompt sensitivity: "
+    title_artist = figure.suptitle(
+        (f"{args.task.capitalize()} prompt sensitivity: {len(rows)} completed LLM runs"
+         if args.allow_incomplete else
+         f"{args.task.capitalize()} prompt sensitivity: "
         f"{len(args.prompts)} prompts × {len(args.generations)} generations × "
-        f"{len(args.seeds)} seeds"
+        f"{len(args.seeds)} seeds"),
+        fontsize=FIGURE_FONT_SIZE,
     )
-    figure.tight_layout(rect=(0, 0, 1, 0.96))
-    figure.savefig(output / f"{args.task}_prompt_sensitivity.png", dpi=200, bbox_inches="tight")
+    figure.tight_layout(rect=(0, 0.1, 1, 0.93))
+    lowercase_plot_labels(figure)
+    figure.savefig(
+        output / f"{args.task}_prompt_sensitivity.png",
+        dpi=200,
+        bbox_inches="tight",
+    )
+    title_artist.set_visible(False)
+    for axis in all_axes:
+        axis.title.set_visible(False)
+    figure.tight_layout(rect=(0, 0.1, 1, 0.98))
+    figure.savefig(
+        output / f"{args.task}_prompt_sensitivity_no_title.png",
+        dpi=200,
+        bbox_inches="tight",
+    )
     plt.close(figure)
-    print(f"Analyzed {len(rows)} LLM runs and {len(baseline_rows)} baseline runs")
+    print(f"Analyzed {len(rows)} LLM runs" + (
+        f" and {len(baseline_rows)} baseline runs" if baseline_rows else ""
+    ))
     print(f"Saved outputs under {output}")
     return 0
 

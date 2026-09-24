@@ -1,6 +1,0 @@
-stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
-154,"('robot_0', 'robot_2')",back,front,EV_task_move_forward,EV_task_move_forward
-157,"('robot_0', 'robot_2')",left,left,EV_task_rotate_clockwise,EV_task_rotate_counterclockwise
-213,"('robot_0', 'robot_2')",front,left,EV_task_move_forward,EV_task_move_forward
-215,"('robot_0', 'robot_2')",front,back,EV_task_move_forward,EV_task_move_forward
-265,"('robot_0', 'robot_2')",back,left,EV_task_move_forward,EV_task_move_forward

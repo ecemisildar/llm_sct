@@ -1,0 +1,18 @@
+[INFO] [1789488317.621513038] [robot_2.target_detector]: Color detector listening on RGB '/robot_2/depth_camera/image'; reached uses world poses
+[INFO] [1789488330.870579830] [robot_2.target_detector]: RGB HEARTBEAT frames_total=10 recent_rate_hz=0.718 last_frame_age_s=0.704 status=OK
+[INFO] [1789488340.783716666] [robot_2.target_detector]: RGB HEARTBEAT frames_total=20 recent_rate_hz=1.009 last_frame_age_s=0.809 status=OK
+[INFO] [1789488351.402554203] [robot_2.target_detector]: RGB HEARTBEAT frames_total=30 recent_rate_hz=0.943 last_frame_age_s=0.801 status=OK
+[INFO] [1789488361.157986712] [robot_2.target_detector]: RGB HEARTBEAT frames_total=40 recent_rate_hz=1.025 last_frame_age_s=0.829 status=OK
+[INFO] [1789488370.800581139] [robot_2.target_detector]: RGB HEARTBEAT frames_total=50 recent_rate_hz=1.036 last_frame_age_s=0.845 status=OK
+[INFO] [1789488380.814029881] [robot_2.target_detector]: RGB HEARTBEAT frames_total=60 recent_rate_hz=0.999 last_frame_age_s=0.828 status=OK
+[INFO] [1789488389.909117292] [robot_2.target_detector]: RGB HEARTBEAT frames_total=70 recent_rate_hz=1.099 last_frame_age_s=0.668 status=OK
+[INFO] [1789488399.875356341] [robot_2.target_detector]: RGB HEARTBEAT frames_total=80 recent_rate_hz=1.005 last_frame_age_s=0.739 status=OK
+[INFO] [1789488409.817952562] [robot_2.target_detector]: RGB HEARTBEAT frames_total=90 recent_rate_hz=1.007 last_frame_age_s=0.859 status=OK
+[INFO] [1789488419.236656096] [robot_2.target_detector]: RGB HEARTBEAT frames_total=100 recent_rate_hz=1.061 last_frame_age_s=0.755 status=OK
+[INFO] [1789488428.521122225] [robot_2.target_detector]: RGB HEARTBEAT frames_total=110 recent_rate_hz=1.075 last_frame_age_s=0.694 status=OK
+[INFO] [1789488437.846881980] [robot_2.target_detector]: RGB HEARTBEAT frames_total=120 recent_rate_hz=1.074 last_frame_age_s=0.809 status=OK
+[INFO] [1789488447.656015859] [robot_2.target_detector]: RGB HEARTBEAT frames_total=130 recent_rate_hz=1.018 last_frame_age_s=0.716 status=OK
+[INFO] [1789488456.473416979] [robot_2.target_detector]: RGB HEARTBEAT frames_total=140 recent_rate_hz=1.135 last_frame_age_s=0.747 status=OK
+[INFO] [1789488465.132514891] [robot_2.target_detector]: RGB HEARTBEAT frames_total=150 recent_rate_hz=1.154 last_frame_age_s=0.615 status=OK
+[INFO] [1789488474.906904632] [robot_2.target_detector]: RGB HEARTBEAT frames_total=160 recent_rate_hz=1.023 last_frame_age_s=0.864 status=OK
+[INFO] [1789488484.820836399] [robot_2.target_detector]: RGB HEARTBEAT frames_total=170 recent_rate_hz=1.009 last_frame_age_s=0.740 status=OK

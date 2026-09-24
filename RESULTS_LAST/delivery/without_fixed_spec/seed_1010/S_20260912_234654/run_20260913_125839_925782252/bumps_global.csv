@@ -1,0 +1,4 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+227,"('robot_1', 'generic_delivery_box_5::link::collision')",front,,EV_u_turn,
+231,"('robot_1', 'generic_delivery_box_5::link::collision')",front,,EV_u_turn,
+235,"('robot_1', 'generic_delivery_box_5::link::collision')",right,,EV_u_turn,

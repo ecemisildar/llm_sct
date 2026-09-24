@@ -1,0 +1,6 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+29,"('robot_0', 'west_wall::link::collision')",right,,EV_move_forward,
+31,"('robot_0', 'north_wall::link::collision')",front,,EV_move_forward,
+40,"('robot_1', 'south_wall::link::collision')",front,,EV_move_forward,
+44,"('robot_1', 'south_wall::link::collision')",front,,EV_move_forward,
+51,"('robot_0', 'west_wall::link::collision')",right,,EV_move_forward,

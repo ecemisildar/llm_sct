@@ -1,0 +1,8 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+186,"('robot_0', 'robot_2')",front,front,ZONE_ESCAPE_REVERSE,ZONE_ESCAPE_TURN
+188,"('robot_0', 'robot_2')",right,back,ZONE_ESCAPE_TURN,none
+241,"('robot_0', 'robot_2')",back,front,ZONE_ESCAPE_TURN,EV_rotate_clockwise
+242,"('robot_0', 'robot_2')",left,left,ZONE_ESCAPE_TURN,EV_move_forward
+249,"('robot_0', 'robot_2')",back,right,ZONE_ESCAPE_TURN,ZONE_ESCAPE_TURN
+251,"('robot_0', 'robot_2')",front,left,EV_search_color,EV_u_turn
+274,"('robot_0', 'robot_2')",left,left,EV_rotate_clockwise,EV_u_turn

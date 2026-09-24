@@ -18,7 +18,7 @@
 	<event id="10" name="move_backward" controllable="True" observable="True"/>
 	<event id="11" name="blue_visible" controllable="False" observable="True"/>
 	<event id="12" name="obstacle_left" controllable="False" observable="True"/>
-	<event id="13" name="full_rotate" controllable="True" observable="True"/>
+	<event id="13" name="u_turn" controllable="True" observable="True"/>
 	<event id="14" name="path_clear" controllable="False" observable="True"/>
 	<event id="15" name="green_reached" controllable="False" observable="True"/>
 	<event id="16" name="search_color" controllable="True" observable="True"/>

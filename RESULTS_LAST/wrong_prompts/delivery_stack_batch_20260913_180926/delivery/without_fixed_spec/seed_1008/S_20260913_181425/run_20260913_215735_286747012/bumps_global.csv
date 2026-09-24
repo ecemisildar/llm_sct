@@ -1,0 +1,5 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+316,"('robot_0', 'north_wall::link::collision')",back,,EV_move_backward,
+323,"('robot_0', 'north_wall::link::collision')",front,,ZONE_ESCAPE_TURN,
+354,"('robot_0', 'north_wall::link::collision')",left,,EV_move_forward,
+364,"('robot_0', 'north_wall::link::collision')",left,,EV_search_object,

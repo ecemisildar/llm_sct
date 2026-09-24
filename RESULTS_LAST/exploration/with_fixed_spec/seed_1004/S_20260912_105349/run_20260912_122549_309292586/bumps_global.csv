@@ -1,0 +1,4 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+69,"('robot_0', 'robot_2')",right,left,none,EV_u_turn
+70,"('robot_0', 'robot_2')",front,front,CONTACT_RECOVERY,CONTACT_RECOVERY
+74,"('robot_0', 'west_wall::link::collision')",back,,EV_u_turn,

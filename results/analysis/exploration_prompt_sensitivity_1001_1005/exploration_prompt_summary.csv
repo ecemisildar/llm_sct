@@ -1,6 +1,0 @@
-prompt,prompt_text,runs,successes,success_rate_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
-1,Explore the environment continuously to maximize area coverage while avoiding obstacles.,15,0,0.0,299.8306,0.03522650517248293,,,99.06666666666666,1.18133634311129,,,22,1.4666666666666666,1.3097921802925667
-2,"As a member of a team of three robots, explore the environment and avoid obstacles.",15,0,0.0,299.8337333333333,0.04578859634838627,,,98.2,2.006655592438988,,,22,1.4666666666666666,1.54344492037203
-3,Explore the area while maximizing the coverage.,15,0,0.0,299.8136,0.03775323385706545,,,97.73333333333333,1.569146972791976,,,24,1.6,1.019803902718557
-4,Explore the area.,15,0,0.0,299.80853333333334,0.03475220216843116,,,98.6,1.3564659966250536,,,15,1.0,1.5491933384829668
-5,Maximize the covered area.,15,0,0.0,299.81913333333335,0.038033085012336536,,,98.6,1.1430952132988164,,,22,1.4666666666666666,1.8571184369578826

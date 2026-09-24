@@ -1,0 +1,1 @@
+Move within the environment to maximize the area covered while avoiding obstacles.

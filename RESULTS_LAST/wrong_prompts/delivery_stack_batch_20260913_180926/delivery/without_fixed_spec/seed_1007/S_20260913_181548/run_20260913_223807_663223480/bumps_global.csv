@@ -1,0 +1,6 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+187,"('robot_0', 'south_wall::link::collision')",front,,EV_rotate_counterclockwise,
+201,"('robot_0', 'south_wall::link::collision')",back,,EV_u_turn,
+203,"('robot_0', 'south_wall::link::collision')",left,,EV_move_forward,
+205,"('robot_0', 'south_wall::link::collision')",back,,EV_move_backward,
+212,"('robot_0', 'south_wall::link::collision')",right,,EV_move_backward,

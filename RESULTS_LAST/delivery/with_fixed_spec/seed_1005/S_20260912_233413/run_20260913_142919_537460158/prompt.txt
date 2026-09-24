@@ -1,0 +1,1 @@
+Search an object and pick it up. Search for a drop-off zone which could be the red zone, the blue zone, or both. Once reached, drop the object. This triggers a broadcast message that indicates the zone to which the object was delivered. Following delivery, repeat the process indefinitely. Switch zones every time an object is delivered.

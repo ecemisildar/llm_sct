@@ -1,0 +1,1 @@
+Using the existing events and unchanged plants, coordinate the robots to deliver three boxes per color. Treat one pickup as loading at most one red box, two green boxes, or three blue boxes, and one drop as unloading that batch at the matching zone.

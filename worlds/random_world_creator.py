@@ -78,7 +78,8 @@ with open(world_file, "w") as f:
   <world name="random_world">
     <physics name="1ms" type="ignored">
       <max_step_size>0.002</max_step_size>
-      <real_time_update_rate>200</real_time_update_rate>
+      <real_time_update_rate>400</real_time_update_rate>
+      <real_time_factor>2.0</real_time_factor>
     </physics>
 
     <plugin

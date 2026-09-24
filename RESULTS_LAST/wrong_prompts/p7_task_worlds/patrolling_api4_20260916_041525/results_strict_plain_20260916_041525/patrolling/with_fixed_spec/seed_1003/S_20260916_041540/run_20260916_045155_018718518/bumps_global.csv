@@ -1,0 +1,7 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+98,"('robot_0', 'robot_2')",right,left,EV_move_forward,EV_move_forward
+100,"('robot_0', 'robot_2')",back,left,EV_move_forward,EV_move_forward
+219,"('robot_0', 'robot_1')",left,left,EV_u_turn,EV_u_turn
+220,"('robot_0', 'robot_1')",right,front,EV_move_forward,EV_move_forward
+229,"('robot_1', 'east_wall::link::collision')",right,,ZONE_ESCAPE_TURN,
+231,"('robot_1', 'east_wall::link::collision')",back,,none,

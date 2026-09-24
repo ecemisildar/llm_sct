@@ -1,0 +1,6 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+15,"('robot_0', 'robot_1')",right,left,EV_u_turn,ZONE_ESCAPE_TURN
+18,"('robot_0', 'robot_1')",left,front,EV_approach_color,EV_u_turn
+26,"('robot_0', 'robot_1')",front,right,EV_approach_color,EV_u_turn
+146,"('robot_1', 'robot_2')",right,back,ZONE_ESCAPE_TURN,EV_u_turn
+147,"('robot_1', 'robot_2')",back,right,EV_move_forward,EV_approach_color

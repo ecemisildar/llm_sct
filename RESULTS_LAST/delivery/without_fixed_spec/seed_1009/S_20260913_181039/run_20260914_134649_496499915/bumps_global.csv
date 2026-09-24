@@ -1,0 +1,4 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+369,"('robot_1', 'south_wall::link::collision')",front,,EV_rotate_counterclockwise,
+372,"('robot_1', 'south_wall::link::collision')",right,,EV_rotate_clockwise,
+390,"('robot_1', 'south_wall::link::collision')",back,,EV_move_forward,

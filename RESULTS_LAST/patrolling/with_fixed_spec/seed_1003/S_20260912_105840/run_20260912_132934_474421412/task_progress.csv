@@ -1,0 +1,4 @@
+robot,completed_colors,total_colors,progress_pct,complete,completion_s,red_reached_s,green_reached_s,blue_reached_s
+robot_0,3,3,100.000,true,158.267,125.798,148.239,
+robot_1,3,3,100.000,true,85.659,53.081,66.854,85.627
+robot_2,3,3,100.000,true,70.857,28.211,59.373,70.860

@@ -1,0 +1,1 @@
+As a member of a team of robots, explore the environment while collecting objects (i.e., touching them).

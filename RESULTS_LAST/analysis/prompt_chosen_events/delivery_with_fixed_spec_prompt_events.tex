@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for delivery (LLM + fixed specification). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:delivery-with-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_approach\_color} & 0.00 & 5.56 & 3.61 & 8.09 & 2.31 & 7.69 & 2.66 \\
+\texttt{EV\_approach\_object} & 7.96 & 2.16 & 1.49 & 1.94 & 0.52 & 2.04 & 0.34 \\
+\texttt{EV\_approach\_zone} & 11.72 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_blue} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_green} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_red} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_drop\_object} & 0.31 & 0.22 & 0.06 & 0.11 & 0.05 & 0.18 & 0.05 \\
+\texttt{EV\_drop\_zone\_blue} & 0.00 & 0.12 & 0.04 & 0.06 & 0.07 & 0.09 & 0.03 \\
+\texttt{EV\_drop\_zone\_red} & 0.00 & 0.12 & 0.04 & 0.06 & 0.06 & 0.09 & 0.03 \\
+\texttt{EV\_move\_backward} & 0.20 & 0.35 & 0.40 & 0.45 & 0.42 & 0.40 & 0.41 \\
+\texttt{EV\_move\_forward} & 45.95 & 46.71 & 48.04 & 48.74 & 54.48 & 48.83 & 73.49 \\
+\texttt{EV\_pick\_up\_object} & 0.31 & 0.24 & 0.09 & 0.13 & 0.08 & 0.18 & 0.05 \\
+\texttt{EV\_rotate\_clockwise} & 1.33 & 1.62 & 1.68 & 1.54 & 1.83 & 1.60 & 1.78 \\
+\texttt{EV\_rotate\_counterclockwise} & 1.69 & 1.94 & 2.38 & 2.43 & 2.91 & 2.04 & 3.15 \\
+\texttt{EV\_search\_color} & 0.00 & 16.46 & 31.78 & 21.07 & 21.79 & 12.59 & 4.61 \\
+\texttt{EV\_search\_object} & 14.60 & 21.25 & 6.73 & 11.77 & 11.20 & 21.02 & 8.91 \\
+\texttt{EV\_search\_zone} & 12.59 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_u\_turn} & 3.03 & 3.26 & 3.66 & 3.61 & 4.29 & 3.25 & 4.49 \\
+\hline
+\end{tabular}
+\end{table}

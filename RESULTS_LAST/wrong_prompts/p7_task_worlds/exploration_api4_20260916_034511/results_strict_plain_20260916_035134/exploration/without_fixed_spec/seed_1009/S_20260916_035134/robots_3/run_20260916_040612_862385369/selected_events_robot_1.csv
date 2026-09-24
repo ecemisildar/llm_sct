@@ -1,0 +1,5 @@
+elapsed_s,robot,selected_event,uncontrollable_events,raw_zone,front_distance_m,left_distance_m,right_distance_m
+10.228,robot_1,EV_move_forward,EV_obstacle_left,LEFT,inf,inf,inf
+11.231,robot_1,EV_move_forward,EV_obstacle_right,RIGHT,inf,inf,inf
+32.330,robot_1,EV_move_forward,EV_obstacle_left,LEFT,inf,inf,inf
+48.430,robot_1,EV_move_backward,EV_obstacle_left,LEFT,inf,inf,inf

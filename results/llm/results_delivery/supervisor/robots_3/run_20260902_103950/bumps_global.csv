@@ -1,4 +1,0 @@
-stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
-0,"('robot_0', 'robot_1')",front,back,CONTACT_RECOVERY,EV_drop_object
-0,"('robot_0', 'robot_2')",front,back,CONTACT_RECOVERY,EV_drop_object
-0,"('robot_1', 'robot_2')",right,right,none,EV_drop_object

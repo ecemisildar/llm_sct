@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Controllable event distribution for exploration. Values are mean $\pm$ population standard deviation in percent across completed runs (Baseline: $n=10$; LLM: $n=300$; LLM + fixed specification: $n=300$). Each run pools its robots and receives equal weight; absent events count as zero.}
+\label{tab:exploration-controllable-events}
+\begin{tabular}{lrrr}
+\hline
+Controllable event & Baseline (\%) & LLM (\%) & LLM + fixed spec. (\%) \\
+\hline
+\texttt{EV\_full\_rotate} & $6.81 \pm 2.57$ & $0.00 \pm 0.00$ & $0.00 \pm 0.00$ \\
+\texttt{EV\_move\_backward} & $0.12 \pm 0.13$ & $2.64 \pm 0.68$ & $0.16 \pm 0.24$ \\
+\texttt{EV\_move\_forward} & $86.37 \pm 4.42$ & $89.73 \pm 1.39$ & $89.70 \pm 3.84$ \\
+\texttt{EV\_rotate\_clockwise} & $3.08 \pm 0.79$ & $2.58 \pm 0.64$ & $2.38 \pm 1.26$ \\
+\texttt{EV\_rotate\_counterclockwise} & $3.62 \pm 1.40$ & $2.54 \pm 0.81$ & $2.74 \pm 1.39$ \\
+\texttt{EV\_u\_turn} & $0.00 \pm 0.00$ & $2.51 \pm 0.69$ & $5.02 \pm 1.90$ \\
+\hline
+\end{tabular}
+\end{table}

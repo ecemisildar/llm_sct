@@ -36,10 +36,8 @@ RESULTS_DIRS = [
     RESULTS_ROOT / "baseline",
     RESULTS_ROOT / "llm",
 ]
-WORLD_SDF = RESULTS_ROOT.parent / "worlds" / "random_world_rgb.sdf"
-
-ENV_MIN = -5
-ENV_MAX = 5
+WORLD_DIR = RESULTS_ROOT.parent / "worlds"
+DEFAULT_WORLD_SDF = WORLD_DIR / "arena_6x8.sdf"
 GRID_SIZE = 1.0
 OBSTACLE_OCCUPANCY_THRESHOLD = 0.4
 CIRCLE_OBSTACLE_OCCUPANCY_THRESHOLD = 0.05
@@ -276,12 +274,37 @@ def path_time_origin(path: Path) -> float | None:
     return min(origins) if origins else None
 
 
-def build_cells(env_min, env_max, grid_size=GRID_SIZE):
-    cells_per_axis = int((env_max - env_min) / grid_size)
+def world_grid_bounds(world_sdf: Path):
+    """Read rectangular evaluation bounds from the world's ground box."""
+    fallback = (-3.0, 3.0, -4.0, 4.0)
+    if not world_sdf.exists():
+        return fallback
+    try:
+        root = ET.parse(world_sdf).getroot()
+        ground = root.find(".//world/model[@name='ground_plane']")
+        size_text = ground.findtext(".//collision/geometry/box/size")
+        if not size_text:
+            return fallback
+        size = [float(value) for value in size_text.split()]
+        pose = parse_pose(ground.findtext("pose"))
+        return (
+            pose[0] - size[0] / 2.0,
+            pose[0] + size[0] / 2.0,
+            pose[1] - size[1] / 2.0,
+            pose[1] + size[1] / 2.0,
+        )
+    except (AttributeError, ET.ParseError, OSError, TypeError, ValueError):
+        return fallback
+
+
+def build_cells(bounds, grid_size=GRID_SIZE):
+    min_x, max_x, min_y, max_y = bounds
+    cells_x = int((max_x - min_x) / grid_size)
+    cells_y = int((max_y - min_y) / grid_size)
     return [
-        (env_min + ix * grid_size, env_min + iy * grid_size)
-        for ix in range(cells_per_axis)
-        for iy in range(cells_per_axis)
+        (min_x + ix * grid_size, min_y + iy * grid_size)
+        for ix in range(cells_x)
+        for iy in range(cells_y)
     ]
 
 
@@ -426,6 +449,9 @@ def load_colored_delivery_boxes(world_sdf: Path):
 
 
 def world_sdf_for_run(run_dir: Path) -> Path:
+    saved_world = run_dir / "sim_world.sdf"
+    if saved_world.exists():
+        return saved_world
     status_path = run_dir / "SAVE_STATUS.txt"
     if status_path.exists():
         for line in status_path.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -433,8 +459,15 @@ def world_sdf_for_run(run_dir: Path) -> Path:
             if stripped.startswith("sim_world:"):
                 value = stripped.split(":", 1)[1].strip()
                 if value:
-                    return Path(value)
-    return WORLD_SDF
+                    recorded_world = Path(value)
+                    if recorded_world.exists():
+                        return recorded_world
+    run_text = str(run_dir).lower()
+    if "patrolling" in run_text:
+        return WORLD_DIR / "patrolling_arena_6x8.sdf"
+    if "delivery" in run_text or "complex" in run_text:
+        return WORLD_DIR / "delivery_arena_6x8.sdf"
+    return DEFAULT_WORLD_SDF
 
 
 def rect_corners(cx, cy, sx, sy, yaw):
@@ -568,14 +601,16 @@ def plot_coverage_map(
     obstacles,
     delivery_boxes,
     target_circles,
+    bounds,
     out_png: Path,
 ):
     fig, ax = plt.subplots(figsize=(8, 8))
     ax.set_xlabel("X (m)", fontsize=16)
     ax.set_ylabel("Y (m)", fontsize=16)
     ax.set_aspect("equal")
-    ax.set_xlim(ENV_MIN, ENV_MAX)
-    ax.set_ylim(ENV_MIN, ENV_MAX)
+    min_x, max_x, min_y, max_y = bounds
+    ax.set_xlim(min_x, max_x)
+    ax.set_ylim(min_y, max_y)
     fig.subplots_adjust(right=0.78)
 
     for idx, (cx, cy) in enumerate(cells):
@@ -802,8 +837,9 @@ def analyze_run(
         else {}
     )
 
-    cells = build_cells(ENV_MIN, ENV_MAX)
     world_sdf = world_sdf_for_run(run_dir)
+    bounds = world_grid_bounds(world_sdf)
+    cells = build_cells(bounds)
     obstacles = load_obstacle_rectangles(world_sdf)
     delivery_boxes = load_colored_delivery_boxes(world_sdf)
     target_circles = load_colored_target_circles(world_sdf)
@@ -821,6 +857,7 @@ def analyze_run(
         obstacles,
         delivery_boxes,
         target_circles,
+        bounds,
         map_out,
     )
 

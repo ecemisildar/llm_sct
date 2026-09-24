@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\centering
+\scriptsize
+\caption{Controllable event counts per run for exploration, without\_fixed\_spec. Entries are mean (population variance), pooling all robots in each run and combining generations and seeds. Missing events count as zero. Baseline uses ten runs.}}
+\label{tab:exploration-without_fixed_spec-event-variance}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\hline
+Event & Baseline & P1 & P2 & P3 & P4 & P5 & P6 & P7 \\
+\hline
+Runs & 10 & 50 & 50 & 50 & 50 & 50 & 50 & 10 \\
+full\_rotate & 34.20 (138.96) & 0.00 (0.00) & 0.00 (0.00) & 0.00 (0.00) & 0.00 (0.00) & 0.00 (0.00) & 0.00 (0.00) & 0.00 (0.00) \\
+move\_backward & 0.60 (0.44) & 11.22 (10.21) & 12.04 (7.04) & 10.06 (8.46) & 12.20 (10.76) & 11.14 (3.60) & 11.66 (10.62) & 0.00 (0.00) \\
+move\_forward & 437.40 (929.24) & 385.10 (947.45) & 375.98 (830.50) & 405.56 (891.93) & 385.70 (703.37) & 384.88 (1825.67) & 388.90 (898.13) & 468.50 (2830.45) \\
+rotate\_clockwise & 15.60 (15.64) & 11.24 (4.42) & 11.68 (4.30) & 12.08 (10.91) & 11.58 (10.76) & 10.94 (10.50) & 9.58 (9.16) & 0.00 (0.00) \\
+rotate\_counterclockwise & 18.20 (42.56) & 9.36 (10.71) & 12.82 (6.39) & 11.62 (11.48) & 9.76 (9.94) & 11.58 (20.24) & 10.68 (11.34) & 0.00 (0.00) \\
+u\_turn & 0.00 (0.00) & 12.00 (9.44) & 12.70 (6.81) & 10.04 (7.64) & 10.70 (2.81) & 9.16 (5.69) & 9.96 (6.20) & 0.00 (0.00) \\
+\hline
+\end{tabular}}
+\end{table*}

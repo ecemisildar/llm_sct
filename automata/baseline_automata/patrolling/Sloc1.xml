@@ -30,7 +30,7 @@
 	<state id="26" name="LEFT,detecting,ready,search_red,S_LEFT" initial ="False" marked="False" x="550" y="360" />
 	<state id="27" name="LEFT,detecting,ready,search_green,S_LEFT" initial ="False" marked="False" x="640" y="360" />
 	<event id="0" name="obstacle_left" controllable="False" observable="True"/>
-	<event id="1" name="full_rotate" controllable="True" observable="True"/>
+	<event id="1" name="u_turn" controllable="True" observable="True"/>
 	<event id="2" name="path_clear" controllable="False" observable="True"/>
 	<event id="3" name="green_reached" controllable="False" observable="True"/>
 	<event id="4" name="search_color" controllable="True" observable="True"/>

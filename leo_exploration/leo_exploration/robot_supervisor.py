@@ -239,59 +239,8 @@ class RobotSupervisor(
     # -------------------------------
     # Motion execution
     # -------------------------------
-    def _task_action_spec(self, ev_name: str) -> Optional[ActionSpec]:
-        """Translate a high-level LLM request through fixed obstacle safety."""
-        if not (
-            ev_name.startswith("EV_task_")
-            or ev_name.startswith("EV_search_")
-            or ev_name.startswith("EV_approach_")
-        ):
-            return None
-        motion_requests = {
-            "EV_task_move_forward",
-            "EV_task_rotate_clockwise",
-            "EV_task_rotate_counterclockwise",
-        }
-        if ev_name not in motion_requests:
-            return ActionSpec()
-        zones = self._effective_obstacle_zones()
-        if "CORNER" in zones:
-            return ActionSpec(
-                angular_z=self.full_rotate_omega, is_full_rotate=True
-            )
-        if "LEFT" in zones:
-            return ActionSpec(
-                angular_z=-self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        if "RIGHT" in zones:
-            return ActionSpec(
-                angular_z=self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        if ev_name.startswith("EV_search_"):
-            search_sign = 1.0 if self.robot_index % 2 == 0 else -1.0
-            return ActionSpec(
-                angular_z=search_sign * self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        if ev_name.startswith("EV_approach_"):
-            linear_x, angular_z = self._target_approach_components(ev_name)
-            return ActionSpec(linear_x=linear_x, angular_z=angular_z)
-        if ev_name == "EV_task_rotate_clockwise":
-            return ActionSpec(
-                angular_z=-self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        if ev_name == "EV_task_rotate_counterclockwise":
-            return ActionSpec(
-                angular_z=self.short_rotation_omega,
-                hold_s=self.supervisor_period,
-            )
-        return ActionSpec(linear_x=0.3)
-
     def publish_twist_for_event(self, ev_name: str):
-        spec = self._task_action_spec(ev_name) or self.action_table.get(ev_name)
+        spec = self.action_table.get(ev_name)
 
         # Unknown controllable -> stop (safe)
         if spec is None:

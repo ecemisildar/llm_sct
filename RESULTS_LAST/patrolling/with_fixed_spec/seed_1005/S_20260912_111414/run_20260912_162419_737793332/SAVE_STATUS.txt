@@ -1,0 +1,22 @@
+Node started
+run_id: run_20260912_162419_737793332
+results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/patrolling/with_fixed_spec/seed_1005/S_20260912_111414/run_20260912_162419_737793332
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/patrolling/with_fixed_spec/prompt_6/generation_4/S_20260912_111414.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /tmp/leo_patrolling_no_overhead_camera_aisr9inx.sdf
+  headless: true
+  auto_start: true
+  run_duration: 300.0
+  total_robots: 3
+  random_seed: 1005
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/patrolling/with_fixed_spec/seed_1005
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/patrolling/with_fixed_spec/prompt_6/generation_4/S_20260912_111414.yaml
+robot_2 completed the patrolling task.
+robot_0 completed the patrolling task.
+robot_1 completed the patrolling task.
+Task success: true
+Task duration: 147.276s
+Saving started...
+Saving OK

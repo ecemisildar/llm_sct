@@ -28,13 +28,10 @@ class SimulationVideoRecorder(Node):
             if "baseline" in results_root.parts
             else "simulation.mp4"
         )
-        self.output_path = (
-            results_root
-            / (yaml_path.stem or "unknown_yaml")
-            / f"robots_{robot_count}"
-            / run_id
-            / filename
-        )
+        run_root = results_root / (yaml_path.stem or "unknown_yaml")
+        if not results_root.name.startswith("seed_"):
+            run_root = run_root / f"robots_{robot_count}"
+        self.output_path = run_root / run_id / filename
         if not self.enabled:
             self.get_logger().info("Simulation video recording disabled for this run")
             return

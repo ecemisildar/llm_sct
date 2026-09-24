@@ -20,7 +20,7 @@ def _baseline_payload() -> dict[str, object]:
         / "automata"
         / "baseline_automata"
         / "delivery"
-        / "delivery_task_specification_corrected.xml"
+        / "delivery_task_specification.xml"
     ).getroot().find("data")
     assert data is not None
     states = {state.attrib["id"]: state.attrib["name"] for state in data.findall("state")}
@@ -35,7 +35,7 @@ def _baseline_payload() -> dict[str, object]:
 
 
 class DeliverySemanticValidationTest(unittest.TestCase):
-    def test_llm_delivery_alphabet_excludes_low_level_motion(self):
+    def test_llm_delivery_alphabet_includes_low_level_motion(self):
         events = events_for_mission("delivery")
         self.assertTrue(
             {
@@ -49,10 +49,12 @@ class DeliverySemanticValidationTest(unittest.TestCase):
         self.assertTrue(
             {
                 "move_forward",
+                "move_backward",
                 "rotate_clockwise",
                 "rotate_counterclockwise",
-                "full_rotate",
-            }.isdisjoint(events)
+                "u_turn",
+            }
+            <= set(events)
         )
 
     def test_baseline_task_stops_after_color_assignment(self):
@@ -61,7 +63,7 @@ class DeliverySemanticValidationTest(unittest.TestCase):
             / "automata"
             / "baseline_automata"
             / "delivery"
-            / "delivery_task_specification_corrected.xml"
+            / "delivery_task_specification.xml"
         )
         data = ET.parse(path).getroot().find("data")
         assert data is not None
@@ -87,14 +89,18 @@ class DeliverySemanticValidationTest(unittest.TestCase):
             {"red_task_assigned", "green_task_assigned", "blue_task_assigned"},
         )
 
-    def test_baseline_availability_uses_claim_events_only(self):
+    def test_claiming_receiving_plant_uses_claim_events_only(self):
         directory = ROOT / "automata" / "baseline_automata" / "delivery"
-        for color in ("red", "green", "blue"):
-            with self.subTest(color=color):
-                data = ET.parse(directory / f"{color}_availability.xml").getroot().find("data")
-                assert data is not None
-                events = {event.attrib["name"] for event in data.findall("event")}
-                self.assertEqual(events, {f"claim_{color}", f"received_claim_{color}"})
+        data = ET.parse(directory / "claiming_receiving_plant.xml").getroot().find("data")
+        assert data is not None
+        events = {event.attrib["name"] for event in data.findall("event")}
+        self.assertEqual(
+            events,
+            {
+                *(f"claim_{color}" for color in ("red", "green", "blue")),
+                *(f"received_claim_{color}" for color in ("red", "green", "blue")),
+            },
+        )
 
     def test_pickup_drop_plant_has_no_result_events(self):
         path = (
@@ -188,7 +194,7 @@ class DeliverySemanticValidationTest(unittest.TestCase):
             self.skipTest("Known failed run artifact is not available")
         errors = delivery_semantic_errors(json.loads(path.read_text(encoding="utf-8")))
         self.assertTrue(any("approach_object" in error and "self-loop" in error for error in errors))
-        self.assertTrue(any("not preceded by red_object_visible" in error for error in errors))
+        self.assertTrue(any("search_object" in error for error in errors))
 
 
 if __name__ == "__main__":

@@ -87,7 +87,7 @@ class CoverageCounter(Node):
             if color.strip()
         )
         self.total_task_targets = max(1, len(self.target_color_order))
-        if self.mission != "complex_task":
+        if self.mission not in {"complex_task", "balanced_delivery"}:
             self.task_progress_on_complete = self.total_task_targets
         else:
             self.total_task_targets = self.task_progress_on_complete
@@ -125,14 +125,26 @@ class CoverageCounter(Node):
             if sim_world
             else Path(get_package_share_directory("leo_exploration"))
             / "worlds"
-            / "random_world.sdf"
+            / "arena_6x8.sdf"
         )
 
         yaml_group = self.metadata_yaml_path.stem if self.metadata_yaml_path else "unknown_yaml"
         robot_count = self.launch_arguments.get("total_robots", "").strip() or "unknown"
         robot_group = f"robots_{robot_count}"
-        self.results_dir = self.results_root / yaml_group / robot_group / self.run_id
+        if self.results_root.name.startswith("seed_"):
+            self.results_dir = self.results_root / yaml_group / self.run_id
+        else:
+            self.results_dir = self.results_root / yaml_group / robot_group / self.run_id
         self.results_dir.mkdir(parents=True, exist_ok=True)
+        # Preserve the exact per-run randomized layout after the launcher's
+        # temporary SDF is removed during shutdown.
+        if self.world_sdf.is_file():
+            saved_world = self.results_dir / "sim_world.sdf"
+            try:
+                shutil.copy2(self.world_sdf, saved_world)
+                self.world_sdf = saved_world
+            except OSError:
+                pass
 
         self.coverage_csv_path = self.results_dir / "coverage_timeseries.csv"
         self.paths_csv_path = self.results_dir / "coverage_paths.csv"
@@ -173,16 +185,18 @@ class CoverageCounter(Node):
         self.task_completion_duration = None
         self._nominal_timeout_reported = False
         # grid
-        self.env_min = -5
-        self.env_max = 5
+        self.env_min_x, self.env_max_x, self.env_min_y, self.env_max_y = (
+            self._world_grid_bounds()
+        )
         self.grid_size = 1.0
-        self.num_cells_y = int((self.env_max - self.env_min) / self.grid_size)
+        self.num_cells_x = int((self.env_max_x - self.env_min_x) / self.grid_size)
+        self.num_cells_y = int((self.env_max_y - self.env_min_y) / self.grid_size)
         self.cells = [
             (
-                self.env_min + ix * self.grid_size,
-                self.env_min + iy * self.grid_size,
+                self.env_min_x + ix * self.grid_size,
+                self.env_min_y + iy * self.grid_size,
             )
-            for ix in range(self.num_cells_y)
+            for ix in range(self.num_cells_x)
             for iy in range(self.num_cells_y)
         ]
         self.visited = set()
@@ -281,24 +295,24 @@ class CoverageCounter(Node):
             for ix, iy in self._footprint_cells(x, y):
                 idx = ix * self.num_cells_y + iy
                 if idx not in self.visited and idx not in self.blocked:
-                    cx = self.env_min + ix * self.grid_size
-                    cy = self.env_min + iy * self.grid_size
+                    cx = self.env_min_x + ix * self.grid_size
+                    cy = self.env_min_y + iy * self.grid_size
                     self.visited.add(idx)
                     self._append_visited_cell_row(name, idx, cx, cy)
 
     def _footprint_cells(self, x, y):
         """Yield grid cells touched by the rover's circular XY footprint."""
         radius = self.robot_footprint_radius
-        min_ix = math.floor((x - radius - self.env_min) / self.grid_size)
-        max_ix = math.floor((x + radius - self.env_min) / self.grid_size)
-        min_iy = math.floor((y - radius - self.env_min) / self.grid_size)
-        max_iy = math.floor((y + radius - self.env_min) / self.grid_size)
+        min_ix = math.floor((x - radius - self.env_min_x) / self.grid_size)
+        max_ix = math.floor((x + radius - self.env_min_x) / self.grid_size)
+        min_iy = math.floor((y - radius - self.env_min_y) / self.grid_size)
+        max_iy = math.floor((y + radius - self.env_min_y) / self.grid_size)
 
-        for ix in range(max(0, min_ix), min(self.num_cells_y - 1, max_ix) + 1):
-            cell_min_x = self.env_min + ix * self.grid_size
+        for ix in range(max(0, min_ix), min(self.num_cells_x - 1, max_ix) + 1):
+            cell_min_x = self.env_min_x + ix * self.grid_size
             cell_max_x = cell_min_x + self.grid_size
             for iy in range(max(0, min_iy), min(self.num_cells_y - 1, max_iy) + 1):
-                cell_min_y = self.env_min + iy * self.grid_size
+                cell_min_y = self.env_min_y + iy * self.grid_size
                 cell_max_y = cell_min_y + self.grid_size
                 if circle_intersects_cell(
                     x,
@@ -772,6 +786,30 @@ class CoverageCounter(Node):
             shutil.copy2(self.metadata_yaml_path, self.results_dir / self.metadata_yaml_path.name)
         except Exception as exc:
             self._write_status(f"WARNING: Failed to copy YAML: {exc}\n")
+
+    def _world_grid_bounds(self):
+        """Use a rectangular ground box as the coverage area when available."""
+        fallback = (-5.0, 5.0, -5.0, 5.0)
+        if not self.world_sdf.exists():
+            return fallback
+        try:
+            root = ET.parse(self.world_sdf).getroot()
+            ground = root.find(".//world/model[@name='ground_plane']")
+            size_text = ground.findtext(".//collision/geometry/box/size")
+            if not size_text:
+                return fallback
+            size = [float(value) for value in size_text.split()]
+            if len(size) < 2:
+                return fallback
+            pose = self._parse_pose(ground.findtext("pose"))
+            return (
+                pose[0] - size[0] / 2.0,
+                pose[0] + size[0] / 2.0,
+                pose[1] - size[1] / 2.0,
+                pose[1] + size[1] / 2.0,
+            )
+        except (AttributeError, ET.ParseError, OSError, TypeError, ValueError):
+            return fallback
 
     # obstacles
     def _compute_blocked_cells(self):

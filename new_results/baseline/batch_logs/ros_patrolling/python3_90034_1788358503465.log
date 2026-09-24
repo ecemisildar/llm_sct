@@ -1,3 +1,0 @@
-[INFO] [1788358503.827078689] [robot_1.color_detector]: Color detector listening on RGB '/robot_1/depth_camera/image'; reached uses world poses
-[INFO] [1788358506.901521946] [robot_1.color_detector]: RGB HEARTBEAT frames_total=3 recent_rate_hz=0.919 last_frame_age_s=0.452 status=OK
-[INFO] [1788358511.900843481] [robot_1.color_detector]: RGB HEARTBEAT frames_total=14 recent_rate_hz=2.200 last_frame_age_s=0.402 status=OK

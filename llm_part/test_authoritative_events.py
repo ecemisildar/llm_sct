@@ -4,8 +4,12 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
-from llm_input import authoritative_event_errors, events_for_mission
+from llm_input import (
+    authoritative_event_errors, events_for_mission, events_available_in_automata,
+    events_from_automata, add_event_meanings,
+)
 
 
 class AuthoritativeEventValidationTest(unittest.TestCase):
@@ -19,7 +23,7 @@ class AuthoritativeEventValidationTest(unittest.TestCase):
             "move_backward",
             "rotate_clockwise",
             "rotate_counterclockwise",
-            "full_rotate",
+            "u_turn",
         ):
             self.assertIn(event, exploration)
         for event in (
@@ -27,7 +31,7 @@ class AuthoritativeEventValidationTest(unittest.TestCase):
             "task_rotate_clockwise",
             "task_rotate_counterclockwise",
         ):
-            self.assertIn(event, exploration)
+            self.assertNotIn(event, exploration)
             self.assertNotIn(event, patrolling)
             self.assertNotIn(event, delivery)
 
@@ -47,8 +51,11 @@ class AuthoritativeEventValidationTest(unittest.TestCase):
         expected_delivery_events = {
             "search_object", "approach_object", "search_zone", "approach_zone",
             "pick_up_object", "drop_object",
+            "move_forward", "move_backward", "rotate_clockwise",
+            "rotate_counterclockwise", "u_turn",
             *(f"claim_{color}" for color in ("red", "green", "blue")),
             "obstacle_front", "obstacle_left", "obstacle_right", "path_clear",
+            "timeout",
             *(
                 f"{color}_{target}_{observation}"
                 for color in ("red", "green", "blue")
@@ -57,7 +64,24 @@ class AuthoritativeEventValidationTest(unittest.TestCase):
             ),
             *(f"received_claim_{color}" for color in ("red", "green", "blue")),
         }
-        self.assertEqual(set(delivery), expected_delivery_events)
+        baseline = Path(__file__).resolve().parent.parent / "automata/baseline_automata/delivery"
+        plants = [baseline / name for name in (
+            "obstacle_sensor.xml", "motion_plant.xml", "pickup_and_drop_plant.xml",
+            "color_sensor.xml", "claiming_receiving_plant.xml",
+        )]
+        self.assertEqual(set(events_available_in_automata(delivery, plants)), expected_delivery_events)
+
+    def test_delivery_stack_alphabet_has_meanings_and_plant_controllability(self):
+        baseline = Path(__file__).resolve().parent.parent / "automata/baseline_automata/delivery_stack"
+        events = events_from_automata(sorted(baseline.glob("G*.xml")))
+        self.assertEqual(len(events), 31)
+        self.assertTrue(events["drop_zone_red"])
+        self.assertFalse(events["recieve_drop_zone_red"])
+        self.assertFalse(events["object_not_reached"])
+        self.assertNotIn("claim_red", events)
+        prompt = add_event_meanings("", events)
+        for event in events:
+            self.assertIn(f"`{event}`:", prompt)
 
     def test_unused_declared_controllable_is_repaired_before_conversion(self):
         payload = {

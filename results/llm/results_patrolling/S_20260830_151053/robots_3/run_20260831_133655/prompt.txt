@@ -1,1 +1,0 @@
-Each robot should visit red, green, and blue zones in that order. The robots should also avoid collisions.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="0.0" type="FSA" id="Untitled">
+<data>
+	<state id="0" name="1" initial ="True" marked="True" x="389" y="390" />
+	<state id="1" name="2" initial ="False" marked="False" x="712" y="404" />
+	<event id="0" name="pick_up_object" controllable="True" observable="True"/>
+	<event id="1" name="drop_object" controllable="True" observable="True"/>
+	<transition source="0" target="1" event="0"/>
+	<transition source="1" target="0" event="1"/>
+</data>
+</model>

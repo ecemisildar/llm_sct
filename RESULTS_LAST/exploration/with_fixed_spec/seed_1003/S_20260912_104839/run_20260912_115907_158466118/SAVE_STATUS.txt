@@ -1,0 +1,20 @@
+Node started
+run_id: run_20260912_115907_158466118
+results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/exploration/with_fixed_spec/seed_1003/S_20260912_104839/run_20260912_115907_158466118
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/exploration/with_fixed_spec/prompt_2/generation_4/S_20260912_104839.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /tmp/leo_exploration_no_overhead_camera_fcmis9uv.sdf
+  headless: true
+  auto_start: true
+  run_duration: 60.0
+  total_robots: 3
+  random_seed: 1003
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/exploration/with_fixed_spec/seed_1003
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/exploration/with_fixed_spec/prompt_2/generation_4/S_20260912_104839.yaml
+KeyboardInterrupt received. Saving + shutdown.
+Saving started...
+Task success: false
+Task duration: 58.906s
+Saving OK

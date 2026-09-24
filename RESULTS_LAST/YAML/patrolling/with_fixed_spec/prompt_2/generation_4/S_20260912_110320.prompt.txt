@@ -1,0 +1,1 @@
+As a member of a team of robots, go to the red, green, and blue regions precisely in that order. Avoid collisions with obstacles (i.e., walls or other robots).  If you reach a location out of sequence, continue your search for the correct location.

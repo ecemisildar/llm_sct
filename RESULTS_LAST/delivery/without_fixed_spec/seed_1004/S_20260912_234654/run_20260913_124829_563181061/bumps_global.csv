@@ -1,0 +1,15 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+38,"('robot_1', 'robot_2')",back,right,EV_rotate_clockwise,EV_u_turn
+48,"('robot_1', 'robot_2')",left,front,EV_move_forward,EV_move_backward
+112,"('robot_1', 'robot_2')",right,right,ZONE_ESCAPE_TURN,EV_rotate_clockwise
+114,"('robot_1', 'robot_2')",back,front,CONTACT_RECOVERY,CONTACT_RECOVERY
+120,"('robot_1', 'robot_2')",right,left,EV_u_turn,EV_u_turn
+121,"('robot_1', 'robot_2')",back,left,ZONE_ESCAPE_REVERSE,EV_rotate_counterclockwise
+123,"('robot_1', 'robot_2')",back,left,EV_u_turn,EV_u_turn
+126,"('robot_1', 'robot_2')",back,left,EV_u_turn,EV_u_turn
+129,"('robot_1', 'robot_2')",front,front,EV_u_turn,EV_u_turn
+141,"('robot_2', 'generic_delivery_box_3::link::collision')",front,,ZONE_ESCAPE_TURN,
+155,"('robot_2', 'generic_delivery_box_3::link::collision')",right,,EV_u_turn,
+167,"('robot_2', 'generic_delivery_box_3::link::collision')",front,,EV_u_turn,
+168,"('robot_2', 'generic_delivery_box_3::link::collision')",right,,EV_rotate_clockwise,
+175,"('robot_2', 'generic_delivery_box_3::link::collision')",left,,EV_u_turn,

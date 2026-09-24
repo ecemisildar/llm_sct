@@ -2,7 +2,8 @@
 <sdf version="1.9">
   <!-- Canonical arena plus only the three patrolling targets. -->
   <world name="random_world">
-    <physics name="1ms" type="ignored"><max_step_size>0.01</max_step_size><real_time_update_rate>400</real_time_update_rate></physics>
+    <physics name="1ms" type="ignored"><max_step_size>0.01</max_step_size><real_time_update_rate>400</real_time_update_rate>
+      <real_time_factor>2.0</real_time_factor></physics>
     <plugin filename="ignition-gazebo-physics-system" name="ignition::gazebo::systems::Physics"><include_entity_names>true</include_entity_names></plugin>
     <plugin filename="ignition-gazebo-sensors-system" name="ignition::gazebo::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
     <plugin filename="ignition-gazebo-user-commands-system" name="ignition::gazebo::systems::UserCommands"/>

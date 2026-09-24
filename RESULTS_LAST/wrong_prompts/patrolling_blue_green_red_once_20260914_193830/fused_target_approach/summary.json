@@ -1,0 +1,12 @@
+{
+  "state_counts": {
+    "G": 1,
+    "K": 140,
+    "S": 140
+  },
+  "plant": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/patrolling_blue_green_red_once_20260914_193830/resulting_automata/patrolling/with_fixed_spec/G_K/G_20260914_193859.xml",
+  "original_supervisor": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/patrolling_blue_green_red_once_20260914_193830/resulting_automata/patrolling/with_fixed_spec/S/S_20260914_193859.xml",
+  "added_specification": "/home/ecem/sct_ws/src/llm_sct/automata/baseline_automata/patrolling/target_approach.xml",
+  "result_xml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/patrolling_blue_green_red_once_20260914_193830/fused_target_approach/S/S_20260914_194006.xml",
+  "result_yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/patrolling_blue_green_red_once_20260914_193830/fused_target_approach/S_blue_green_red_with_target_approach.yaml"
+}

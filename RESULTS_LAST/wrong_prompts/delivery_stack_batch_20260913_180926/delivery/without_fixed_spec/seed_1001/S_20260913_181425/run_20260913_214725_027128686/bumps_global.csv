@@ -1,0 +1,6 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+65,"('robot_0', 'blue_delivery_box::link::collision')",front,,EV_u_turn,
+67,"('robot_0', 'blue_delivery_box::link::collision')",right,,EV_rotate_counterclockwise,
+82,"('robot_0', 'blue_delivery_box::link::collision')",back,,ZONE_ESCAPE_REVERSE,
+91,"('robot_0', 'blue_delivery_box::link::collision')",right,,EV_u_turn,
+93,"('robot_0', 'blue_delivery_box::link::collision')",back,,EV_move_forward,

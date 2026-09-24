@@ -14,6 +14,8 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
         ('share/' + package_name + '/config', glob('config/*.yaml')),
+        ('share/' + package_name + '/config/balanced_delivery',
+            glob('../automata/baseline_automata/balanced_delivery/*.yaml')),
         ('share/' + package_name + '/rviz', glob('rviz/*.rviz')),
         ('share/' + package_name + '/worlds', glob('../worlds/*.sdf')),
     ],
@@ -28,6 +30,7 @@ setup(
         'console_scripts': [
             'robot_supervisor = leo_delivery.robot_supervisor:main',
             'complex_delivery_supervisor = leo_delivery.complex_delivery_supervisor:main',
+            'balanced_delivery_supervisor = leo_delivery.balanced_delivery_supervisor:main',
         ],
     },
 )

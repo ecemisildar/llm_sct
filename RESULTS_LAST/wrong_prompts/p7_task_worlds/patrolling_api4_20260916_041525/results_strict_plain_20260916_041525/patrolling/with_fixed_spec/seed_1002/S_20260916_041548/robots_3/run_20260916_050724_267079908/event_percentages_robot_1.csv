@@ -1,0 +1,7 @@
+robot,selected_event,count,percentage
+robot_1,EV_move_backward,2,0.228
+robot_1,EV_move_forward,808,92.132
+robot_1,EV_rotate_clockwise,15,1.710
+robot_1,EV_rotate_counterclockwise,20,2.281
+robot_1,EV_u_turn,32,3.649
+robot_1,TOTAL,877,100.000

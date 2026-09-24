@@ -52,7 +52,7 @@ def main() -> int:
     root = args.repo_root.expanduser().resolve()
     yaml_root = root / "automata" / "resulting_automata" / "YAML" / args.task
     yaml_index: dict[str, tuple[int, int, Path]] = {}
-    for yaml_path in yaml_root.glob("prompt_*/generation_*/S_*.yaml"):
+    for yaml_path in yaml_root.glob("*_collision/prompt_*/generation_*/S_*.yaml"):
         prompt = int(yaml_path.parents[1].name.removeprefix("prompt_"))
         generation = int(yaml_path.parent.name.removeprefix("generation_"))
         yaml_index[yaml_path.stem] = (prompt, generation, yaml_path)

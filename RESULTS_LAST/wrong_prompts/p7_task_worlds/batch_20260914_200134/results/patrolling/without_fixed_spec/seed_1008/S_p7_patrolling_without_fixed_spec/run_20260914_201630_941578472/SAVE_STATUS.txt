@@ -1,0 +1,20 @@
+Node started
+run_id: run_20260914_201630_941578472
+results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/results/patrolling/without_fixed_spec/seed_1008/S_p7_patrolling_without_fixed_spec/run_20260914_201630_941578472
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/YAML/patrolling/without_fixed_spec/prompt_7/generation_1/S_p7_patrolling_without_fixed_spec.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /tmp/leo_patrolling_no_overhead_camera_ujpxk9f9.sdf
+  headless: true
+  auto_start: true
+  run_duration: 300.0
+  total_robots: 3
+  random_seed: 1008
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/results/patrolling/without_fixed_spec/seed_1008
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/YAML/patrolling/without_fixed_spec/prompt_7/generation_1/S_p7_patrolling_without_fixed_spec.yaml
+Timeout reached (300.0s). Saving + shutdown.
+Saving started...
+Task success: false
+Task duration: 300.435s
+Saving OK

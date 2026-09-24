@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="0.0" type="FSA" id="Untitled">
+<data>
+	<state id="0" name="1,1,2,1,1,1,1,1" initial ="False" marked="False" x="0" y="0" />
+	<state id="1" name="1,1,1,1,1,1,1,1" initial ="True" marked="True" x="0" y="0" />
+	<event id="0" name="approach_object" controllable="True" observable="True"/>
+	<event id="1" name="red_visible" controllable="False" observable="True"/>
+	<event id="2" name="red_not_reached" controllable="False" observable="True"/>
+	<event id="3" name="obstacle_left" controllable="False" observable="True"/>
+	<event id="4" name="red_not_visible" controllable="False" observable="True"/>
+	<event id="5" name="search_object" controllable="True" observable="True"/>
+	<event id="6" name="red_reached" controllable="False" observable="True"/>
+	<event id="7" name="move_backward" controllable="True" observable="True"/>
+	<event id="8" name="drop_zone_blue" controllable="True" observable="True"/>
+	<event id="9" name="drop_zone_red" controllable="True" observable="True"/>
+	<event id="10" name="path_clear" controllable="False" observable="True"/>
+	<event id="11" name="move_forward" controllable="True" observable="True"/>
+	<event id="12" name="recieve_drop_zone_red" controllable="False" observable="True"/>
+	<event id="13" name="recieve_drop_zone_blue" controllable="False" observable="True"/>
+	<event id="14" name="approach_color" controllable="True" observable="True"/>
+	<event id="15" name="object_reached" controllable="False" observable="True"/>
+	<event id="16" name="rotate_counterclockwise" controllable="True" observable="True"/>
+	<event id="17" name="pick_up_object" controllable="True" observable="True"/>
+	<event id="18" name="drop_object" controllable="True" observable="True"/>
+	<event id="19" name="blue_not_visible" controllable="False" observable="True"/>
+	<event id="20" name="search_color" controllable="True" observable="True"/>
+	<event id="21" name="object_not_visible" controllable="False" observable="True"/>
+	<event id="22" name="rotate_clockwise" controllable="True" observable="True"/>
+	<event id="23" name="object_visible" controllable="False" observable="True"/>
+	<event id="24" name="u_turn" controllable="True" observable="True"/>
+	<event id="25" name="blue_reached" controllable="False" observable="True"/>
+	<event id="26" name="object_not_reached" controllable="False" observable="True"/>
+	<event id="27" name="blue_not_reached" controllable="False" observable="True"/>
+	<event id="28" name="obstacle_right" controllable="False" observable="True"/>
+	<event id="29" name="blue_visible" controllable="False" observable="True"/>
+	<event id="30" name="obstacle_front" controllable="False" observable="True"/>
+	<transition source="0" target="0" event="23"/>
+	<transition source="0" target="0" event="2"/>
+	<transition source="0" target="0" event="24"/>
+	<transition source="0" target="0" event="3"/>
+	<transition source="0" target="0" event="25"/>
+	<transition source="0" target="0" event="4"/>
+	<transition source="0" target="0" event="26"/>
+	<transition source="0" target="0" event="5"/>
+	<transition source="0" target="0" event="1"/>
+	<transition source="0" target="0" event="27"/>
+	<transition source="0" target="0" event="6"/>
+	<transition source="0" target="0" event="28"/>
+	<transition source="0" target="0" event="7"/>
+	<transition source="0" target="0" event="29"/>
+	<transition source="0" target="0" event="8"/>
+	<transition source="0" target="0" event="30"/>
+	<transition source="0" target="0" event="9"/>
+	<transition source="0" target="0" event="10"/>
+	<transition source="0" target="0" event="11"/>
+	<transition source="0" target="0" event="12"/>
+	<transition source="0" target="0" event="13"/>
+	<transition source="0" target="0" event="14"/>
+	<transition source="0" target="0" event="15"/>
+	<transition source="0" target="0" event="16"/>
+	<transition source="0" target="1" event="18"/>
+	<transition source="0" target="0" event="19"/>
+	<transition source="0" target="0" event="0"/>
+	<transition source="0" target="0" event="20"/>
+	<transition source="0" target="0" event="21"/>
+	<transition source="0" target="0" event="22"/>
+	<transition source="1" target="1" event="12"/>
+	<transition source="1" target="1" event="13"/>
+	<transition source="1" target="1" event="14"/>
+	<transition source="1" target="1" event="15"/>
+	<transition source="1" target="1" event="16"/>
+	<transition source="1" target="0" event="17"/>
+	<transition source="1" target="1" event="19"/>
+	<transition source="1" target="1" event="20"/>
+	<transition source="1" target="1" event="0"/>
+	<transition source="1" target="1" event="21"/>
+	<transition source="1" target="1" event="22"/>
+	<transition source="1" target="1" event="1"/>
+	<transition source="1" target="1" event="23"/>
+	<transition source="1" target="1" event="2"/>
+	<transition source="1" target="1" event="24"/>
+	<transition source="1" target="1" event="3"/>
+	<transition source="1" target="1" event="25"/>
+	<transition source="1" target="1" event="4"/>
+	<transition source="1" target="1" event="26"/>
+	<transition source="1" target="1" event="5"/>
+	<transition source="1" target="1" event="27"/>
+	<transition source="1" target="1" event="6"/>
+	<transition source="1" target="1" event="28"/>
+	<transition source="1" target="1" event="7"/>
+	<transition source="1" target="1" event="29"/>
+	<transition source="1" target="1" event="8"/>
+	<transition source="1" target="1" event="30"/>
+	<transition source="1" target="1" event="9"/>
+	<transition source="1" target="1" event="10"/>
+	<transition source="1" target="1" event="11"/>
+</data>
+</model>

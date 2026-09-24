@@ -1,0 +1,18 @@
+{
+  "automata": [
+    {
+      "name": "forward_only_specification",
+      "initial_state": "forward",
+      "marked_states": [
+        "forward"
+      ],
+      "transitions": [
+        [
+          "forward",
+          "move_forward",
+          "forward"
+        ]
+      ]
+    }
+  ]
+}

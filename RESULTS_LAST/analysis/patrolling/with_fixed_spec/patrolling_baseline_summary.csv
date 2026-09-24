@@ -1,0 +1,2 @@
+prompt,runs,successes,success_rate_pct,task_success_mean_pct,task_success_sd_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
+baseline,10,10,100.0,100.0,0.0,167.5259,57.1758573043728,167.5259,57.1758573043728,69.7918,10.835265855529341,69.7918,10.835265855529341,1,0.1,0.3

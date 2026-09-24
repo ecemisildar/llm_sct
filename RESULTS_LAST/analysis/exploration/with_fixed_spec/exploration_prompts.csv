@@ -1,0 +1,8 @@
+prompt,prompt_text
+1,Move within the environment to maximize the area covered while avoiding obstacles.
+2,"As a member of a team of robots, explore the area while not colliding with obstacles (i.e., walls or other robots)."
+3,Move to maximize the area covered.
+4,"As a member of a team, explore the area."
+5,Explore the environment to gain points: Receive 1 point per square meter visited. Lose -1 point for every obstacle you collide with.
+6,"As a member of a team of robots, explore the environment while collecting objects (i.e., touching them)."
+7,Move only forward

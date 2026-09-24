@@ -1,6 +1,0 @@
-prompt,prompt_text
-1,"Patrol the red, green, and blue zones in that order, while avoiding obstacles."
-2,"Each robot should visit red, green, and blue zones in that order. The robots should also avoid collisions."
-3,"First go to the red, then to the green, and lastly to the blue zones."
-4,"Visit red, green, and blue locations."
-5,"Go to the red, green, and blue regions."

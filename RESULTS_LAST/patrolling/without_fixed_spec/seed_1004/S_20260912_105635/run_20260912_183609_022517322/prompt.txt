@@ -1,0 +1,1 @@
+Search for and visit the red, green, and blue locations in that order, while avoiding obstacles. If you reach a location out of sequence, continue your search for the correct location.

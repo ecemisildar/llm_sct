@@ -1,0 +1,149 @@
+% Prompt event tables; no additional LaTeX packages required.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for exploration (LLM). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:exploration-without-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_full\_rotate} & 6.81 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_move\_backward} & 0.12 & 2.61 & 2.83 & 2.25 & 2.84 & 2.62 & 2.71 \\
+\texttt{EV\_move\_forward} & 86.37 & 89.77 & 88.42 & 90.24 & 89.72 & 89.96 & 90.26 \\
+\texttt{EV\_rotate\_clockwise} & 3.08 & 2.62 & 2.74 & 2.68 & 2.67 & 2.57 & 2.21 \\
+\texttt{EV\_rotate\_counterclockwise} & 3.62 & 2.19 & 3.01 & 2.58 & 2.27 & 2.67 & 2.49 \\
+\texttt{EV\_u\_turn} & 0.00 & 2.82 & 2.99 & 2.25 & 2.50 & 2.18 & 2.33 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for exploration (LLM + fixed specification). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:exploration-with-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_full\_rotate} & 6.81 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_move\_backward} & 0.12 & 0.11 & 0.12 & 0.17 & 0.19 & 0.11 & 0.25 \\
+\texttt{EV\_move\_forward} & 86.37 & 89.03 & 90.39 & 89.96 & 90.27 & 88.92 & 89.64 \\
+\texttt{EV\_rotate\_clockwise} & 3.08 & 2.58 & 2.06 & 2.39 & 2.22 & 2.54 & 2.51 \\
+\texttt{EV\_rotate\_counterclockwise} & 3.62 & 2.92 & 2.64 & 2.61 & 2.59 & 2.96 & 2.73 \\
+\texttt{EV\_u\_turn} & 0.00 & 5.36 & 4.80 & 4.88 & 4.73 & 5.47 & 4.87 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for patrolling (LLM). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:patrolling-without-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_approach\_color} & 17.31 & 5.53 & 5.00 & 5.83 & 5.77 & 9.54 & 8.99 \\
+\texttt{EV\_full\_rotate} & 4.86 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_move\_backward} & 0.47 & 17.10 & 17.01 & 16.51 & 16.82 & 16.44 & 17.02 \\
+\texttt{EV\_move\_forward} & 45.12 & 16.81 & 16.60 & 16.60 & 16.77 & 16.59 & 16.74 \\
+\texttt{EV\_rotate\_clockwise} & 2.52 & 16.91 & 17.04 & 16.52 & 16.64 & 16.84 & 16.67 \\
+\texttt{EV\_rotate\_counterclockwise} & 2.39 & 17.06 & 17.13 & 16.78 & 16.30 & 16.68 & 16.67 \\
+\texttt{EV\_search\_color} & 27.33 & 9.70 & 10.13 & 11.18 & 11.02 & 7.36 & 7.24 \\
+\texttt{EV\_u\_turn} & 0.00 & 16.89 & 17.10 & 16.59 & 16.69 & 16.55 & 16.69 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for patrolling (LLM + fixed specification). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:patrolling-with-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_approach\_color} & 17.31 & 18.56 & 17.32 & 19.13 & 19.04 & 15.79 & 16.54 \\
+\texttt{EV\_full\_rotate} & 4.86 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_move\_backward} & 0.47 & 0.47 & 0.43 & 0.38 & 0.41 & 0.42 & 0.37 \\
+\texttt{EV\_move\_forward} & 45.12 & 46.26 & 46.02 & 46.57 & 46.57 & 59.32 & 58.86 \\
+\texttt{EV\_rotate\_clockwise} & 2.52 & 1.90 & 1.72 & 1.34 & 1.42 & 1.55 & 1.46 \\
+\texttt{EV\_rotate\_counterclockwise} & 2.39 & 1.90 & 1.96 & 1.79 & 1.94 & 2.08 & 1.87 \\
+\texttt{EV\_search\_color} & 27.33 & 27.61 & 29.19 & 28.07 & 27.61 & 17.51 & 17.82 \\
+\texttt{EV\_u\_turn} & 0.00 & 3.30 & 3.37 & 2.72 & 3.01 & 3.33 & 3.09 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for delivery (LLM). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:delivery-without-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 40 & 50 & 50 & 50 & 40 \\
+\hline
+\texttt{EV\_approach\_color} & 0.00 & 2.82 & 2.00 & 3.79 & 1.65 & 4.74 & 2.93 \\
+\texttt{EV\_approach\_object} & 7.96 & 2.19 & 4.08 & 3.84 & 1.66 & 2.68 & 2.34 \\
+\texttt{EV\_approach\_zone} & 11.72 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_blue} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_green} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_red} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_drop\_object} & 0.31 & 0.04 & 0.01 & 0.02 & 0.01 & 0.04 & 0.02 \\
+\texttt{EV\_drop\_zone\_blue} & 0.00 & 0.03 & 0.02 & 0.02 & 0.04 & 0.01 & 0.03 \\
+\texttt{EV\_drop\_zone\_red} & 0.00 & 0.03 & 0.02 & 0.01 & 0.04 & 0.02 & 0.03 \\
+\texttt{EV\_move\_backward} & 0.20 & 16.69 & 16.52 & 16.85 & 17.20 & 16.48 & 17.47 \\
+\texttt{EV\_move\_forward} & 45.95 & 16.44 & 16.73 & 16.78 & 17.50 & 16.87 & 17.27 \\
+\texttt{EV\_pick\_up\_object} & 0.31 & 0.09 & 0.07 & 0.08 & 0.06 & 0.10 & 0.06 \\
+\texttt{EV\_rotate\_clockwise} & 1.33 & 16.74 & 16.72 & 16.64 & 17.50 & 16.71 & 17.59 \\
+\texttt{EV\_rotate\_counterclockwise} & 1.69 & 16.94 & 16.75 & 16.67 & 17.20 & 16.68 & 17.72 \\
+\texttt{EV\_search\_color} & 0.00 & 6.76 & 8.28 & 7.26 & 7.87 & 7.16 & 4.78 \\
+\texttt{EV\_search\_object} & 14.60 & 4.63 & 2.25 & 1.40 & 1.74 & 1.58 & 2.33 \\
+\texttt{EV\_search\_zone} & 12.59 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_u\_turn} & 3.03 & 16.60 & 16.53 & 16.65 & 17.52 & 16.92 & 17.42 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for delivery (LLM + fixed specification). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:delivery-with-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 50 & 50 & 50 & 50 & 50 \\
+\hline
+\texttt{EV\_approach\_color} & 0.00 & 5.56 & 3.61 & 8.09 & 2.31 & 7.69 & 2.66 \\
+\texttt{EV\_approach\_object} & 7.96 & 2.16 & 1.49 & 1.94 & 0.52 & 2.04 & 0.34 \\
+\texttt{EV\_approach\_zone} & 11.72 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_blue} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_green} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_red} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_drop\_object} & 0.31 & 0.22 & 0.06 & 0.11 & 0.05 & 0.18 & 0.05 \\
+\texttt{EV\_drop\_zone\_blue} & 0.00 & 0.12 & 0.04 & 0.06 & 0.07 & 0.09 & 0.03 \\
+\texttt{EV\_drop\_zone\_red} & 0.00 & 0.12 & 0.04 & 0.06 & 0.06 & 0.09 & 0.03 \\
+\texttt{EV\_move\_backward} & 0.20 & 0.35 & 0.40 & 0.45 & 0.42 & 0.40 & 0.41 \\
+\texttt{EV\_move\_forward} & 45.95 & 46.71 & 48.04 & 48.74 & 54.48 & 48.83 & 73.49 \\
+\texttt{EV\_pick\_up\_object} & 0.31 & 0.24 & 0.09 & 0.13 & 0.08 & 0.18 & 0.05 \\
+\texttt{EV\_rotate\_clockwise} & 1.33 & 1.62 & 1.68 & 1.54 & 1.83 & 1.60 & 1.78 \\
+\texttt{EV\_rotate\_counterclockwise} & 1.69 & 1.94 & 2.38 & 2.43 & 2.91 & 2.04 & 3.15 \\
+\texttt{EV\_search\_color} & 0.00 & 16.46 & 31.78 & 21.07 & 21.79 & 12.59 & 4.61 \\
+\texttt{EV\_search\_object} & 14.60 & 21.25 & 6.73 & 11.77 & 11.20 & 21.02 & 8.91 \\
+\texttt{EV\_search\_zone} & 12.59 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_u\_turn} & 3.03 & 3.26 & 3.66 & 3.61 & 4.29 & 3.25 & 4.49 \\
+\hline
+\end{tabular}
+\end{table}

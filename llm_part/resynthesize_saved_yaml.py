@@ -61,7 +61,7 @@ def resynthesize(yaml_path: Path, mission: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "mission", choices=("exploration", "patrolling", "delivery", "complex_task")
+        "mission", choices=("exploration", "patrolling", "delivery", "payload_delivery", "complex_task")
     )
     parser.add_argument("yaml", type=Path, nargs="+")
     args = parser.parse_args()

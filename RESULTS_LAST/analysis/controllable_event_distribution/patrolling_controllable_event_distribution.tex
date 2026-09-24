@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Controllable event distribution for patrolling. Values are mean $\pm$ population standard deviation in percent across completed runs (Baseline: $n=10$; LLM: $n=300$; LLM + fixed specification: $n=300$). Each run pools its robots and receives equal weight; absent events count as zero.}
+\label{tab:patrolling-controllable-events}
+\begin{tabular}{lrrr}
+\hline
+Controllable event & Baseline (\%) & LLM (\%) & LLM + fixed spec. (\%) \\
+\hline
+\texttt{EV\_approach\_color} & $17.31 \pm 2.62$ & $6.78 \pm 2.18$ & $17.73 \pm 3.85$ \\
+\texttt{EV\_full\_rotate} & $4.86 \pm 2.62$ & $0.00 \pm 0.00$ & $0.00 \pm 0.00$ \\
+\texttt{EV\_move\_backward} & $0.47 \pm 0.26$ & $16.82 \pm 0.90$ & $0.41 \pm 0.24$ \\
+\texttt{EV\_move\_forward} & $45.12 \pm 3.20$ & $16.68 \pm 0.82$ & $50.60 \pm 7.46$ \\
+\texttt{EV\_rotate\_clockwise} & $2.52 \pm 1.49$ & $16.77 \pm 0.84$ & $1.57 \pm 0.79$ \\
+\texttt{EV\_rotate\_counterclockwise} & $2.39 \pm 1.25$ & $16.77 \pm 0.87$ & $1.92 \pm 0.81$ \\
+\texttt{EV\_search\_color} & $27.33 \pm 2.29$ & $9.44 \pm 2.05$ & $24.63 \pm 6.35$ \\
+\texttt{EV\_u\_turn} & $0.00 \pm 0.00$ & $16.75 \pm 0.87$ & $3.14 \pm 1.22$ \\
+\hline
+\end{tabular}
+\end{table}

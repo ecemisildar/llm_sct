@@ -1,0 +1,550 @@
+[INFO] [launch]: All log files can be found below /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/baseline/balanced_delivery/batch_logs/ros_slot5/2026-09-15-18-04-36-612554-ecem-pc-465
+[INFO] [launch]: Default logging verbosity is set to INFO
+[leo_delivery] randomized task layout with seed 1009
+[spawn_multi_robots] run_id=run_20260915_180436_978134755 random_seed=1009 
+[INFO] [ign gazebo-1]: process started with pid [495]
+[INFO] [image_bridge-2]: process started with pid [503]
+[ERROR] [image_bridge-2]: process has died [pid 503, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_image/image_bridge /top_view_camera/image --ros-args -r __node:=top_view_image_bridge'].
+[INFO] [simulation_video_recorder-3]: process started with pid [513]
+[INFO] [coverage_counter-4]: process started with pid [521]
+[INFO] [bump_counter-5]: process started with pid [527]
+[INFO] [parameter_bridge-6]: process started with pid [532]
+[INFO] [robot_state_publisher-7]: process started with pid [536]
+[ERROR] [robot_state_publisher-7]: process has died [pid 536, exit code -6, cmd '/opt/ros/humble/lib/robot_state_publisher/robot_state_publisher --ros-args -r __ns:=/robot_0 --params-file /tmp/launch_params_s1p74yhx -r joint_states:=/robot_0/joint_states -r tf:=/tf -r tf_static:=/tf_static'].
+[INFO] [create-8]: process started with pid [547]
+[ERROR] [create-8]: process has died [pid 547, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_sim/create -name robot_0 -x 1.9787640458248954 -y 0.850086643834818 -z 0.1 -Y -2.2927891771396216 -topic /robot_0/robot_description --ros-args -r __ns:=/robot_0'].
+[INFO] [static_transform_publisher-9]: process started with pid [559]
+[ERROR] [static_transform_publisher-9]: process has died [pid 559, exit code -6, cmd '/opt/ros/humble/lib/tf2_ros/static_transform_publisher 1.9787640458248954 0.850086643834818 0.0 -2.2927891771396216 0.0 0.0 odom robot_0/odom --ros-args -r __node:=robot_0_spawn_offset_tf'].
+[INFO] [image_bridge-10]: process started with pid [570]
+[INFO] [robot_state_publisher-11]: process started with pid [576]
+[ERROR] [robot_state_publisher-11]: process has died [pid 576, exit code -6, cmd '/opt/ros/humble/lib/robot_state_publisher/robot_state_publisher --ros-args -r __ns:=/robot_1 --params-file /tmp/launch_params_2lnqwb3q -r joint_states:=/robot_1/joint_states -r tf:=/tf -r tf_static:=/tf_static'].
+[INFO] [create-12]: process started with pid [584]
+[ERROR] [create-12]: process has died [pid 584, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_sim/create -name robot_1 -x 1.0173071977013106 -y -2.0604176280304785 -z 0.1 -Y -0.22105687275017116 -topic /robot_1/robot_description --ros-args -r __ns:=/robot_1'].
+[INFO] [static_transform_publisher-13]: process started with pid [594]
+[ERROR] [static_transform_publisher-13]: process has died [pid 594, exit code -6, cmd '/opt/ros/humble/lib/tf2_ros/static_transform_publisher 1.0173071977013106 -2.0604176280304785 0.0 -0.22105687275017116 0.0 0.0 odom robot_1/odom --ros-args -r __node:=robot_1_spawn_offset_tf'].
+[INFO] [image_bridge-14]: process started with pid [602]
+[INFO] [robot_state_publisher-15]: process started with pid [614]
+[INFO] [create-16]: process started with pid [627]
+[INFO] [static_transform_publisher-17]: process started with pid [636]
+[INFO] [image_bridge-18]: process started with pid [645]
+[INFO] [parameter_bridge-19]: process started with pid [654]
+[ERROR] [robot_state_publisher-15]: process has died [pid 614, exit code -6, cmd '/opt/ros/humble/lib/robot_state_publisher/robot_state_publisher --ros-args -r __ns:=/robot_2 --params-file /tmp/launch_params_zhogba9z -r joint_states:=/robot_2/joint_states -r tf:=/tf -r tf_static:=/tf_static'].
+[ERROR] [create-16]: process has died [pid 627, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_sim/create -name robot_2 -x 0.20886982410754218 -y 1.3115294420038874 -z 0.1 -Y -0.45521031053739414 -topic /robot_2/robot_description --ros-args -r __ns:=/robot_2'].
+[INFO] [balanced_delivery_supervisor-20]: process started with pid [685]
+[INFO] [stuck_recovery-21]: process started with pid [692]
+[ERROR] [image_bridge-10]: process has died [pid 570, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_image/image_bridge /robot_0/depth_camera/image --ros-args -r __node:=robot_0_rgb_image_bridge'].
+[ERROR] [static_transform_publisher-17]: process has died [pid 636, exit code -6, cmd '/opt/ros/humble/lib/tf2_ros/static_transform_publisher 0.20886982410754218 1.3115294420038874 0.0 -0.45521031053739414 0.0 0.0 odom robot_2/odom --ros-args -r __node:=robot_2_spawn_offset_tf'].
+[ERROR] [parameter_bridge-6]: process has died [pid 532, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_bridge/parameter_bridge /robot_0/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist /robot_0/odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry /robot_0/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V /robot_0/joint_states@sensor_msgs/msg/JointState[ignition.msgs.Model /robot_0/depth_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image /robot_0/depth_camera/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo /world/random_world/model/robot_0/link/robot_0/base_footprint/sensor/contact_sensor/contact@ros_gz_interfaces/msg/Contacts[ignition.msgs.Contacts /robot_1/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist /robot_1/odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry /robot_1/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V /robot_1/joint_states@sensor_msgs/msg/JointState[ignition.msgs.Model /robot_1/depth_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image /robot_1/depth_camera/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo /world/random_world/model/robot_1/link/robot_1/base_footprint/sensor/contact_sensor/contact@ros_gz_interfaces/msg/Contacts[ignition.msgs.Contacts /robot_2/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist /robot_2/odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry /robot_2/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V /robot_2/joint_states@sensor_msgs/msg/JointState[ignition.msgs.Model /robot_2/depth_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image /robot_2/depth_camera/camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo /world/random_world/model/robot_2/link/robot_2/base_footprint/sensor/contact_sensor/contact@ros_gz_interfaces/msg/Contacts[ignition.msgs.Contacts /world/random_world/dynamic_pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V /world/random_world/create@ros_gz_interfaces/srv/SpawnEntity /world/random_world/remove@ros_gz_interfaces/srv/DeleteEntity /world/random_world/set_pose@ros_gz_interfaces/srv/SetEntityPose --ros-args -r __node:=all_robots_bridge --params-file /tmp/launch_params_h_964mej -r /robot_0/tf:=/tf -r /robot_1/tf:=/tf -r /robot_2/tf:=/tf'].
+[ERROR] [image_bridge-14]: process has died [pid 602, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_image/image_bridge /robot_1/depth_camera/image --ros-args -r __node:=robot_1_rgb_image_bridge'].
+[INFO] [balanced_delivery_supervisor-22]: process started with pid [720]
+[INFO] [stuck_recovery-23]: process started with pid [723]
+[image_bridge-2] 1789488277.251702 [76] image_brid: failed to enumerate interfaces for "udp": -1
+[image_bridge-2] [ERROR] [1789488277.251734605] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[image_bridge-2] 
+[image_bridge-2] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[image_bridge-2] This error state is being overwritten:
+[image_bridge-2] 
+[image_bridge-2]   'error not set, at ./src/rcl/node.c:263'
+[image_bridge-2] 
+[image_bridge-2] with this new error message:
+[image_bridge-2] 
+[image_bridge-2]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[image_bridge-2] 
+[image_bridge-2] rcutils_reset_error() should be called after error handling to avoid this.
+[image_bridge-2] <<<
+[image_bridge-2] [ERROR] [1789488277.251784684] [rcl]: Failed to fini publisher for node: 1
+[image_bridge-2] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[image_bridge-2]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[parameter_bridge-6] 1789488277.394793 [76] parameter_: failed to enumerate interfaces for "udp": -1
+[parameter_bridge-6] [ERROR] [1789488277.394830369] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[parameter_bridge-6] 
+[parameter_bridge-6] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[parameter_bridge-6] This error state is being overwritten:
+[parameter_bridge-6] 
+[parameter_bridge-6]   'error not set, at ./src/rcl/node.c:263'
+[parameter_bridge-6] 
+[parameter_bridge-6] with this new error message:
+[parameter_bridge-6] 
+[parameter_bridge-6]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[parameter_bridge-6] 
+[parameter_bridge-6] rcutils_reset_error() should be called after error handling to avoid this.
+[parameter_bridge-6] <<<
+[parameter_bridge-6] [ERROR] [1789488277.394899909] [rcl]: Failed to fini publisher for node: 1
+[parameter_bridge-6] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[parameter_bridge-6]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[robot_state_publisher-7] 1789488277.195392 [76] robot_stat: failed to enumerate interfaces for "udp": -1
+[robot_state_publisher-7] [ERROR] [1789488277.195420666] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[robot_state_publisher-7] 
+[robot_state_publisher-7] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[robot_state_publisher-7] This error state is being overwritten:
+[robot_state_publisher-7] 
+[robot_state_publisher-7]   'error not set, at ./src/rcl/node.c:263'
+[robot_state_publisher-7] 
+[robot_state_publisher-7] with this new error message:
+[robot_state_publisher-7] 
+[robot_state_publisher-7]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[robot_state_publisher-7] 
+[robot_state_publisher-7] rcutils_reset_error() should be called after error handling to avoid this.
+[robot_state_publisher-7] <<<
+[robot_state_publisher-7] [ERROR] [1789488277.195472396] [rcl]: Failed to fini publisher for node: 1
+[robot_state_publisher-7] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[robot_state_publisher-7]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[create-8] 1789488277.285741 [76]     create: failed to enumerate interfaces for "udp": -1
+[create-8] [ERROR] [1789488277.285766261] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[create-8] 
+[create-8] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[create-8] This error state is being overwritten:
+[create-8] 
+[create-8]   'error not set, at ./src/rcl/node.c:263'
+[create-8] 
+[create-8] with this new error message:
+[create-8] 
+[create-8]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[create-8] 
+[create-8] rcutils_reset_error() should be called after error handling to avoid this.
+[create-8] <<<
+[create-8] [ERROR] [1789488277.285806450] [rcl]: Failed to fini publisher for node: 1
+[create-8] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[create-8]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[static_transform_publisher-9] [WARN] [1789488277.229099414] []: Old-style arguments are deprecated; see --help for new-style arguments
+[static_transform_publisher-9] 1789488277.229790 [76] static_tra: failed to enumerate interfaces for "udp": -1
+[static_transform_publisher-9] [ERROR] [1789488277.229814290] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[static_transform_publisher-9] 
+[static_transform_publisher-9] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[static_transform_publisher-9] This error state is being overwritten:
+[static_transform_publisher-9] 
+[static_transform_publisher-9]   'error not set, at ./src/rcl/node.c:263'
+[static_transform_publisher-9] 
+[static_transform_publisher-9] with this new error message:
+[static_transform_publisher-9] 
+[static_transform_publisher-9]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[static_transform_publisher-9] 
+[static_transform_publisher-9] rcutils_reset_error() should be called after error handling to avoid this.
+[static_transform_publisher-9] <<<
+[static_transform_publisher-9] [ERROR] [1789488277.229836919] [rcl]: Failed to fini publisher for node: 1
+[static_transform_publisher-9] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[static_transform_publisher-9]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[robot_state_publisher-11] 1789488277.282514 [76] robot_stat: failed to enumerate interfaces for "udp": -1
+[robot_state_publisher-11] [ERROR] [1789488277.282544497] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[robot_state_publisher-11] 
+[robot_state_publisher-11] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[robot_state_publisher-11] This error state is being overwritten:
+[robot_state_publisher-11] 
+[robot_state_publisher-11]   'error not set, at ./src/rcl/node.c:263'
+[robot_state_publisher-11] 
+[robot_state_publisher-11] with this new error message:
+[robot_state_publisher-11] 
+[robot_state_publisher-11]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[robot_state_publisher-11] 
+[robot_state_publisher-11] rcutils_reset_error() should be called after error handling to avoid this.
+[robot_state_publisher-11] <<<
+[robot_state_publisher-11] [ERROR] [1789488277.282594203] [rcl]: Failed to fini publisher for node: 1
+[robot_state_publisher-11] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[robot_state_publisher-11]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[create-12] 1789488277.363270 [76]     create: failed to enumerate interfaces for "udp": -1
+[create-12] [ERROR] [1789488277.363300323] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[create-12] 
+[create-12] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[create-12] This error state is being overwritten:
+[create-12] 
+[create-12]   'error not set, at ./src/rcl/node.c:263'
+[create-12] 
+[create-12] with this new error message:
+[create-12] 
+[create-12]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[create-12] 
+[create-12] rcutils_reset_error() should be called after error handling to avoid this.
+[create-12] <<<
+[create-12] [ERROR] [1789488277.363347503] [rcl]: Failed to fini publisher for node: 1
+[create-12] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[create-12]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[static_transform_publisher-13] [WARN] [1789488277.314031870] []: Old-style arguments are deprecated; see --help for new-style arguments
+[static_transform_publisher-13] 1789488277.314925 [76] static_tra: failed to enumerate interfaces for "udp": -1
+[static_transform_publisher-13] [ERROR] [1789488277.314954542] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[static_transform_publisher-13] 
+[static_transform_publisher-13] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[static_transform_publisher-13] This error state is being overwritten:
+[static_transform_publisher-13] 
+[static_transform_publisher-13]   'error not set, at ./src/rcl/node.c:263'
+[static_transform_publisher-13] 
+[static_transform_publisher-13] with this new error message:
+[static_transform_publisher-13] 
+[static_transform_publisher-13]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[static_transform_publisher-13] 
+[static_transform_publisher-13] rcutils_reset_error() should be called after error handling to avoid this.
+[static_transform_publisher-13] <<<
+[static_transform_publisher-13] [ERROR] [1789488277.314981194] [rcl]: Failed to fini publisher for node: 1
+[static_transform_publisher-13] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[static_transform_publisher-13]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[robot_state_publisher-15] 1789488277.355411 [76] robot_stat: failed to enumerate interfaces for "udp": -1
+[robot_state_publisher-15] [ERROR] [1789488277.355442811] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[robot_state_publisher-15] 
+[robot_state_publisher-15] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[robot_state_publisher-15] This error state is being overwritten:
+[robot_state_publisher-15] 
+[robot_state_publisher-15]   'error not set, at ./src/rcl/node.c:263'
+[robot_state_publisher-15] 
+[robot_state_publisher-15] with this new error message:
+[robot_state_publisher-15] 
+[robot_state_publisher-15]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[robot_state_publisher-15] 
+[robot_state_publisher-15] rcutils_reset_error() should be called after error handling to avoid this.
+[robot_state_publisher-15] <<<
+[robot_state_publisher-15] [ERROR] [1789488277.355497198] [rcl]: Failed to fini publisher for node: 1
+[robot_state_publisher-15] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[robot_state_publisher-15]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[static_transform_publisher-17] [WARN] [1789488277.404840662] []: Old-style arguments are deprecated; see --help for new-style arguments
+[static_transform_publisher-17] 1789488277.405603 [76] static_tra: failed to enumerate interfaces for "udp": -1
+[static_transform_publisher-17] [ERROR] [1789488277.405637513] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[static_transform_publisher-17] 
+[static_transform_publisher-17] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[static_transform_publisher-17] This error state is being overwritten:
+[static_transform_publisher-17] 
+[static_transform_publisher-17]   'error not set, at ./src/rcl/node.c:263'
+[static_transform_publisher-17] 
+[static_transform_publisher-17] with this new error message:
+[static_transform_publisher-17] 
+[static_transform_publisher-17]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[static_transform_publisher-17] 
+[static_transform_publisher-17] rcutils_reset_error() should be called after error handling to avoid this.
+[static_transform_publisher-17] <<<
+[static_transform_publisher-17] [ERROR] [1789488277.405660838] [rcl]: Failed to fini publisher for node: 1
+[static_transform_publisher-17] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[static_transform_publisher-17]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[ERROR] [parameter_bridge-19]: process has died [pid 654, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_bridge/parameter_bridge /clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock --ros-args -r __node:=clock_bridge --params-file /tmp/launch_params_yskfej7c'].
+[create-16] 1789488277.551506 [76]     create: failed to enumerate interfaces for "udp": -1
+[create-16] [ERROR] [1789488277.551552088] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[create-16] 
+[create-16] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[create-16] This error state is being overwritten:
+[create-16] 
+[create-16]   'error not set, at ./src/rcl/node.c:263'
+[create-16] 
+[create-16] with this new error message:
+[create-16] 
+[create-16]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[create-16] 
+[create-16] rcutils_reset_error() should be called after error handling to avoid this.
+[create-16] <<<
+[create-16] [ERROR] [1789488277.551625405] [rcl]: Failed to fini publisher for node: 1
+[create-16] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[create-16]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[image_bridge-14] 1789488277.574603 [76] image_brid: failed to enumerate interfaces for "udp": -1
+[image_bridge-14] [ERROR] [1789488277.574651179] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[image_bridge-14] 
+[image_bridge-14] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[image_bridge-14] This error state is being overwritten:
+[image_bridge-14] 
+[image_bridge-14]   'error not set, at ./src/rcl/node.c:263'
+[image_bridge-14] 
+[image_bridge-14] with this new error message:
+[image_bridge-14] 
+[image_bridge-14]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[image_bridge-14] 
+[image_bridge-14] rcutils_reset_error() should be called after error handling to avoid this.
+[image_bridge-14] <<<
+[image_bridge-14] [ERROR] [1789488277.574721772] [rcl]: Failed to fini publisher for node: 1
+[image_bridge-14] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[image_bridge-14]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[image_bridge-10] 1789488277.585872 [76] image_brid: failed to enumerate interfaces for "udp": -1
+[image_bridge-10] [ERROR] [1789488277.585926974] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[image_bridge-10] 
+[image_bridge-10] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[image_bridge-10] This error state is being overwritten:
+[image_bridge-10] 
+[image_bridge-10]   'error not set, at ./src/rcl/node.c:263'
+[image_bridge-10] 
+[image_bridge-10] with this new error message:
+[image_bridge-10] 
+[image_bridge-10]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[image_bridge-10] 
+[image_bridge-10] rcutils_reset_error() should be called after error handling to avoid this.
+[image_bridge-10] <<<
+[image_bridge-10] [ERROR] [1789488277.586012042] [rcl]: Failed to fini publisher for node: 1
+[image_bridge-10] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[image_bridge-10]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[ERROR] [image_bridge-18]: process has died [pid 645, exit code -6, cmd '/opt/ros/humble/lib/ros_gz_image/image_bridge /robot_2/depth_camera/image --ros-args -r __node:=robot_2_rgb_image_bridge'].
+[INFO] [balanced_delivery_supervisor-24]: process started with pid [737]
+[INFO] [stuck_recovery-25]: process started with pid [739]
+[parameter_bridge-19] 1789488277.694242 [76] parameter_: failed to enumerate interfaces for "udp": -1
+[parameter_bridge-19] [ERROR] [1789488277.694305077] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[parameter_bridge-19] 
+[parameter_bridge-19] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[parameter_bridge-19] This error state is being overwritten:
+[parameter_bridge-19] 
+[parameter_bridge-19]   'error not set, at ./src/rcl/node.c:263'
+[parameter_bridge-19] 
+[parameter_bridge-19] with this new error message:
+[parameter_bridge-19] 
+[parameter_bridge-19]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[parameter_bridge-19] 
+[parameter_bridge-19] rcutils_reset_error() should be called after error handling to avoid this.
+[parameter_bridge-19] <<<
+[parameter_bridge-19] [ERROR] [1789488277.694398075] [rcl]: Failed to fini publisher for node: 1
+[parameter_bridge-19] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[parameter_bridge-19]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[image_bridge-18] 1789488277.863775 [76] image_brid: failed to enumerate interfaces for "udp": -1
+[image_bridge-18] [ERROR] [1789488277.863835158] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[image_bridge-18] 
+[image_bridge-18] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[image_bridge-18] This error state is being overwritten:
+[image_bridge-18] 
+[image_bridge-18]   'error not set, at ./src/rcl/node.c:263'
+[image_bridge-18] 
+[image_bridge-18] with this new error message:
+[image_bridge-18] 
+[image_bridge-18]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[image_bridge-18] 
+[image_bridge-18] rcutils_reset_error() should be called after error handling to avoid this.
+[image_bridge-18] <<<
+[image_bridge-18] [ERROR] [1789488277.875992083] [rcl]: Failed to fini publisher for node: 1
+[image_bridge-18] terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+[image_bridge-18]   what():  failed to initialize rcl node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[ign gazebo-1] Failed to create directory [/home/ecem/.ignition/gazebo/log/2026-09-15T18:04:38.539091473]: Read-only file system
+[ign gazebo-1] Failed to generate log directories. No log file will be generated.Error opening log file: /home/ecem/.ignition/auto_default.log
+[ign gazebo-1] error in getifaddrs: Unknown error -1
+[coverage_counter-4] 1789488278.880792 [76] coverage_c: failed to enumerate interfaces for "udp": -1
+[ERROR] [ign gazebo-1]: process has died [pid 495, exit code 255, cmd 'ruby /usr/bin/ign gazebo /tmp/leo_delivery_no_overhead_camera_9xkm593f.sdf -s --headless-rendering -r -z 200 --force-version 6'].
+[INFO] [launch]: process[ign gazebo-1] was required: shutting down launched system
+[INFO] [stuck_recovery-25]: sending signal 'SIGINT' to process[stuck_recovery-25]
+[INFO] [balanced_delivery_supervisor-24]: sending signal 'SIGINT' to process[balanced_delivery_supervisor-24]
+[INFO] [stuck_recovery-23]: sending signal 'SIGINT' to process[stuck_recovery-23]
+[INFO] [balanced_delivery_supervisor-22]: sending signal 'SIGINT' to process[balanced_delivery_supervisor-22]
+[INFO] [stuck_recovery-21]: sending signal 'SIGINT' to process[stuck_recovery-21]
+[ERROR] [balanced_delivery_supervisor-24]: process has died [pid 737, exit code -2, cmd '/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor --ros-args -r __node:=robot_supervisor -r __ns:=/robot_2 --params-file /tmp/launch_params_2tcdsu10 --params-file /tmp/launch_params_ci5xne86 --params-file /tmp/launch_params_io8rs820 --params-file /tmp/launch_params_u9kmhoja --params-file /tmp/launch_params_tcsa3b7h --params-file /tmp/launch_params_p2hp4k2i --params-file /tmp/launch_params_lhpy0615 --params-file /tmp/launch_params_52ky1xne --params-file /tmp/launch_params_pvg4w4ap -r cmd_vel:=cmd_vel_supervisor'].
+[ERROR] [stuck_recovery-25]: process has died [pid 739, exit code -2, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery --ros-args -r __node:=stuck_recovery -r __ns:=/robot_2 --params-file /tmp/launch_params_uzyb1eme --params-file /tmp/launch_params_8ra4lpxy --params-file /tmp/launch_params_cvgf745e --params-file /tmp/launch_params_9l7gaje5 --params-file /tmp/launch_params_km90ku5v --params-file /tmp/launch_params_9kljbbmb --params-file /tmp/launch_params_u_ehhjyp --params-file /tmp/launch_params_yfrf3_pe --params-file /tmp/launch_params_dih71_ef --params-file /tmp/launch_params_7rq1tzct'].
+[INFO] [balanced_delivery_supervisor-20]: sending signal 'SIGINT' to process[balanced_delivery_supervisor-20]
+[INFO] [bump_counter-5]: sending signal 'SIGINT' to process[bump_counter-5]
+[INFO] [coverage_counter-4]: sending signal 'SIGINT' to process[coverage_counter-4]
+[INFO] [simulation_video_recorder-3]: sending signal 'SIGINT' to process[simulation_video_recorder-3]
+[ERROR] [stuck_recovery-23]: process has died [pid 723, exit code -2, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery --ros-args -r __node:=stuck_recovery -r __ns:=/robot_1 --params-file /tmp/launch_params_8kebzmtf --params-file /tmp/launch_params_mtiv2uhd --params-file /tmp/launch_params_hmg78svb --params-file /tmp/launch_params_exozr9k_ --params-file /tmp/launch_params_fwjuc2pk --params-file /tmp/launch_params_u386zgjb --params-file /tmp/launch_params_s1axgbtr --params-file /tmp/launch_params_gvbhgpp9 --params-file /tmp/launch_params_6891kr1c --params-file /tmp/launch_params_xzffovay'].
+[coverage_counter-4] [ERROR] [1789488278.889963131] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[coverage_counter-4] 
+[coverage_counter-4] >>> [rcutils|error_handling.c:108] rcutils_set_error_state()
+[coverage_counter-4] This error state is being overwritten:
+[coverage_counter-4] 
+[coverage_counter-4]   'error not set, at ./src/rcl/node.c:263'
+[coverage_counter-4] 
+[coverage_counter-4] with this new error message:
+[coverage_counter-4] 
+[coverage_counter-4]   'rcl node's rmw handle is invalid, at ./src/rcl/node.c:415'
+[coverage_counter-4] 
+[coverage_counter-4] rcutils_reset_error() should be called after error handling to avoid this.
+[coverage_counter-4] <<<
+[coverage_counter-4] [ERROR] [1789488278.890040984] [rcl]: Failed to fini publisher for node: 1
+[ERROR] [coverage_counter-4]: process has died [pid 521, exit code -2, cmd '/home/ecem/sct_ws/install/evaluation/lib/evaluation/coverage_counter --ros-args -r __node:=coverage_counter --params-file /tmp/launch_params_uxob_wbq --params-file /tmp/launch_params_r5vbnb_v --params-file /tmp/launch_params_nggfb8f3 --params-file /tmp/launch_params_xlk7580_ --params-file /tmp/launch_params_b3d4_5jf --params-file /tmp/launch_params_8wucmykx --params-file /tmp/launch_params_avo13g52 --params-file /tmp/launch_params_0s8zfeuw --params-file /tmp/launch_params_l5zrr4uk'].
+[ERROR] [balanced_delivery_supervisor-22]: process has died [pid 720, exit code -2, cmd '/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor --ros-args -r __node:=robot_supervisor -r __ns:=/robot_1 --params-file /tmp/launch_params_uuqrg9kx --params-file /tmp/launch_params_z266d7rg --params-file /tmp/launch_params_mthjzc9h --params-file /tmp/launch_params_jop2fldb --params-file /tmp/launch_params_xmc29i7v --params-file /tmp/launch_params_c_s_8luv --params-file /tmp/launch_params_9at8geem --params-file /tmp/launch_params_2rec_237 --params-file /tmp/launch_params_l4tp48h4 -r cmd_vel:=cmd_vel_supervisor'].
+[stuck_recovery-25] Traceback (most recent call last):
+[stuck_recovery-25]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery", line 33, in <module>
+[stuck_recovery-25]     sys.exit(load_entry_point('leo-image-processing==0.0.0', 'console_scripts', 'stuck_recovery')())
+[stuck_recovery-25]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery", line 25, in importlib_load_entry_point
+[stuck_recovery-25]     return next(matches).load()
+[stuck_recovery-25]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[stuck_recovery-25]     module = import_module(match.group('module'))
+[stuck_recovery-25]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[stuck_recovery-25]     return _bootstrap._gcd_import(name[level:], package, level)
+[stuck_recovery-25]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[stuck_recovery-25]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[stuck_recovery-25]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[stuck_recovery-25]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[stuck_recovery-25]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[stuck_recovery-25]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[stuck_recovery-25]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/python3.10/site-packages/stuck_recovery.py", line 7, in <module>
+[stuck_recovery-25]     import rclpy
+[stuck_recovery-25]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 52, in <module>
+[stuck_recovery-25]     from rclpy.task import Future
+[stuck_recovery-25] KeyboardInterrupt
+[balanced_delivery_supervisor-24] Traceback (most recent call last):
+[balanced_delivery_supervisor-24]   File "/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor", line 33, in <module>
+[balanced_delivery_supervisor-24]     sys.exit(load_entry_point('leo-delivery==0.0.0', 'console_scripts', 'balanced_delivery_supervisor')())
+[balanced_delivery_supervisor-24]   File "/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor", line 25, in importlib_load_entry_point
+[balanced_delivery_supervisor-24]     return next(matches).load()
+[balanced_delivery_supervisor-24]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[balanced_delivery_supervisor-24]     module = import_module(match.group('module'))
+[balanced_delivery_supervisor-24]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[balanced_delivery_supervisor-24]     return _bootstrap._gcd_import(name[level:], package, level)
+[balanced_delivery_supervisor-24]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[balanced_delivery_supervisor-24]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[balanced_delivery_supervisor-24]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[balanced_delivery_supervisor-24]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[balanced_delivery_supervisor-24]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[balanced_delivery_supervisor-24]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[balanced_delivery_supervisor-24]   File "/home/ecem/sct_ws/install/leo_delivery/lib/python3.10/site-packages/leo_delivery/balanced_delivery_supervisor.py", line 7, in <module>
+[balanced_delivery_supervisor-24]     import rclpy
+[balanced_delivery_supervisor-24]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 49, in <module>
+[balanced_delivery_supervisor-24]     from rclpy.signals import install_signal_handlers
+[balanced_delivery_supervisor-24]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/signals.py", line 16, in <module>
+[balanced_delivery_supervisor-24]     from rclpy.guard_condition import GuardCondition
+[balanced_delivery_supervisor-24] KeyboardInterrupt
+[stuck_recovery-23] Traceback (most recent call last):
+[stuck_recovery-23]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery", line 33, in <module>
+[stuck_recovery-23]     sys.exit(load_entry_point('leo-image-processing==0.0.0', 'console_scripts', 'stuck_recovery')())
+[stuck_recovery-23]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery", line 25, in importlib_load_entry_point
+[stuck_recovery-23]     return next(matches).load()
+[stuck_recovery-23]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[stuck_recovery-23]     module = import_module(match.group('module'))
+[stuck_recovery-23]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[stuck_recovery-23]     return _bootstrap._gcd_import(name[level:], package, level)
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[stuck_recovery-23]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[stuck_recovery-23]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/python3.10/site-packages/stuck_recovery.py", line 8, in <module>
+[stuck_recovery-23]     from geometry_msgs.msg import Twist
+[stuck_recovery-23]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/geometry_msgs/msg/__init__.py", line 3, in <module>
+[stuck_recovery-23]     from geometry_msgs.msg._accel_with_covariance import AccelWithCovariance  # noqa: F401
+[stuck_recovery-23]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/geometry_msgs/msg/_accel_with_covariance.py", line 13, in <module>
+[stuck_recovery-23]     import numpy  # noqa: E402, I100
+[stuck_recovery-23]   File "/home/ecem/.local/lib/python3.10/site-packages/numpy/__init__.py", line 114, in <module>
+[stuck_recovery-23]     from numpy.__config__ import show_config
+[stuck_recovery-23]   File "/home/ecem/.local/lib/python3.10/site-packages/numpy/__config__.py", line 4, in <module>
+[stuck_recovery-23]     from numpy._core._multiarray_umath import (
+[stuck_recovery-23]   File "/home/ecem/.local/lib/python3.10/site-packages/numpy/_core/__init__.py", line 71, in <module>
+[stuck_recovery-23]     from . import numerictypes as nt
+[stuck_recovery-23]   File "/home/ecem/.local/lib/python3.10/site-packages/numpy/_core/numerictypes.py", line 105, in <module>
+[stuck_recovery-23]     from ._dtype import _kind_name
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[stuck_recovery-23]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[stuck_recovery-23]   File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+[stuck_recovery-23]   File "<frozen importlib._bootstrap_external>", line 1012, in get_code
+[stuck_recovery-23]   File "<frozen importlib._bootstrap_external>", line 672, in _compile_bytecode
+[stuck_recovery-23] KeyboardInterrupt
+[balanced_delivery_supervisor-22] Traceback (most recent call last):
+[balanced_delivery_supervisor-22]   File "/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor", line 33, in <module>
+[balanced_delivery_supervisor-22]     sys.exit(load_entry_point('leo-delivery==0.0.0', 'console_scripts', 'balanced_delivery_supervisor')())
+[balanced_delivery_supervisor-22]   File "/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor", line 25, in importlib_load_entry_point
+[balanced_delivery_supervisor-22]     return next(matches).load()
+[balanced_delivery_supervisor-22]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[balanced_delivery_supervisor-22]     module = import_module(match.group('module'))
+[balanced_delivery_supervisor-22]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[balanced_delivery_supervisor-22]     return _bootstrap._gcd_import(name[level:], package, level)
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[balanced_delivery_supervisor-22]   File "/home/ecem/sct_ws/install/leo_delivery/lib/python3.10/site-packages/leo_delivery/balanced_delivery_supervisor.py", line 8, in <module>
+[balanced_delivery_supervisor-22]     from ros_gz_interfaces.msg import Entity
+[balanced_delivery_supervisor-22]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/ros_gz_interfaces/msg/__init__.py", line 13, in <module>
+[balanced_delivery_supervisor-22]     from ros_gz_interfaces.msg._param_vec import ParamVec  # noqa: F401
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 1002, in _find_and_load_unlocked
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap>", line 945, in _find_spec
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap_external>", line 1439, in find_spec
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap_external>", line 1411, in _get_spec
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap_external>", line 1572, in find_spec
+[balanced_delivery_supervisor-22]   File "<frozen importlib._bootstrap_external>", line 126, in _path_join
+[balanced_delivery_supervisor-22] KeyboardInterrupt
+[stuck_recovery-21] Traceback (most recent call last):
+[stuck_recovery-21]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery", line 33, in <module>
+[stuck_recovery-21]     sys.exit(load_entry_point('leo-image-processing==0.0.0', 'console_scripts', 'stuck_recovery')())
+[stuck_recovery-21]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery", line 25, in importlib_load_entry_point
+[stuck_recovery-21]     return next(matches).load()
+[stuck_recovery-21]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[stuck_recovery-21]     module = import_module(match.group('module'))
+[stuck_recovery-21]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[stuck_recovery-21]     return _bootstrap._gcd_import(name[level:], package, level)
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[stuck_recovery-21]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[stuck_recovery-21]   File "/home/ecem/sct_ws/install/leo_image_processing/lib/python3.10/site-packages/stuck_recovery.py", line 8, in <module>
+[stuck_recovery-21]     from geometry_msgs.msg import Twist
+[stuck_recovery-21]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/geometry_msgs/msg/__init__.py", line 4, in <module>
+[stuck_recovery-21]     from geometry_msgs.msg._accel_with_covariance_stamped import AccelWithCovarianceStamped  # noqa: F401
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[stuck_recovery-21]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[stuck_recovery-21]   File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+[stuck_recovery-21]   File "<frozen importlib._bootstrap_external>", line 1016, in get_code
+[stuck_recovery-21]   File "<frozen importlib._bootstrap_external>", line 1074, in get_data
+[stuck_recovery-21] KeyboardInterrupt
+[balanced_delivery_supervisor-20] Traceback (most recent call last):
+[balanced_delivery_supervisor-20]   File "/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor", line 33, in <module>
+[balanced_delivery_supervisor-20]     sys.exit(load_entry_point('leo-delivery==0.0.0', 'console_scripts', 'balanced_delivery_supervisor')())
+[balanced_delivery_supervisor-20]   File "/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor", line 25, in importlib_load_entry_point
+[balanced_delivery_supervisor-20]     return next(matches).load()
+[balanced_delivery_supervisor-20]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[balanced_delivery_supervisor-20]     module = import_module(match.group('module'))
+[balanced_delivery_supervisor-20]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[balanced_delivery_supervisor-20]     return _bootstrap._gcd_import(name[level:], package, level)
+[balanced_delivery_supervisor-20]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[balanced_delivery_supervisor-20]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[balanced_delivery_supervisor-20]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[balanced_delivery_supervisor-20]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[balanced_delivery_supervisor-20]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[balanced_delivery_supervisor-20]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[balanced_delivery_supervisor-20]   File "/home/ecem/sct_ws/install/leo_delivery/lib/python3.10/site-packages/leo_delivery/balanced_delivery_supervisor.py", line 10, in <module>
+[balanced_delivery_supervisor-20]     from std_msgs.msg import Bool, Int32, String
+[balanced_delivery_supervisor-20]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/std_msgs/msg/__init__.py", line 20, in <module>
+[balanced_delivery_supervisor-20]     from std_msgs.msg._multi_array_dimension import MultiArrayDimension  # noqa: F401
+[balanced_delivery_supervisor-20] KeyboardInterrupt
+[coverage_counter-4] Traceback (most recent call last):
+[coverage_counter-4]   File "/home/ecem/sct_ws/install/evaluation/lib/evaluation/coverage_counter", line 33, in <module>
+[coverage_counter-4]     sys.exit(load_entry_point('evaluation==0.0.0', 'console_scripts', 'coverage_counter')())
+[coverage_counter-4]   File "/home/ecem/sct_ws/install/evaluation/lib/python3.10/site-packages/evaluation/coverage_counter.py", line 980, in main
+[coverage_counter-4]     node = CoverageCounter()
+[coverage_counter-4]   File "/home/ecem/sct_ws/install/evaluation/lib/python3.10/site-packages/evaluation/coverage_counter.py", line 46, in __init__
+[coverage_counter-4]     super().__init__("coverage_counter")
+[coverage_counter-4]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 175, in __init__
+[coverage_counter-4]     self.__node = _rclpy.Node(
+[coverage_counter-4] rclpy._rclpy_pybind11.RCLError: error creating node: rcl node's rmw handle is invalid, at ./src/rcl/node.c:415
+[bump_counter-5] Traceback (most recent call last):
+[bump_counter-5]   File "/home/ecem/sct_ws/install/evaluation/lib/evaluation/bump_counter", line 33, in <module>
+[bump_counter-5]     sys.exit(load_entry_point('evaluation==0.0.0', 'console_scripts', 'bump_counter')())
+[bump_counter-5]   File "/home/ecem/sct_ws/install/evaluation/lib/evaluation/bump_counter", line 25, in importlib_load_entry_point
+[bump_counter-5]     return next(matches).load()
+[bump_counter-5]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[bump_counter-5]     module = import_module(match.group('module'))
+[bump_counter-5]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[bump_counter-5]     return _bootstrap._gcd_import(name[level:], package, level)
+[bump_counter-5]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[bump_counter-5]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[bump_counter-5]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[bump_counter-5]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[bump_counter-5]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[bump_counter-5]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[bump_counter-5]   File "/home/ecem/sct_ws/install/evaluation/lib/python3.10/site-packages/evaluation/bump_counter.py", line 46, in <module>
+[bump_counter-5]     from std_msgs.msg import UInt32, String
+[bump_counter-5]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/std_msgs/msg/__init__.py", line 26, in <module>
+[bump_counter-5]     from std_msgs.msg._u_int32_multi_array import UInt32MultiArray  # noqa: F401
+[bump_counter-5]   File "<frozen importlib._bootstrap>", line 1024, in _find_and_load
+[bump_counter-5]   File "<frozen importlib._bootstrap>", line 174, in __exit__
+[bump_counter-5] KeyboardInterrupt
+[INFO] [launch]: process[coverage_counter-4] was required: shutting down launched system
+[simulation_video_recorder-3] Traceback (most recent call last):
+[simulation_video_recorder-3]   File "/home/ecem/sct_ws/install/evaluation/lib/evaluation/simulation_video_recorder", line 33, in <module>
+[simulation_video_recorder-3]     sys.exit(load_entry_point('evaluation==0.0.0', 'console_scripts', 'simulation_video_recorder')())
+[simulation_video_recorder-3]   File "/home/ecem/sct_ws/install/evaluation/lib/evaluation/simulation_video_recorder", line 25, in importlib_load_entry_point
+[simulation_video_recorder-3]     return next(matches).load()
+[simulation_video_recorder-3]   File "/usr/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+[simulation_video_recorder-3]     module = import_module(match.group('module'))
+[simulation_video_recorder-3]   File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+[simulation_video_recorder-3]     return _bootstrap._gcd_import(name[level:], package, level)
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[simulation_video_recorder-3]   File "/home/ecem/sct_ws/install/evaluation/lib/python3.10/site-packages/evaluation/simulation_video_recorder.py", line 10, in <module>
+[simulation_video_recorder-3]     from sensor_msgs.msg import Image
+[simulation_video_recorder-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/sensor_msgs/msg/__init__.py", line 3, in <module>
+[simulation_video_recorder-3]     from sensor_msgs.msg._channel_float32 import ChannelFloat32  # noqa: F401
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap_external>", line 1016, in get_code
+[simulation_video_recorder-3]   File "<frozen importlib._bootstrap_external>", line 1074, in get_data
+[simulation_video_recorder-3] KeyboardInterrupt
+[ERROR] [balanced_delivery_supervisor-20]: process has died [pid 685, exit code -2, cmd '/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor --ros-args -r __node:=robot_supervisor -r __ns:=/robot_0 --params-file /tmp/launch_params_hgss6g37 --params-file /tmp/launch_params_zysvecnc --params-file /tmp/launch_params_9urh8zr2 --params-file /tmp/launch_params_pdqii1lg --params-file /tmp/launch_params_9bjmg8de --params-file /tmp/launch_params_itv2fy_b --params-file /tmp/launch_params_3wmox52v --params-file /tmp/launch_params_r8uer7id --params-file /tmp/launch_params_v499hxfn -r cmd_vel:=cmd_vel_supervisor'].
+[ERROR] [stuck_recovery-21]: process has died [pid 692, exit code -2, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery --ros-args -r __node:=stuck_recovery -r __ns:=/robot_0 --params-file /tmp/launch_params_an2gdas7 --params-file /tmp/launch_params_qan51qng --params-file /tmp/launch_params_zmdsgro_ --params-file /tmp/launch_params_la2ff1qc --params-file /tmp/launch_params_3e01ud1p --params-file /tmp/launch_params_ttaeq6dz --params-file /tmp/launch_params_yffmawwv --params-file /tmp/launch_params_xz8eu944 --params-file /tmp/launch_params_9uujia7j --params-file /tmp/launch_params_ijxenv94'].
+[ERROR] [bump_counter-5]: process has died [pid 527, exit code -2, cmd '/home/ecem/sct_ws/install/evaluation/lib/evaluation/bump_counter --ros-args -r __node:=bump_counter --params-file /tmp/launch_params_hm1r0n96 --params-file /tmp/launch_params_matz3hfi --params-file /tmp/launch_params_y73xat2c --params-file /tmp/launch_params_k04gjlo8 --params-file /tmp/launch_params_zzqygdct --params-file /tmp/launch_params_5vhjc_9b --params-file /tmp/launch_params_9p2nj2cj --params-file /tmp/launch_params_w7ugajrj'].
+[ERROR] [simulation_video_recorder-3]: process has died [pid 513, exit code -2, cmd '/home/ecem/sct_ws/install/evaluation/lib/evaluation/simulation_video_recorder --ros-args -r __node:=simulation_video_recorder --params-file /tmp/launch_params_9i6ng2l0 --params-file /tmp/launch_params_p3o6zkrf --params-file /tmp/launch_params_7nsyqzaa --params-file /tmp/launch_params_gddktu22 --params-file /tmp/launch_params_x7jpp_5w --params-file /tmp/launch_params_p_d450kl --params-file /tmp/launch_params_9c8uccme'].

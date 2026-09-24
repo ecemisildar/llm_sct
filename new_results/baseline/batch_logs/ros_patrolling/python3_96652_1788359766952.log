@@ -1,2 +1,0 @@
-[INFO] [1788359767.041331027] [robot_0.image_processor]: Argmin zone detector listening on '/robot_0/depth_camera/depth_image'
-[INFO] [1788359840.711452486] [robot_0.image_processor]: Task complete; obstacle publications stopped.

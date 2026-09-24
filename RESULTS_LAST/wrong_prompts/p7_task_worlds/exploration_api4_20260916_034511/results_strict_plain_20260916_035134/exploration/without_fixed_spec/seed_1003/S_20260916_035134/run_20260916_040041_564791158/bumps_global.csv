@@ -1,0 +1,17 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+1159,"('robot_2', 'north_wall::link::collision')",back,,,
+1170,"('robot_0', 'north_wall::link::collision')",right,,EV_move_forward,
+1171,"('robot_1', 'robot_2')",left,front,EV_move_forward,EV_u_turn
+1176,"('robot_0', 'north_wall::link::collision')",back,,EV_rotate_clockwise,
+1176,"('robot_2', 'north_wall::link::collision')",left,,EV_move_forward,
+1185,"('robot_2', 'east_wall::link::collision')",right,,EV_move_forward,
+1196,"('robot_1', 'robot_2')",front,right,EV_move_forward,none
+1213,"('robot_0', 'west_wall::link::collision')",front,,EV_move_forward,
+1215,"('robot_0', 'robot_1')",back,back,EV_move_forward,EV_move_forward
+1216,"('robot_0', 'west_wall::link::collision')",right,,CONTACT_RECOVERY,
+1216,"('robot_1', 'robot_2')",back,front,CONTACT_RECOVERY,EV_move_forward
+1218,"('robot_0', 'robot_1')",right,front,CONTACT_RECOVERY,CONTACT_RECOVERY
+1223,"('robot_0', 'robot_1')",right,left,CONTACT_RECOVERY,none
+1232,"('robot_1', 'robot_2')",back,right,EV_u_turn,EV_move_forward
+1238,"('robot_0', 'robot_1')",left,front,EV_move_forward,EV_move_forward
+1244,"('robot_0', 'robot_1')",back,left,EV_u_turn,EV_move_forward

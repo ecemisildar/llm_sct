@@ -1,1 +1,0 @@
-Explore the environment continuously to maximize area coverage while avoiding obstacles.

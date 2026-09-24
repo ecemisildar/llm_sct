@@ -22,6 +22,7 @@ from llm_input import (
     DEFAULT_PROMPT_PATH,
     events_for_mission,
     events_available_in_automata,
+    events_from_automata,
     generate_json,
     read_required_text,
     save_json,
@@ -525,16 +526,18 @@ def select_profile(
             [directory / "obstacle_sensor.xml", directory / "motion_plant.xml"],
             [directory / "collision_avoidance.xml"],
         )
-    if mission in {"delivery", "complex_task"}:
+    if mission in {"delivery", "complex_task", "payload_delivery"}:
         directory = baseline_root / "delivery"
         plants = [
             directory / "obstacle_sensor.xml",
             directory / "motion_plant.xml",
-            directory / "pickup_and_drop_plant.xml",
+            directory / (
+                "payload_plant.xml"
+                if mission == "payload_delivery"
+                else "pickup_and_drop_plant.xml"
+            ),
             directory / "color_sensor.xml",
-            directory / "red_availability.xml",
-            directory / "green_availability.xml",
-            directory / "blue_availability.xml",
+            directory / "claiming_receiving_plant.xml",
         ]
         return mission, plants, [directory / "collision_avoidance.xml"]
 
@@ -559,6 +562,14 @@ def run_pipeline(
     auto_feedback: bool = False,
     prompt_number: int = 1,
     generation_number: int = 1,
+    collision_control: str = "fixed",
+    include_fixed_collision_avoidance: bool | None = None,
+    output_root: Path | None = None,
+    reuse_json_path: Path | None = None,
+    plant_paths: Sequence[Path] | None = None,
+    specification_paths: Sequence[Path] | None = None,
+    max_repair_attempts: int = 2,
+    complete_generated_alphabet: bool = True,
 ) -> PipelineResult:
     if prompt_number < 1 or generation_number < 1:
         raise ValueError("Prompt and generation numbers must be positive integers")
@@ -568,9 +579,24 @@ def run_pipeline(
             "Automatic feedback is disabled so every LLM request has the same "
             "input structure. Put task requirements in the user input."
         )
+    if include_fixed_collision_avoidance is not None:
+        collision_control = (
+            "fixed" if include_fixed_collision_avoidance else "llm"
+        )
+    if collision_control not in {"fixed", "none", "llm"}:
+        raise ValueError("collision_control must be 'fixed', 'none', or 'llm'")
+
     selected_mission, fixed_plants, fixed_specs = select_profile(
         task, mission, exploration_mode
     )
+    if plant_paths is not None:
+        fixed_plants = list(plant_paths)
+    if specification_paths is not None:
+        fixed_specs = list(specification_paths)
+    if collision_control in {"none", "llm"}:
+        fixed_specs = [
+            path for path in fixed_specs if path.stem != "collision_avoidance"
+        ]
     if auto_feedback and feedback is None and selected_mission in {
         "exploration", "patrolling", "delivery"
     }:
@@ -596,23 +622,59 @@ def run_pipeline(
                 "without previous-run feedback."
             )
     report(
+        f"Collision control mode: {collision_control}. "
+        + (
+            "The fixed collision specification is included."
+            if collision_control == "fixed"
+            else "No fixed specification is included during synchronization."
+        )
+    )
+    report(
         f"Selected {selected_mission} fixed automata: "
         + ", ".join(path.stem for path in [*fixed_plants, *fixed_specs])
     )
-    allowed_events = events_available_in_automata(
-        events_for_mission(selected_mission), fixed_plants
+    allowed_events = (
+        events_from_automata(fixed_plants)
+        if plant_paths is not None
+        else events_available_in_automata(events_for_mission(selected_mission), fixed_plants)
     )
 
-    report("Requesting JSON automata from OpenAI…")
-    payload, json_path = generate_json(
-        task=task,
-        prompt_path=prompt_path,
-        api_key_path=api_key_path,
-        model=model,
-        context_files=[*fixed_plants, *fixed_specs],
-        context_mission=selected_mission,
-        feedback=feedback,
+    collision_folder = (
+        "with_fixed_spec" if collision_control == "fixed" else "without_fixed_spec"
     )
+    isolated_root = output_root.expanduser().resolve() if output_root else None
+    json_output_path = None
+    if isolated_root is not None:
+        json_output_path = (
+            isolated_root
+            / "llm_outputs"
+            / selected_mission
+            / collision_folder
+            / f"prompt_{prompt_number}"
+            / f"generation_{generation_number}"
+            / "llm_output.json"
+        )
+
+    if reuse_json_path is None:
+        report("Requesting JSON automata from OpenAI…")
+        payload, json_path = generate_json(
+            task=task,
+            prompt_path=prompt_path,
+            api_key_path=api_key_path,
+            model=model,
+            # Fixed specifications are deliberately withheld from the API request.
+            context_files=fixed_plants,
+            context_mission=selected_mission,
+            feedback=feedback,
+            collision_control="none",
+            output_path=json_output_path,
+            allowed_events=allowed_events,
+            max_repair_attempts=max_repair_attempts,
+        )
+    else:
+        json_path = reuse_json_path.expanduser().resolve()
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
+        report(f"Reusing API result: {json_path}")
 
     report("Converting generated JSON to Nadzoru XML…")
     plant_events: set[str] = set()
@@ -623,24 +685,53 @@ def run_pipeline(
         for event, controllable in allowed_events.items()
         if event in plant_events
     }
-    report(
-        "Completing the generated specifications with the fixed-plant event "
-        "alphabet; unused actions will be disabled."
+    low_level_motion_events = {
+        "move_forward",
+        "move_backward",
+        "rotate_clockwise",
+        "rotate_counterclockwise",
+        "u_turn",
+    }
+    protected_motion_events = low_level_motion_events & set(complete_event_alphabet)
+    if complete_generated_alphabet:
+        report(
+            "Completing the generated specifications with the fixed-plant event "
+            "alphabet."
+        )
+    else:
+        report(
+            "Keeping only the events present in the generated specification; "
+            "no plant-alphabet events or self-loops are added."
+        )
+    generated_xml_dir = (
+        (isolated_root / "generated_automata" if isolated_root else llm_json_to_xml.DEFAULT_OUTPUT_DIR)
+        / selected_mission
+        / collision_folder
     )
     generated_xml = tuple(
         llm_json_to_xml.convert(
             json_path,
-            llm_json_to_xml.DEFAULT_OUTPUT_DIR,
+            generated_xml_dir,
             fixed_plants[0].parent,
             allowed_generated_events=set(allowed_events),
-            complete_event_alphabet=complete_event_alphabet,
+            complete_event_alphabet=(
+                complete_event_alphabet if complete_generated_alphabet else None
+            ),
+            protected_self_loop_events=(
+                protected_motion_events if complete_generated_alphabet else None
+            ),
         )
     )
 
     report("Synchronizing plants and specifications with Nadzoru…")
     sync_args = nadzoru_sync.build_parser().parse_args([])
-    # G uses the selected fixed plants. K adds the tested collision
-    # specification and only this request's generated specifications. Old LLM
+    sync_args.output_dir = str(
+        (isolated_root / "resulting_automata" if isolated_root else nadzoru_sync.DEFAULT_OUTPUT_DIR)
+        / selected_mission
+        / collision_folder
+    )
+    # G uses the selected fixed plants. K adds the selected fixed specifications
+    # and only this request's generated specifications. Old LLM
     # XML files remain on disk but cannot affect this run.
     sync_args.input_dir = []
     sync_args.input_file = [
@@ -653,24 +744,33 @@ def run_pipeline(
 
     report("Encoding the synthesized supervisor as runtime YAML…")
     yaml_path = (
-        supervisor_xml_to_yaml.DEFAULT_YAML_DIR
+        (isolated_root / "YAML" if isolated_root else supervisor_xml_to_yaml.DEFAULT_YAML_DIR)
         / selected_mission
+        / collision_folder
         / f"prompt_{prompt_number}"
         / f"generation_{generation_number}"
         / s_xml.with_suffix(".yaml").name
     )
     supervisor_xml_to_yaml.convert(s_xml, yaml_path)
-    source_prompt_path = json_path.with_suffix(".prompt.txt")
+    collision_control_path = yaml_path.with_suffix(".collision_control.txt")
+    collision_control_path.write_text(collision_control + "\n", encoding="utf-8")
+    report(f"Saved collision-control mode: {collision_control_path}")
+    metadata_base = (
+        json_path.with_name(json_path.name.removesuffix(".llm_output.json"))
+        if json_path.name.endswith(".llm_output.json")
+        else json_path.with_suffix("")
+    )
+    source_prompt_path = metadata_base.with_name(metadata_base.name + ".prompt.txt")
     yaml_prompt_path = yaml_path.with_suffix(".prompt.txt")
     if source_prompt_path.is_file():
         shutil.copy2(source_prompt_path, yaml_prompt_path)
         report(f"Saved matching UI prompt: {yaml_prompt_path}")
-    source_llm_prompt_path = json_path.with_suffix(".llm_prompt.txt")
+    source_llm_prompt_path = metadata_base.with_name(metadata_base.name + ".llm_prompt.txt")
     yaml_llm_prompt_path = yaml_path.with_suffix(".llm_prompt.txt")
     if source_llm_prompt_path.is_file():
         shutil.copy2(source_llm_prompt_path, yaml_llm_prompt_path)
         report(f"Saved complete LLM prompt: {yaml_llm_prompt_path}")
-    source_feedback_path = json_path.with_suffix(".feedback.json")
+    source_feedback_path = metadata_base.with_name(metadata_base.name + ".feedback.json")
     yaml_feedback_path = yaml_path.with_suffix(".feedback.json")
     if source_feedback_path.is_file():
         shutil.copy2(source_feedback_path, yaml_feedback_path)
@@ -701,7 +801,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument(
         "--mission",
-        choices=("auto", "exploration", "patrolling", "delivery", "complex_task"),
+        choices=("auto", "exploration", "patrolling", "delivery", "payload_delivery", "complex_task"),
         default="auto",
     )
     parser.add_argument(
@@ -721,6 +821,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--prompt-number", type=int, default=1)
     parser.add_argument("--generation-number", type=int, default=1)
+    parser.add_argument(
+        "--collision-control",
+        choices=("fixed", "llm"),
+        default="fixed",
+        help="Use fixed collision_avoidance.xml or let the LLM generate collision control",
+    )
     return parser
 
 
@@ -755,6 +861,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             auto_feedback=False,
             prompt_number=args.prompt_number,
             generation_number=args.generation_number,
+            collision_control=args.collision_control,
             status=print,
         )
     except Exception as error:

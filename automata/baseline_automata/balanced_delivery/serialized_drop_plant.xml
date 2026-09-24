@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="0.0" type="FSA" id="serialized_drop_plant">
+<data>
+	<state id="0" name="drop_slot_free" initial ="True" marked="True" x="220" y="300" />
+	<state id="1" name="local_drop_a_in_progress" initial ="False" marked="True" x="600" y="180" />
+	<state id="2" name="local_drop_b_in_progress" initial ="False" marked="True" x="600" y="420" />
+	<event id="0" name="drop_zone_a" controllable="True" observable="True"/>
+	<event id="1" name="drop_zone_b" controllable="True" observable="True"/>
+	<event id="2" name="publish_delivered_zone_a" controllable="True" observable="True"/>
+	<event id="3" name="publish_delivered_zone_b" controllable="True" observable="True"/>
+	<event id="4" name="received_delivered_zone_a" controllable="False" observable="True"/>
+	<event id="5" name="received_delivered_zone_b" controllable="False" observable="True"/>
+	<transition source="0" target="1" event="0"/>
+	<transition source="0" target="2" event="1"/>
+	<transition source="0" target="0" event="4"/>
+	<transition source="0" target="0" event="5"/>
+	<transition source="1" target="0" event="2"/>
+	<transition source="2" target="0" event="3"/>
+</data>
+</model>

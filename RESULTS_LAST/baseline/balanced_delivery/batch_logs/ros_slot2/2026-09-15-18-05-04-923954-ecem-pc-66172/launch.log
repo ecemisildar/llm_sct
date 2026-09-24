@@ -1,0 +1,95 @@
+1789488304.9246821 [INFO] [launch]: All log files can be found below /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/baseline/balanced_delivery/batch_logs/ros_slot2/2026-09-15-18-05-04-923954-ecem-pc-66172
+1789488304.9247746 [INFO] [launch]: Default logging verbosity is set to INFO
+1789488305.7511017 [INFO] [ign gazebo-1]: process started with pid [66179]
+1789488305.7513614 [INFO] [image_bridge-2]: process started with pid [66182]
+1789488305.7514699 [INFO] [simulation_video_recorder-3]: process started with pid [66184]
+1789488305.7515564 [INFO] [coverage_counter-4]: process started with pid [66186]
+1789488305.7516325 [INFO] [bump_counter-5]: process started with pid [66196]
+1789488305.7517083 [INFO] [parameter_bridge-6]: process started with pid [66212]
+1789488305.7517841 [INFO] [robot_state_publisher-7]: process started with pid [66237]
+1789488305.7609315 [INFO] [create-8]: process started with pid [66249]
+1789488305.7611978 [INFO] [static_transform_publisher-9]: process started with pid [66263]
+1789488305.7613273 [INFO] [image_bridge-10]: process started with pid [66277]
+1789488305.7614305 [INFO] [robot_state_publisher-11]: process started with pid [66293]
+1789488305.7615275 [INFO] [create-12]: process started with pid [66321]
+1789488305.7616212 [INFO] [static_transform_publisher-13]: process started with pid [66346]
+1789488305.7617223 [INFO] [image_bridge-14]: process started with pid [66394]
+1789488305.7618082 [INFO] [robot_state_publisher-15]: process started with pid [66424]
+1789488305.7619052 [INFO] [create-16]: process started with pid [66443]
+1789488305.7619929 [INFO] [static_transform_publisher-17]: process started with pid [66467]
+1789488305.7620757 [INFO] [image_bridge-18]: process started with pid [66496]
+1789488305.7621603 [INFO] [parameter_bridge-19]: process started with pid [66517]
+1789488308.6669734 [INFO] [create-12]: process has finished cleanly [pid 66321]
+1789488308.6889758 [INFO] [create-16]: process has finished cleanly [pid 66443]
+1789488308.6892500 [INFO] [create-8]: process has finished cleanly [pid 66249]
+1789488308.8223903 [INFO] [balanced_delivery_supervisor-20]: process started with pid [67692]
+1789488308.8226628 [INFO] [stuck_recovery-21]: process started with pid [67694]
+1789488308.8238947 [INFO] [balanced_delivery_supervisor-22]: process started with pid [67702]
+1789488308.8240669 [INFO] [stuck_recovery-23]: process started with pid [67705]
+1789488308.8243470 [INFO] [balanced_delivery_supervisor-24]: process started with pid [67716]
+1789488308.8244822 [INFO] [stuck_recovery-25]: process started with pid [67724]
+1789488311.1787672 [INFO] [image_processor-26]: process started with pid [67866]
+1789488311.1790853 [INFO] [color_detector-27]: process started with pid [67884]
+1789488311.1807969 [INFO] [image_processor-28]: process started with pid [67902]
+1789488311.1810222 [INFO] [color_detector-29]: process started with pid [67908]
+1789488311.1942379 [INFO] [image_processor-30]: process started with pid [67968]
+1789488311.1945260 [INFO] [color_detector-31]: process started with pid [67976]
+1789488488.4388924 [INFO] [coverage_counter-4]: process has finished cleanly [pid 66186]
+1789488488.4440188 [INFO] [launch]: process[coverage_counter-4] was required: shutting down launched system
+1789488488.7036819 [INFO] [color_detector-31]: sending signal 'SIGINT' to process[color_detector-31]
+1789488488.8633881 [INFO] [image_processor-30]: sending signal 'SIGINT' to process[image_processor-30]
+1789488488.9677973 [INFO] [color_detector-29]: sending signal 'SIGINT' to process[color_detector-29]
+1789488489.0702498 [INFO] [image_processor-28]: sending signal 'SIGINT' to process[image_processor-28]
+1789488489.3324070 [INFO] [color_detector-27]: sending signal 'SIGINT' to process[color_detector-27]
+1789488489.4597025 [INFO] [image_processor-26]: sending signal 'SIGINT' to process[image_processor-26]
+1789488489.5328026 [INFO] [stuck_recovery-25]: sending signal 'SIGINT' to process[stuck_recovery-25]
+1789488489.5893455 [INFO] [balanced_delivery_supervisor-24]: sending signal 'SIGINT' to process[balanced_delivery_supervisor-24]
+1789488489.6239605 [INFO] [stuck_recovery-23]: sending signal 'SIGINT' to process[stuck_recovery-23]
+1789488489.6873612 [INFO] [balanced_delivery_supervisor-22]: sending signal 'SIGINT' to process[balanced_delivery_supervisor-22]
+1789488489.8436277 [INFO] [stuck_recovery-21]: sending signal 'SIGINT' to process[stuck_recovery-21]
+1789488489.8926656 [INFO] [balanced_delivery_supervisor-20]: sending signal 'SIGINT' to process[balanced_delivery_supervisor-20]
+1789488489.9194996 [INFO] [parameter_bridge-19]: sending signal 'SIGINT' to process[parameter_bridge-19]
+1789488490.0334454 [INFO] [image_bridge-18]: sending signal 'SIGINT' to process[image_bridge-18]
+1789488490.0842235 [INFO] [parameter_bridge-19]: process has finished cleanly [pid 66517]
+1789488490.0984244 [INFO] [static_transform_publisher-17]: sending signal 'SIGINT' to process[static_transform_publisher-17]
+1789488490.1685507 [INFO] [robot_state_publisher-15]: sending signal 'SIGINT' to process[robot_state_publisher-15]
+1789488490.2201390 [INFO] [image_bridge-14]: sending signal 'SIGINT' to process[image_bridge-14]
+1789488490.2581809 [INFO] [static_transform_publisher-13]: sending signal 'SIGINT' to process[static_transform_publisher-13]
+1789488490.3094094 [INFO] [robot_state_publisher-11]: sending signal 'SIGINT' to process[robot_state_publisher-11]
+1789488490.3480878 [INFO] [image_bridge-10]: sending signal 'SIGINT' to process[image_bridge-10]
+1789488490.4186070 [INFO] [static_transform_publisher-9]: sending signal 'SIGINT' to process[static_transform_publisher-9]
+1789488490.4485910 [INFO] [robot_state_publisher-7]: sending signal 'SIGINT' to process[robot_state_publisher-7]
+1789488490.5654793 [INFO] [parameter_bridge-6]: sending signal 'SIGINT' to process[parameter_bridge-6]
+1789488490.6488678 [INFO] [bump_counter-5]: sending signal 'SIGINT' to process[bump_counter-5]
+1789488490.7704842 [INFO] [simulation_video_recorder-3]: sending signal 'SIGINT' to process[simulation_video_recorder-3]
+1789488490.7806721 [INFO] [parameter_bridge-6]: process has finished cleanly [pid 66212]
+1789488490.9165766 [INFO] [image_bridge-2]: sending signal 'SIGINT' to process[image_bridge-2]
+1789488491.0454466 [INFO] [ign gazebo-1]: sending signal 'SIGINT' to process[ign gazebo-1]
+1789488491.1049235 [ERROR] [image_processor-28]: process has died [pid 67902, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/image_processor --ros-args -r __node:=image_processor -r __ns:=/robot_2 --params-file /tmp/launch_params_l_wuq1y8 --params-file /tmp/launch_params_4mzbw0uv --params-file /tmp/launch_params_ucsiidm4'].
+1789488491.2281272 [INFO] [static_transform_publisher-17]: process has finished cleanly [pid 66467]
+1789488491.2974041 [INFO] [image_bridge-18]: process has finished cleanly [pid 66496]
+1789488491.2977178 [INFO] [robot_state_publisher-15]: process has finished cleanly [pid 66424]
+1789488491.3256836 [ERROR] [color_detector-31]: process has died [pid 67976, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/color_detector --ros-args -r __node:=target_detector -r __ns:=/robot_0 --params-file /tmp/launch_params_fdi4o880 --params-file /tmp/launch_params_mgeolch9 --params-file /tmp/launch_params_fydy65j4 --params-file /tmp/launch_params_wgi5ena2 --params-file /tmp/launch_params_drlkmict --params-file /tmp/launch_params_k505bfhn'].
+1789488491.3572679 [INFO] [static_transform_publisher-13]: process has finished cleanly [pid 66346]
+1789488491.4117737 [INFO] [image_bridge-14]: process has finished cleanly [pid 66394]
+1789488491.4120414 [INFO] [robot_state_publisher-11]: process has finished cleanly [pid 66293]
+1789488491.4121876 [ERROR] [image_processor-30]: process has died [pid 67968, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/image_processor --ros-args -r __node:=image_processor -r __ns:=/robot_0 --params-file /tmp/launch_params_a0y17nv1 --params-file /tmp/launch_params_sxyar4oc --params-file /tmp/launch_params_4sqqnyhd'].
+1789488491.5241122 [INFO] [static_transform_publisher-9]: process has finished cleanly [pid 66263]
+1789488491.5285740 [INFO] [image_bridge-10]: process has finished cleanly [pid 66277]
+1789488491.5644646 [INFO] [robot_state_publisher-7]: process has finished cleanly [pid 66237]
+1789488491.5972867 [ERROR] [color_detector-29]: process has died [pid 67908, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/color_detector --ros-args -r __node:=target_detector -r __ns:=/robot_2 --params-file /tmp/launch_params_vxiaeij_ --params-file /tmp/launch_params_hq2khihu --params-file /tmp/launch_params_zuh064oe --params-file /tmp/launch_params_b17jav6z --params-file /tmp/launch_params_zbrml837 --params-file /tmp/launch_params_75m533nn'].
+1789488491.6105375 [ERROR] [image_processor-26]: process has died [pid 67866, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/image_processor --ros-args -r __node:=image_processor -r __ns:=/robot_1 --params-file /tmp/launch_params_1p5ywyvt --params-file /tmp/launch_params_y_j_63cg --params-file /tmp/launch_params_v2bubyjr'].
+1789488491.7552102 [INFO] [balanced_delivery_supervisor-20]: process has finished cleanly [pid 67692]
+1789488491.8122165 [ERROR] [color_detector-27]: process has died [pid 67884, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/color_detector --ros-args -r __node:=target_detector -r __ns:=/robot_1 --params-file /tmp/launch_params_uoar4f8o --params-file /tmp/launch_params_ffqqr4js --params-file /tmp/launch_params_stcb0wdl --params-file /tmp/launch_params_5gsk4lse --params-file /tmp/launch_params_9k8dl33g --params-file /tmp/launch_params_w20qyku2'].
+1789488491.9103229 [ERROR] [stuck_recovery-25]: process has died [pid 67724, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery --ros-args -r __node:=stuck_recovery -r __ns:=/robot_0 --params-file /tmp/launch_params_sej8c7z7 --params-file /tmp/launch_params_nkh5iesx --params-file /tmp/launch_params_74iade93 --params-file /tmp/launch_params_r94uedk4 --params-file /tmp/launch_params_d9gliexu --params-file /tmp/launch_params_rdr9wlfu --params-file /tmp/launch_params_umwyu1f4 --params-file /tmp/launch_params_h266n3i7 --params-file /tmp/launch_params_ku_qlnpz --params-file /tmp/launch_params_yet4eb5d'].
+1789488491.9635043 [ERROR] [balanced_delivery_supervisor-24]: process has died [pid 67716, exit code 1, cmd '/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor --ros-args -r __node:=robot_supervisor -r __ns:=/robot_0 --params-file /tmp/launch_params_pwvda8lr --params-file /tmp/launch_params_4b4y4yim --params-file /tmp/launch_params_a8k8hmgm --params-file /tmp/launch_params_psr9f6wh --params-file /tmp/launch_params_3ykpv2nh --params-file /tmp/launch_params_na39jusr --params-file /tmp/launch_params_dj20aopl --params-file /tmp/launch_params_cpufvsz7 --params-file /tmp/launch_params_wcoldt8g -r cmd_vel:=cmd_vel_supervisor'].
+1789488491.9888427 [ERROR] [stuck_recovery-23]: process has died [pid 67705, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery --ros-args -r __node:=stuck_recovery -r __ns:=/robot_2 --params-file /tmp/launch_params_pnwb2hox --params-file /tmp/launch_params_i4qcqv0p --params-file /tmp/launch_params_h4249m18 --params-file /tmp/launch_params_mrl37e9u --params-file /tmp/launch_params_08oy6a71 --params-file /tmp/launch_params_wrvpam3f --params-file /tmp/launch_params_c9skdgud --params-file /tmp/launch_params_ctdept3b --params-file /tmp/launch_params_7ytvavyl --params-file /tmp/launch_params_duy07uc7'].
+1789488492.0094314 [ERROR] [balanced_delivery_supervisor-22]: process has died [pid 67702, exit code 1, cmd '/home/ecem/sct_ws/install/leo_delivery/lib/leo_delivery/balanced_delivery_supervisor --ros-args -r __node:=robot_supervisor -r __ns:=/robot_2 --params-file /tmp/launch_params_dnqe9n2g --params-file /tmp/launch_params_7pxrz7ic --params-file /tmp/launch_params_kmv0sajg --params-file /tmp/launch_params_ntcv6nf6 --params-file /tmp/launch_params_4pxb6zzv --params-file /tmp/launch_params__17c4xhi --params-file /tmp/launch_params_pizfknk3 --params-file /tmp/launch_params_01tvljwj --params-file /tmp/launch_params_uuprsdgy -r cmd_vel:=cmd_vel_supervisor'].
+1789488492.0254860 [INFO] [image_bridge-2]: process has finished cleanly [pid 66182]
+1789488492.0382426 [ERROR] [stuck_recovery-21]: process has died [pid 67694, exit code 1, cmd '/home/ecem/sct_ws/install/leo_image_processing/lib/leo_image_processing/stuck_recovery --ros-args -r __node:=stuck_recovery -r __ns:=/robot_1 --params-file /tmp/launch_params_azwnp69b --params-file /tmp/launch_params_5mfi56kx --params-file /tmp/launch_params_iu8dcxey --params-file /tmp/launch_params__qpvaga1 --params-file /tmp/launch_params_e69nrfxu --params-file /tmp/launch_params_s8epl_dg --params-file /tmp/launch_params_ajqd54g1 --params-file /tmp/launch_params_pyzs66ow --params-file /tmp/launch_params_1miv0trs --params-file /tmp/launch_params_jc0ppuoj'].
+1789488492.1104352 [ERROR] [bump_counter-5]: process has died [pid 66196, exit code 1, cmd '/home/ecem/sct_ws/install/evaluation/lib/evaluation/bump_counter --ros-args -r __node:=bump_counter --params-file /tmp/launch_params_2ukto_7v --params-file /tmp/launch_params_31s2sgor --params-file /tmp/launch_params__y30pf49 --params-file /tmp/launch_params_c7ss7ice --params-file /tmp/launch_params_ttkhn5zg --params-file /tmp/launch_params_bwljqupl --params-file /tmp/launch_params_tigdgkl2 --params-file /tmp/launch_params_u68xyk9q'].
+1789488492.1153209 [INFO] [simulation_video_recorder-3]: process has finished cleanly [pid 66184]
+1789488493.7056239 [ERROR] [ign gazebo-1]: process[ign gazebo-1] failed to terminate '5' seconds after receiving 'SIGINT', escalating to 'SIGTERM'
+1789488493.7101371 [INFO] [ign gazebo-1]: sending signal 'SIGTERM' to process[ign gazebo-1]
+1789488493.7110150 [ERROR] [ign gazebo-1]: process has died [pid 66179, exit code -15, cmd 'ruby /usr/bin/ign gazebo /tmp/leo_delivery_no_overhead_camera_fhx0blav.sdf -s --headless-rendering -r -z 200 --force-version 6'].
+1789488493.7113907 [INFO] [launch]: process[ign gazebo-1] was required: shutting down launched system

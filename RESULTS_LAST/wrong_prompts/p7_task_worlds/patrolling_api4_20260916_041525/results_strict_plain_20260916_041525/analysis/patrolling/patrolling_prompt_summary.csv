@@ -1,0 +1,3 @@
+prompt,collision_control,prompt_text,runs,successes,success_rate_pct,task_success_mean_pct,task_success_sd_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
+7,without_fixed_spec,Only rotate clockwise.,40,0,0.0,5.833333333333333,8.23553726687422,300.347175,0.089376139852869,,,41.041725,8.217926082618108,,,6,0.15,0.5267826876426369
+7,with_fixed_spec,Only rotate clockwise.,40,1,2.5,48.05555555555556,18.322808426711646,299.061875,8.007875717652905,249.057,0.0,89.7917,9.185678394108951,45.833,0.0,28,0.7,1.1224972160321824

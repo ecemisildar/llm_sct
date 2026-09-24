@@ -1,1 +1,0 @@
-Using three robots, find the red, green, and blue boxes, deliver each box to its matching colored zone, and complete all three deliveries. Each robot should deliver one box.

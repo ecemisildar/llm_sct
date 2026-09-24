@@ -1,0 +1,2 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+17,"('robot_0', 'blue_delivery_box::link::collision')",left,,EV_search_object,

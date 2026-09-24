@@ -3,8 +3,10 @@ from evaluation.coverage_counter import CoverageCounter, circle_intersects_cell
 
 def make_counter(radius=0.36):
     counter = CoverageCounter.__new__(CoverageCounter)
-    counter.env_min = -5.0
+    counter.env_min_x = -5.0
+    counter.env_min_y = -5.0
     counter.grid_size = 1.0
+    counter.num_cells_x = 10
     counter.num_cells_y = 10
     counter.robot_footprint_radius = radius
     return counter

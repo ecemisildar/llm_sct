@@ -1,0 +1,20 @@
+Node started
+run_id: run_20260912_212237_527176802
+results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/patrolling/without_fixed_spec/seed_1001/S_20260912_110319/run_20260912_212237_527176802
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/patrolling/without_fixed_spec/prompt_2/generation_4/S_20260912_110319.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /tmp/leo_patrolling_no_overhead_camera_ysnv90_e.sdf
+  headless: true
+  auto_start: true
+  run_duration: 300.0
+  total_robots: 3
+  random_seed: 1001
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/patrolling/without_fixed_spec/seed_1001
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/patrolling/without_fixed_spec/prompt_2/generation_4/S_20260912_110319.yaml
+Timeout reached (300.0s). Saving + shutdown.
+Saving started...
+Task success: false
+Task duration: 300.300s
+Saving OK

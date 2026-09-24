@@ -1,0 +1,13 @@
+prompt,generation,collision_control,seed,supervisor,event,percentage
+7,1,with_fixed_spec,1001,S_p7_patrolling_with_fixed_spec,rotate_clockwise,100.0
+7,1,with_fixed_spec,1004,S_p7_patrolling_with_fixed_spec,rotate_clockwise,100.0
+7,1,with_fixed_spec,1005,S_p7_patrolling_with_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1001,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1002,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1003,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1004,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1006,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1007,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1008,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1009,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0
+7,1,without_fixed_spec,1010,S_p7_patrolling_without_fixed_spec,rotate_clockwise,100.0

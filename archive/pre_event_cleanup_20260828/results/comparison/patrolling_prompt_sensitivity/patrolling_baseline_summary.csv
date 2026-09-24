@@ -1,2 +1,0 @@
-prompt,runs,successes,success_rate_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
-baseline,5,4,80.0,278.2788,163.60531211351298,197.8185,33.00111072751945,43.5294,4.764165555477686,42.94125,5.161587903688168,4,0.8,1.1661903789690602

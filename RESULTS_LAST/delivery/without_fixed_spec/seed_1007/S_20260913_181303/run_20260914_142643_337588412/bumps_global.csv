@@ -1,0 +1,4 @@
+stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
+504,"('robot_1', 'generic_delivery_box_0::link::collision')",left,,EV_rotate_counterclockwise,
+505,"('robot_1', 'generic_delivery_box_0::link::collision')",back,,EV_search_color,
+507,"('robot_1', 'generic_delivery_box_0::link::collision')",right,,EV_rotate_clockwise,

@@ -1,0 +1,5 @@
+prompt,collision_control,selection,generation,seeds,mean_task_progression_pct
+7,without_fixed_spec,best,3,10,7.777777777777778
+7,without_fixed_spec,median,4,10,5.555555555555555
+7,with_fixed_spec,best,4,10,55.55555555555556
+7,with_fixed_spec,median,2,10,43.333333333333336

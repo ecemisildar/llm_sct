@@ -1,0 +1,509 @@
+You are an expert in Supervisory Control Theory (SCT) and finite-state automata (hereafter also generators).
+
+WHAT TO OUTPUT
+
+Output one control specification that enforces the control objective. Read `fixed_synthesis_roles`: `G_plants` identifies the plants that define what the robots can do (i.e., the free behavior models) - they are automatically combined into a single generator G; `K_fixed_specifications` identifies the fixed specifications. All specifications are then combined and fused with G to create an overall generator (K) from which the resulting robot controller (i.e. the supervisor) is derived.
+
+Use the given events to fulfill the objective. In particular, use the supplied motion, sensing, and other events (provided as part of the G_plants) to create a specification (e.g., a generator) that realizes the desired control objective for the respective mission.
+
+EVENT MEANINGS
+
+The pipeline appends meanings only for the events available to the current request.
+
+The robot is a rover that operates in a bounded arena. It has a front-facing camera with an 87-degree field of view. The camera determines if sensing events have occurred that relate to the robot's visual perception (e.g., detection of obstacles, colors, and objects).
+
+OUTPUT FORMAT
+
+Return only one small valid JSON object with exactly one top-level field named `automata` which defines the control specification, that is, its 'name',  'initial_state', 'marked_states', and 'transitions'. Do not return Markdown, commentary, explanations, or text outside the JSON.
+
+`automata` must be a non-empty array. Every element must contain exactly these fields:
+
+- `name`: a unique identifier ending in `_specification`
+- `initial_state`: the initial state name
+- `marked_states`: an array of acceptable marked-state names
+- `transitions`: a non-empty array of `[source_state, event, target_state]` arrays
+
+The code derives the automaton type (in this case, a control specification), complete state list, local event alphabet, XML identifiers, and layout. Every state named in `initial_state` or `marked_states` must occur in at least one transition.
+
+Example transition: `["searching", "move_forward", "searching"]`. Do not encode transitions as strings or objects.
+
+SCT RULES
+
+1. Use only events declared by the supplied plants (in G_plants), with exact spelling and case. Select only events relevant to the user input.
+2. Every event used by a generated specification must exist in at least one supplied plant. Do not create a plant to introduce a new event.
+3. The code derives each specification's local event alphabet from its transitions. Keep transitions amongst states minimal and relevant to the objective.
+4. Explicitly define a transition for every uncontrollable event that should change a given state (e.g., if the robot observes something that should trigger a different action). If no transition is defined, a self-loop for this uncontrollable event is automatically added to the state. 
+5. Make every automaton deterministic in the sense that each `(state, event)` pair has at most one target.
+6. Add controllable event transitions to the states where this makes sense for the control objective.
+7. At run-time, zero, one, or multiple controllable events may be enabled in the given state (i.e., they were deemed not to violate the specifications). Where multiple controllable events are enabled, one of them will be picked at random.
+8. Every state must be reachable from the initial state (`initial_state`).
+9. Use short, unique names containing only letters, numbers, and underscores.
+10. Use `marked_states` to define the states that are marked for the control specification. At least one state must be marked. Mark only states that represent stable checkpoints or legitimately repeatable mission conditions. Do not mark transient states with outstanding obligations. However, every state must be marked or have a path to a marked state.
+
+USER INPUT
+As a member of a team of robots, search for an object and pick it up. Drop the object at a delivery zone. You can only drop it at a delivery zone if the last object was not delivered there. After the delivery, inform the other members about the successful delivery location. Collect all the objects in the environment.
+
+FIXED AUTOMATA (JSON)
+These automata are already included during synchronization. Do not regenerate them. Use their exact states, events, and transitions to design compatible additional control specifications. When the control objective requires robot motion, explicitly connect relevant observations and mission states to the existing controllable movement events.
+{
+  "fixed_synthesis_roles": {
+    "mission": "delivery",
+    "G_plants": [
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5b",
+      "G5r",
+      "G6",
+      "G7"
+    ],
+    "K_fixed_specifications": [],
+    "llm_output_role": "specifications_only"
+  },
+  "fixed_automata": [
+    {
+      "name": "G1",
+      "type": "plant",
+      "states": [
+        "1"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "approach_color",
+          "controllable": true
+        },
+        {
+          "name": "search_color",
+          "controllable": true
+        },
+        {
+          "name": "search_object",
+          "controllable": true
+        },
+        {
+          "name": "move_backward",
+          "controllable": true
+        },
+        {
+          "name": "move_forward",
+          "controllable": true
+        },
+        {
+          "name": "rotate_clockwise",
+          "controllable": true
+        },
+        {
+          "name": "approach_object",
+          "controllable": true
+        },
+        {
+          "name": "u_turn",
+          "controllable": true
+        },
+        {
+          "name": "rotate_counterclockwise",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "search_object",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "approach_color",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "search_color",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "move_backward",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "u_turn",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "move_forward",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "rotate_clockwise",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "approach_object",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "rotate_counterclockwise",
+          "target": "1"
+        }
+      ]
+    },
+    {
+      "name": "G2",
+      "type": "plant",
+      "states": [
+        "1"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "obstacle_right",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_left",
+          "controllable": false
+        },
+        {
+          "name": "obstacle_front",
+          "controllable": false
+        },
+        {
+          "name": "path_clear",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "obstacle_front",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "obstacle_left",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "obstacle_right",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "path_clear",
+          "target": "1"
+        }
+      ]
+    },
+    {
+      "name": "G3",
+      "type": "plant",
+      "states": [
+        "1",
+        "2"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "pick_up_object",
+          "controllable": true
+        },
+        {
+          "name": "drop_object",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "pick_up_object",
+          "target": "2"
+        },
+        {
+          "source": "2",
+          "event": "drop_object",
+          "target": "1"
+        }
+      ]
+    },
+    {
+      "name": "G4",
+      "type": "plant",
+      "states": [
+        "1"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "object_visible",
+          "controllable": false
+        },
+        {
+          "name": "object_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "object_reached",
+          "controllable": false
+        },
+        {
+          "name": "object_not_reached",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "object_reached",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "object_not_visible",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "object_not_reached",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "object_visible",
+          "target": "1"
+        }
+      ]
+    },
+    {
+      "name": "G5b",
+      "type": "plant",
+      "states": [
+        "1"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "blue_reached",
+          "controllable": false
+        },
+        {
+          "name": "blue_not_reached",
+          "controllable": false
+        },
+        {
+          "name": "blue_visible",
+          "controllable": false
+        },
+        {
+          "name": "blue_not_visible",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "blue_reached",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "blue_not_reached",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "blue_not_visible",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "blue_visible",
+          "target": "1"
+        }
+      ]
+    },
+    {
+      "name": "G5r",
+      "type": "plant",
+      "states": [
+        "1"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "red_not_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_visible",
+          "controllable": false
+        },
+        {
+          "name": "red_not_reached",
+          "controllable": false
+        },
+        {
+          "name": "red_reached",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "red_visible",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "red_not_visible",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "red_reached",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "red_not_reached",
+          "target": "1"
+        }
+      ]
+    },
+    {
+      "name": "G6",
+      "type": "plant",
+      "states": [
+        "1"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "drop_zone_blue",
+          "controllable": true
+        },
+        {
+          "name": "drop_zone_red",
+          "controllable": true
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "drop_zone_red",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "drop_zone_blue",
+          "target": "1"
+        }
+      ]
+    },
+    {
+      "name": "G7",
+      "type": "plant",
+      "states": [
+        "1"
+      ],
+      "initial_state": "1",
+      "marked_states": [
+        "1"
+      ],
+      "events": [
+        {
+          "name": "recieve_drop_zone_blue",
+          "controllable": false
+        },
+        {
+          "name": "recieve_drop_zone_red",
+          "controllable": false
+        }
+      ],
+      "transitions": [
+        {
+          "source": "1",
+          "event": "recieve_drop_zone_red",
+          "target": "1"
+        },
+        {
+          "source": "1",
+          "event": "recieve_drop_zone_blue",
+          "target": "1"
+        }
+      ]
+    }
+  ]
+}
+
+COLLISION CONTROL MODE
+none
+No fixed specification is included in this API input. Generate only the control specification required by the user input; synchronization will separately evaluate it with and without the fixed collision specification.
+
+EVENT MEANINGS FOR THIS REQUEST
+- `approach_color`: repeatable high-level action that approaches the currently visible requested color.
+- `approach_object`: repeatable high-level action that approaches a visible object.
+- `blue_not_reached`: sensor observation that the blue target has not been reached.
+- `blue_not_visible`: sensor observation that the blue target is no longer visible.
+- `blue_reached`: sensor observation that the blue target has been reached.
+- `blue_visible`: sensor observation that the blue target is visible.
+- `drop_object`: command to drop the carried object in the reached delivery zone.
+- `drop_zone_blue`: command to claim the blue delivery-object assignment.
+- `drop_zone_red`: command to claim the red delivery-object assignment.
+- `move_backward`: command the robot to drive backward.
+- `move_forward`: command the robot to drive forward.
+- `object_not_reached`: sensor observation that the delivery object has not been reached.
+- `object_not_visible`: sensor observation that the delivery object is no longer visible.
+- `object_reached`: sensor observation that the delivery object has been reached.
+- `object_visible`: sensor observation that the delivery object is visible.
+- `obstacle_front`: An obstacle intersects the robot's forward safety region.
+- `obstacle_left`: An obstacle intersects the robot's forward-left safety region.
+- `obstacle_right`: An obstacle intersects the robot's forward-right safety region.
+- `path_clear`: sensor observation that the forward path is clear.
+- `pick_up_object`: command to pick up the reached delivery object.
+- `recieve_drop_zone_blue`: communication observation that another robot claimed blue.
+- `recieve_drop_zone_red`: communication observation that another robot claimed red.
+- `red_not_reached`: sensor observation that the red target has not been reached.
+- `red_not_visible`: sensor observation that the red target is no longer visible.
+- `red_reached`: sensor observation that the red target has been reached.
+- `red_visible`: sensor observation that the red target is visible.
+- `rotate_clockwise`: command an in-place clockwise rotation.
+- `rotate_counterclockwise`: command an in-place counterclockwise rotation.
+- `search_color`: repeatable high-level action that searches for the requested color.
+- `search_object`: repeatable high-level action that searches for a delivery object.
+- `u_turn`: command the robot to turn around.
+
+AUTHORITATIVE EVENT LIST
+Use only events in this list. Events visible in fixed-automata JSON but absent here are forbidden in generated output.
+Select only the events relevant to the user's control objective.
+Controllable events: ["approach_color", "approach_object", "drop_object", "drop_zone_blue", "drop_zone_red", "move_backward", "move_forward", "pick_up_object", "rotate_clockwise", "rotate_counterclockwise", "search_color", "search_object", "u_turn"]
+Uncontrollable observation events: ["blue_not_reached", "blue_not_visible", "blue_reached", "blue_visible", "object_not_reached", "object_not_visible", "object_reached", "object_visible", "obstacle_front", "obstacle_left", "obstacle_right", "path_clear", "recieve_drop_zone_blue", "recieve_drop_zone_red", "red_not_reached", "red_not_visible", "red_reached", "red_visible"]

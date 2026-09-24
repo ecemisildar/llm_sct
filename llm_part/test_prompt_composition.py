@@ -4,13 +4,26 @@ from tempfile import TemporaryDirectory
 
 from llm_input import (
     add_allowed_event_list,
+    add_event_meanings,
     add_existing_automata_context,
     combine_prompt,
+    normalize_llm_event_aliases,
     save_llm_prompt,
+    validate_compact_response,
 )
 
 
 class PromptCompositionTests(unittest.TestCase):
+    def test_compact_policy_response_is_accepted(self) -> None:
+        validate_compact_response({
+            "automata": [{
+                "name": "exploration_specification",
+                "initial_state": "moving",
+                "marked_states": ["moving"],
+                "transitions": [["moving", "move_forward", "moving"]],
+            }]
+        })
+
     def test_only_user_input_and_fixed_automata_vary(self) -> None:
         base = "INVARIANT INSTRUCTIONS"
         context = {"fixed_automata": [{"name": "task_plant"}]}
@@ -48,6 +61,37 @@ class PromptCompositionTests(unittest.TestCase):
         self.assertIn('Controllable events: ["search_color"]', prompt)
         self.assertIn(
             'Uncontrollable observation events: ["red_visible"]', prompt
+        )
+
+    def test_only_allowed_event_meanings_are_added(self) -> None:
+        prompt = add_event_meanings(
+            "BASE", {"move_forward": True, "red_visible": False}
+        )
+
+        self.assertIn("`move_forward`", prompt)
+        self.assertIn("`red_visible`", prompt)
+        self.assertNotIn("`move_backward`", prompt)
+        self.assertNotIn("`blue_visible`", prompt)
+
+    def test_u_turn_is_exposed_without_aliasing(self) -> None:
+        prompt = add_allowed_event_list("PROMPT", {"u_turn": True})
+        self.assertIn('Controllable events: ["u_turn"]', prompt)
+
+        payload = {
+            "automata": [{
+                "events": ["u_turn"],
+                "transitions": ['("ready", "u_turn", "ready")'],
+            }],
+            "explanation": {"event_selection": "Use u_turn."},
+        }
+        normalized = normalize_llm_event_aliases(payload)
+        self.assertEqual(normalized["automata"][0]["events"], ["u_turn"])
+        self.assertEqual(
+            normalized["automata"][0]["transitions"],
+            ['("ready", "u_turn", "ready")'],
+        )
+        self.assertEqual(
+            normalized["explanation"]["event_selection"], "Use u_turn."
         )
 
 

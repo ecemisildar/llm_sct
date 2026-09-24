@@ -1,0 +1,1 @@
+Explore the environment to gain points: Receive 1 point per square meter visited. Lose -1 point for every obstacle you collide with.

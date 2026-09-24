@@ -1,0 +1,62 @@
+[
+  {
+    "generation": 1,
+    "mode": "none",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_1/YAML/delivery/without_fixed_spec/prompt_1/generation_1/S_20260913_181039.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_1/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_1/llm_output.json"
+  },
+  {
+    "generation": 1,
+    "mode": "fixed",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_1/YAML/delivery/with_fixed_spec/prompt_1/generation_1/S_20260913_181041.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_1/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_1/llm_output.json"
+  },
+  {
+    "generation": 2,
+    "mode": "none",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_2/YAML/delivery/without_fixed_spec/prompt_1/generation_2/S_20260913_181149.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_2/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_2/llm_output.json"
+  },
+  {
+    "generation": 2,
+    "mode": "fixed",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_2/YAML/delivery/with_fixed_spec/prompt_1/generation_2/S_20260913_181151.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_2/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_2/llm_output.json"
+  },
+  {
+    "generation": 3,
+    "mode": "none",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_3/YAML/delivery/without_fixed_spec/prompt_1/generation_3/S_20260913_181303.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_3/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_3/llm_output.json"
+  },
+  {
+    "generation": 3,
+    "mode": "fixed",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_3/YAML/delivery/with_fixed_spec/prompt_1/generation_3/S_20260913_181305.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_3/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_3/llm_output.json"
+  },
+  {
+    "generation": 4,
+    "mode": "none",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_4/YAML/delivery/without_fixed_spec/prompt_1/generation_4/S_20260913_181425.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_4/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_4/llm_output.json"
+  },
+  {
+    "generation": 4,
+    "mode": "fixed",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_4/YAML/delivery/with_fixed_spec/prompt_1/generation_4/S_20260913_181427.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_4/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_4/llm_output.json"
+  },
+  {
+    "generation": 5,
+    "mode": "none",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_5/YAML/delivery/without_fixed_spec/prompt_1/generation_5/S_20260913_181548.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_5/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_5/llm_output.json"
+  },
+  {
+    "generation": 5,
+    "mode": "fixed",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_5/YAML/delivery/with_fixed_spec/prompt_1/generation_5/S_20260913_181551.yaml",
+    "json": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/delivery_stack_batch_20260913_180926/candidate_5/llm_outputs/delivery/without_fixed_spec/prompt_1/generation_5/llm_output.json"
+  }
+]

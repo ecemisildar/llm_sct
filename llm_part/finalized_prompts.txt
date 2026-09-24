@@ -1,0 +1,28 @@
+Exploration
+
+P1: Move within the environment to maximize the area covered while avoiding obstacles. 
+
+P2: As a member of a team of robots, explore the area while not colliding with obstacles (i.e., walls or other robots). 
+
+
+P3: Move to maximize the area covered. 
+
+P4: & As a member of a team, explore the area. 
+
+P5: & Explore the environment to gain points: Receive 1 point per square meter visited. Lose -1 point for every obstacle you collide with.
+
+P6: & As a member of a team of robots, explore the environment while collecting objects (i.e., touching them).
+
+Patrolling
+
+P1: Search for and visit the red, green, and blue locations in that order, while avoiding obstacles. If you reach a location out of sequence, continue your search for the correct location.
+
+P2: As a member of a team of robots, go to the red, green, and blue regions precisely in that order. Avoid collisions with obstacles (i.e., walls or other robots).  If you reach a location out of sequence, continue your search for the correct location.
+
+P3: Visit the red, green, and blue locations.
+
+P4: As a member of a team, go to the red, green, and blue regions precisely in that order. 
+
+P5: Visit the colored locations in any order.
+
+P6: As a team, visit the blue, green, and red regions as fast as possible.

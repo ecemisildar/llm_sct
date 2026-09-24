@@ -1,0 +1,28 @@
+{
+  "automata": [
+    {
+      "name": "rotation_only_specification",
+      "initial_state": "rotating",
+      "marked_states": [
+        "rotating"
+      ],
+      "transitions": [
+        [
+          "rotating",
+          "rotate_clockwise",
+          "rotating"
+        ],
+        [
+          "rotating",
+          "rotate_counterclockwise",
+          "rotating"
+        ],
+        [
+          "rotating",
+          "u_turn",
+          "rotating"
+        ]
+      ]
+    }
+  ]
+}

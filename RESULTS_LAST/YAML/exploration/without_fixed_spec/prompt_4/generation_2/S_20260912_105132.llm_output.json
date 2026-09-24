@@ -1,0 +1,83 @@
+{
+  "automata": [
+    {
+      "name": "team_exploration_specification",
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "transitions": [
+        [
+          "exploring",
+          "path_clear",
+          "exploring"
+        ],
+        [
+          "exploring",
+          "move_forward",
+          "exploring"
+        ],
+        [
+          "exploring",
+          "obstacle_front",
+          "avoid_front"
+        ],
+        [
+          "exploring",
+          "obstacle_left",
+          "avoid_left"
+        ],
+        [
+          "exploring",
+          "obstacle_right",
+          "avoid_right"
+        ],
+        [
+          "avoid_front",
+          "rotate_clockwise",
+          "exploring"
+        ],
+        [
+          "avoid_front",
+          "rotate_counterclockwise",
+          "exploring"
+        ],
+        [
+          "avoid_front",
+          "obstacle_left",
+          "avoid_left"
+        ],
+        [
+          "avoid_front",
+          "obstacle_right",
+          "avoid_right"
+        ],
+        [
+          "avoid_front",
+          "path_clear",
+          "exploring"
+        ],
+        [
+          "avoid_left",
+          "rotate_clockwise",
+          "exploring"
+        ],
+        [
+          "avoid_left",
+          "path_clear",
+          "exploring"
+        ],
+        [
+          "avoid_right",
+          "rotate_counterclockwise",
+          "exploring"
+        ],
+        [
+          "avoid_right",
+          "path_clear",
+          "exploring"
+        ]
+      ]
+    }
+  ]
+}

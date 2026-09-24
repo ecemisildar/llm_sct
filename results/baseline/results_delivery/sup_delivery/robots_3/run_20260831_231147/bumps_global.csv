@@ -1,5 +1,0 @@
-stamp_sec,key,entity_a_bump_direction,entity_b_bump_direction,entity_a_event,entity_b_event
-12,"('robot_0', 'blue_delivery_box::link::collision')",right,,CONTACT_RECOVERY,
-14,"('robot_0', 'blue_delivery_box::link::collision')",left,,CONTACT_RECOVERY,
-33,"('robot_0', 'blue_delivery_box::link::collision')",front,,CONTACT_RECOVERY,
-34,"('robot_0', 'blue_delivery_box::link::collision')",right,,CONTACT_RECOVERY,

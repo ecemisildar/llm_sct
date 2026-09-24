@@ -85,7 +85,7 @@ def generate_launch_description():
 
     sim_world = DeclareLaunchArgument(
         "sim_world",
-        default_value=os.path.join(pkg_project_gazebo, "worlds", "common_walls_world.sdf"),
+        default_value=os.path.join(pkg_project_gazebo, "worlds", "arena_6x8.sdf"),
         description="Path to the Gazebo world file",
     )
     headless = DeclareLaunchArgument(
@@ -105,7 +105,7 @@ def generate_launch_description():
     )
     run_duration = DeclareLaunchArgument(
         "run_duration",
-        default_value="300.0",
+        default_value="120.0",
         description="Seconds before shutting down the launch",
     )
     total_robots = DeclareLaunchArgument(
@@ -151,7 +151,7 @@ def generate_launch_description():
         LaunchConfiguration("headless"),
         "' == 'true' else '') + (' -r' if '",
         LaunchConfiguration("auto_start"),
-        "' == 'true' else '')",
+        "' == 'true' else '') + ' -z 200'",
     ])
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(

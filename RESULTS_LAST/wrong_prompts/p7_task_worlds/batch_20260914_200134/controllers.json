@@ -1,0 +1,26 @@
+[
+  {
+    "task": "exploration",
+    "primitive": "move_forward",
+    "collision_control": "without_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/YAML/exploration/without_fixed_spec/prompt_7/generation_1/S_p7_exploration_without_fixed_spec.yaml"
+  },
+  {
+    "task": "exploration",
+    "primitive": "move_forward",
+    "collision_control": "with_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/YAML/exploration/with_fixed_spec/prompt_7/generation_1/S_p7_exploration_with_fixed_spec.yaml"
+  },
+  {
+    "task": "patrolling",
+    "primitive": "rotate_clockwise",
+    "collision_control": "without_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/YAML/patrolling/without_fixed_spec/prompt_7/generation_1/S_p7_patrolling_without_fixed_spec.yaml"
+  },
+  {
+    "task": "patrolling",
+    "primitive": "rotate_clockwise",
+    "collision_control": "with_fixed_spec",
+    "yaml": "/home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/wrong_prompts/p7_task_worlds/batch_20260914_200134/YAML/patrolling/with_fixed_spec/prompt_7/generation_1/S_p7_patrolling_with_fixed_spec.yaml"
+  }
+]

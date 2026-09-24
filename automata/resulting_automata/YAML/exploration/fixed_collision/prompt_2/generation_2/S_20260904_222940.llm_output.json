@@ -1,0 +1,18 @@
+{
+  "automata": [
+    {
+      "name": "exploration_specification",
+      "initial_state": "exploring",
+      "marked_states": [
+        "exploring"
+      ],
+      "transitions": [
+        [
+          "exploring",
+          "move_forward",
+          "exploring"
+        ]
+      ]
+    }
+  ]
+}

@@ -172,6 +172,9 @@ class SupervisorRuntimeMixin:
             "EV_full_rotate": ActionSpec(
                 angular_z=self.full_rotate_omega, is_full_rotate=True
             ),
+            "EV_u_turn": ActionSpec(
+                angular_z=self.full_rotate_omega, is_full_rotate=True
+            ),
         }
 
     def _load_named_sct(self, default_filename: str):

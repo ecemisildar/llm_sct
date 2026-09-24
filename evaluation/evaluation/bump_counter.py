@@ -151,7 +151,9 @@ class BumpCounter(Node):
         yaml_group = Path(metadata_yaml_path).stem if metadata_yaml_path else "unknown_yaml"
         if results_dir:
             base_dir = Path(results_dir)
-            group_dir = base_dir / yaml_group / f"robots_{self.total_robots}"
+            group_dir = base_dir / yaml_group
+            if not base_dir.name.startswith("seed_"):
+                group_dir = group_dir / f"robots_{self.total_robots}"
             self.log_dir = group_dir / run_id if run_id else group_dir
         else:
             self.log_dir = DEFAULT_LOG_DIR

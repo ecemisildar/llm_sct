@@ -1,0 +1,3 @@
+prompt,collision_control,prompt_text,runs,successes,success_rate_pct,task_success_mean_pct,task_success_sd_pct,duration_all_mean_s,duration_all_sd_s,duration_success_mean_s,duration_success_sd_s,coverage_mean_pct,coverage_sd_pct,coverage_success_mean_pct,coverage_success_sd_pct,collisions_total,collisions_mean,collisions_sd
+7,without_fixed_spec,Move only forward,10,0,0.0,0.0,0.0,59.3381,0.28101902070856194,,,83.3332,13.176025157838762,,,148,14.8,4.621688003316537
+7,with_fixed_spec,Move only forward,10,0,0.0,0.0,0.0,59.1636,0.2917523607445188,,,40.4168,11.071230236970054,,,0,0.0,0.0

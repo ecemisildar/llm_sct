@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model version="0.0" type="FSA" id="collision_avoidance_specification">
+  <data>
+    <state id="0" name="clear" initial="True" marked="True" x="150" y="150" />
+    <state id="1" name="blocked" initial="False" marked="True" x="330" y="150" />
+    <event id="0" name="move_forward" controllable="True" observable="True" />
+    <event id="1" name="move_backward" controllable="True" observable="True" />
+    <event id="2" name="rotate_clockwise" controllable="True" observable="True" />
+    <event id="3" name="rotate_counterclockwise" controllable="True" observable="True" />
+    <event id="4" name="u_turn" controllable="True" observable="True" />
+    <event id="5" name="obstacle_front" controllable="False" observable="True" />
+    <event id="6" name="obstacle_left" controllable="False" observable="True" />
+    <event id="7" name="obstacle_right" controllable="False" observable="True" />
+    <event id="8" name="path_clear" controllable="False" observable="True" />
+    <event id="9" name="approach_object" controllable="True" observable="True" />
+    <event id="10" name="approach_zone" controllable="True" observable="True" />
+    <event id="11" name="blue_object_not_visible" controllable="False" observable="True" />
+    <event id="12" name="blue_object_reached" controllable="False" observable="True" />
+    <event id="13" name="blue_object_visible" controllable="False" observable="True" />
+    <event id="14" name="blue_zone_not_visible" controllable="False" observable="True" />
+    <event id="15" name="blue_zone_reached" controllable="False" observable="True" />
+    <event id="16" name="blue_zone_visible" controllable="False" observable="True" />
+    <event id="17" name="claim_blue" controllable="True" observable="True" />
+    <event id="18" name="claim_green" controllable="True" observable="True" />
+    <event id="19" name="claim_red" controllable="True" observable="True" />
+    <event id="20" name="drop_object" controllable="True" observable="True" />
+    <event id="21" name="green_object_not_visible" controllable="False" observable="True" />
+    <event id="22" name="green_object_reached" controllable="False" observable="True" />
+    <event id="23" name="green_object_visible" controllable="False" observable="True" />
+    <event id="24" name="green_zone_not_visible" controllable="False" observable="True" />
+    <event id="25" name="green_zone_reached" controllable="False" observable="True" />
+    <event id="26" name="green_zone_visible" controllable="False" observable="True" />
+    <event id="27" name="pick_up_object" controllable="True" observable="True" />
+    <event id="28" name="received_claim_blue" controllable="False" observable="True" />
+    <event id="29" name="received_claim_green" controllable="False" observable="True" />
+    <event id="30" name="received_claim_red" controllable="False" observable="True" />
+    <event id="31" name="red_object_not_visible" controllable="False" observable="True" />
+    <event id="32" name="red_object_reached" controllable="False" observable="True" />
+    <event id="33" name="red_object_visible" controllable="False" observable="True" />
+    <event id="34" name="red_zone_not_visible" controllable="False" observable="True" />
+    <event id="35" name="red_zone_reached" controllable="False" observable="True" />
+    <event id="36" name="red_zone_visible" controllable="False" observable="True" />
+    <event id="37" name="search_object" controllable="True" observable="True" />
+    <event id="38" name="search_zone" controllable="True" observable="True" />
+    <transition source="0" target="0" event="0" />
+    <transition source="0" target="0" event="1" />
+    <transition source="0" target="0" event="2" />
+    <transition source="0" target="0" event="3" />
+    <transition source="0" target="0" event="4" />
+    <transition source="0" target="1" event="5" />
+    <transition source="0" target="1" event="6" />
+    <transition source="0" target="1" event="7" />
+    <transition source="1" target="1" event="1" />
+    <transition source="1" target="1" event="2" />
+    <transition source="1" target="1" event="3" />
+    <transition source="1" target="1" event="4" />
+    <transition source="1" target="0" event="8" />
+    <transition source="0" target="0" event="9" />
+    <transition source="0" target="0" event="10" />
+    <transition source="0" target="0" event="11" />
+    <transition source="0" target="0" event="12" />
+    <transition source="0" target="0" event="13" />
+    <transition source="0" target="0" event="14" />
+    <transition source="0" target="0" event="15" />
+    <transition source="0" target="0" event="16" />
+    <transition source="0" target="0" event="17" />
+    <transition source="0" target="0" event="18" />
+    <transition source="0" target="0" event="19" />
+    <transition source="0" target="0" event="20" />
+    <transition source="0" target="0" event="21" />
+    <transition source="0" target="0" event="22" />
+    <transition source="0" target="0" event="23" />
+    <transition source="0" target="0" event="24" />
+    <transition source="0" target="0" event="25" />
+    <transition source="0" target="0" event="26" />
+    <transition source="0" target="0" event="8" />
+    <transition source="0" target="0" event="27" />
+    <transition source="0" target="0" event="28" />
+    <transition source="0" target="0" event="29" />
+    <transition source="0" target="0" event="30" />
+    <transition source="0" target="0" event="31" />
+    <transition source="0" target="0" event="32" />
+    <transition source="0" target="0" event="33" />
+    <transition source="0" target="0" event="34" />
+    <transition source="0" target="0" event="35" />
+    <transition source="0" target="0" event="36" />
+    <transition source="0" target="0" event="37" />
+    <transition source="0" target="0" event="38" />
+    <transition source="1" target="1" event="9" />
+    <transition source="1" target="1" event="10" />
+    <transition source="1" target="1" event="11" />
+    <transition source="1" target="1" event="12" />
+    <transition source="1" target="1" event="13" />
+    <transition source="1" target="1" event="14" />
+    <transition source="1" target="1" event="15" />
+    <transition source="1" target="1" event="16" />
+    <transition source="1" target="1" event="17" />
+    <transition source="1" target="1" event="18" />
+    <transition source="1" target="1" event="19" />
+    <transition source="1" target="1" event="20" />
+    <transition source="1" target="1" event="21" />
+    <transition source="1" target="1" event="22" />
+    <transition source="1" target="1" event="23" />
+    <transition source="1" target="1" event="24" />
+    <transition source="1" target="1" event="25" />
+    <transition source="1" target="1" event="26" />
+    <transition source="1" target="1" event="5" />
+    <transition source="1" target="1" event="6" />
+    <transition source="1" target="1" event="7" />
+    <transition source="1" target="1" event="27" />
+    <transition source="1" target="1" event="28" />
+    <transition source="1" target="1" event="29" />
+    <transition source="1" target="1" event="30" />
+    <transition source="1" target="1" event="31" />
+    <transition source="1" target="1" event="32" />
+    <transition source="1" target="1" event="33" />
+    <transition source="1" target="1" event="34" />
+    <transition source="1" target="1" event="35" />
+    <transition source="1" target="1" event="36" />
+    <transition source="1" target="1" event="37" />
+    <transition source="1" target="1" event="38" />
+  </data>
+</model>

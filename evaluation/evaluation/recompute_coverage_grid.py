@@ -14,23 +14,36 @@ from evaluation.coverage_counter import (
 )
 
 
-def blocked_cells(world: Path, grid_size: float) -> tuple[set[int], int]:
+def blocked_cells(world: Path, grid_size: float):
     counter = CoverageCounter.__new__(CoverageCounter)
-    counter.env_min = -5
-    counter.env_max = 5
+    counter.world_sdf = world
+    (
+        counter.env_min_x,
+        counter.env_max_x,
+        counter.env_min_y,
+        counter.env_max_y,
+    ) = counter._world_grid_bounds()
     counter.grid_size = grid_size
+    counter.num_cells_x = int(
+        (counter.env_max_x - counter.env_min_x) / counter.grid_size
+    )
     counter.num_cells_y = int(
-        (counter.env_max - counter.env_min) / counter.grid_size
+        (counter.env_max_y - counter.env_min_y) / counter.grid_size
     )
     counter.cells = [
-        (counter.env_min + ix * grid_size, counter.env_min + iy * grid_size)
-        for ix in range(counter.num_cells_y)
+        (counter.env_min_x + ix * grid_size, counter.env_min_y + iy * grid_size)
+        for ix in range(counter.num_cells_x)
         for iy in range(counter.num_cells_y)
     ]
-    counter.world_sdf = world
     counter.obstacle_occupancy_threshold = 0.4
     counter.circle_obstacle_occupancy_threshold = 0.05
-    return counter._compute_blocked_cells(), counter.num_cells_y
+    bounds = (
+        counter.env_min_x,
+        counter.env_max_x,
+        counter.env_min_y,
+        counter.env_max_y,
+    )
+    return counter._compute_blocked_cells(), counter.num_cells_x, counter.num_cells_y, bounds
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
@@ -42,7 +55,9 @@ def recompute_run(
     run_dir: Path,
     grid_size: float,
     blocked: set[int],
-    cells_per_axis: int,
+    cells_x: int,
+    cells_y: int,
+    bounds: tuple[float, float, float, float],
     robot_footprint_radius: float,
 ) -> None:
     paths_path = run_dir / "coverage_paths.csv"
@@ -55,27 +70,30 @@ def recompute_run(
     sample_times = [
         float(row["time_s"]) for row in read_rows(timeseries_path)
     ]
-    free_cells = cells_per_axis * cells_per_axis - len(blocked)
+    free_cells = cells_x * cells_y - len(blocked)
     visited: set[int] = set()
     visits: list[list[object]] = []
     coverage: list[list[object]] = []
     path_index = 0
     footprint_counter = CoverageCounter.__new__(CoverageCounter)
-    footprint_counter.env_min = -5.0
+    min_x, _max_x, min_y, _max_y = bounds
+    footprint_counter.env_min_x = min_x
+    footprint_counter.env_min_y = min_y
     footprint_counter.grid_size = grid_size
-    footprint_counter.num_cells_y = cells_per_axis
+    footprint_counter.num_cells_x = cells_x
+    footprint_counter.num_cells_y = cells_y
     footprint_counter.robot_footprint_radius = robot_footprint_radius
 
     def consume(row: dict[str, str]) -> None:
         x = float(row["x"])
         y = float(row["y"])
         for ix, iy in footprint_counter._footprint_cells(x, y):
-            index = ix * cells_per_axis + iy
+            index = ix * cells_y + iy
             if index in blocked or index in visited:
                 continue
             visited.add(index)
-            cell_min_x = -5.0 + ix * grid_size
-            cell_min_y = -5.0 + iy * grid_size
+            cell_min_x = min_x + ix * grid_size
+            cell_min_y = min_y + iy * grid_size
             visits.append(
                 [
                     row["stamp_sec"],
@@ -143,19 +161,21 @@ def main() -> None:
         default=DEFAULT_ROBOT_FOOTPRINT_RADIUS,
     )
     args = parser.parse_args()
-    blocked, cells_per_axis = blocked_cells(args.world, args.grid_size)
+    blocked, cells_x, cells_y, bounds = blocked_cells(args.world, args.grid_size)
     runs = sorted({path.parent for path in args.results_root.rglob("coverage_paths.csv")})
     for run_dir in runs:
         recompute_run(
             run_dir,
             args.grid_size,
             blocked,
-            cells_per_axis,
+            cells_x,
+            cells_y,
+            bounds,
             max(0.0, args.robot_footprint_radius),
         )
     print(
         f"Updated {len(runs)} runs at {args.grid_size:g} m resolution "
-        f"({cells_per_axis ** 2 - len(blocked)} free cells)."
+        f"({cells_x * cells_y - len(blocked)} free cells)."
     )
 
 

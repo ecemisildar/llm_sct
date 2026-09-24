@@ -1,5 +1,6 @@
 import os
 import math
+import random
 import re
 import time
 from typing import Optional
@@ -53,9 +54,22 @@ class RobotSupervisor(
         # Parameters
         # -------------------------------
         self._initialize_runtime_parameters(motion_hold_default=0.2)
+        self.timeout_max_s = min(
+            5.0,
+            max(
+                0.0,
+                float(self.declare_parameter("timeout_max_s", 5.0).value),
+            ),
+        )
+        self.timeout_rng = random.Random(self.robot_seed ^ 0x54494D45)
+        self.timeout_deadline = 0.0
+        self._rearm_timeout()
         self.task_complete_sent = False
         self.robot_retired = False
         self.robot_relocation_requested = False
+        self.remove_completed_robot = bool(
+            self.declare_parameter("remove_completed_robot", True).value
+        )
 
         # Deleting a sensor-equipped model can abort Gazebo Fortress. Retired
         # delivery robots are instead moved below the world, as in patrolling.
@@ -164,6 +178,8 @@ class RobotSupervisor(
             config_path,
             random_seed=self.robot_seed,
         )
+        self.generic_pickup = "EV_object_visible" in self.sct.EV
+        self.pickup_color = None
         self.ev_name_by_id = {ev_id: ev_name for ev_name, ev_id in self.sct.EV.items()}
         yaml_colors = {
             match.group("color")
@@ -197,6 +213,11 @@ class RobotSupervisor(
                 None,
                 None,
             )
+        for color in TARGET_COLORS:
+            event = f"EV_drop_zone_{color}"
+            if event in self.sct.EV:
+                self.sct.add_callback(self.sct.EV[event],
+                    lambda _data, color=color: self._publish_delivery_message("drop_zone", color), None, None)
         for event, callback in (
             ("EV_pick_up_object", self._confirm_pickup),
             ("EV_drop_object", self._confirm_delivery),
@@ -260,6 +281,30 @@ class RobotSupervisor(
     def color_event_callback(self, msg):
         source_event = msg.data.strip()
         delivery_match = COLOR_EVENT_RE.fullmatch(source_event)
+        if self.generic_pickup and delivery_match is not None:
+            color, target, observation = delivery_match.group("color", "target", "observation")
+            if target != self.delivery_phase:
+                return
+            if target == "object":
+                if observation != "not_visible":
+                    self.pickup_color = color
+                event = f"EV_object_{observation}"
+            else:
+                if observation != "not_visible" and self.active_delivery_color is None:
+                    self.active_delivery_color = color
+                event = f"EV_{color}_{observation}"
+            prefix = "EV_object" if target == "object" else f"EV_{color}"
+            not_reached = f"{prefix}_not_reached"
+            if observation == "reached":
+                self.pending_color_events.discard(not_reached)
+            elif not_reached in self.sct.EV:
+                self.pending_color_events.add(not_reached)
+            if event in self.sct.EV:
+                if self._motion_event_in_progress():
+                    self.deferred_color_events[event.rsplit("_", 1)[0]] = event
+                else:
+                    self._accept_color_event(event)
+            return
         if delivery_match is not None:
             if source_event not in self.sct.EV:
                 return
@@ -316,7 +361,7 @@ class RobotSupervisor(
         color = color.lower()
         if (
             sender == self.ns
-            or action not in {"claim", "delivered"}
+            or action not in {"claim", "delivered", "drop_zone"}
             or color not in self.delivery_colors
         ):
             return
@@ -338,7 +383,8 @@ class RobotSupervisor(
             self.delivery_phase = "object"
             self.pending_color_events.clear()
             self.deferred_color_events.clear()
-        event = f"EV_received_{action}_{color}"
+        event = (f"EV_recieve_drop_zone_{color}" if action == "drop_zone"
+                 else f"EV_received_{action}_{color}")
         if action == "delivered":
             self._delivery_message_received(color)
         if event not in self.sct.EV:
@@ -351,6 +397,8 @@ class RobotSupervisor(
         self._publish_stop()
 
     def _publish_delivery_message(self, action: str, color: str):
+        if action == "drop_zone":
+            self.active_delivery_color = color
         if action == "claim":
             self.claimed_delivery_color = color
             self.active_delivery_color = color
@@ -380,6 +428,11 @@ class RobotSupervisor(
         self.robot_retired = True
         self._cancel_all_motion()
         self._publish_stop()
+        if not self.remove_completed_robot:
+            self.get_logger().info(
+                "Completed robot removal is disabled; robot remains stopped."
+            )
+            return
         self.get_logger().info(
             f"Delivery complete; retiring robot entity '{self.ns}'."
         )
@@ -447,8 +500,9 @@ class RobotSupervisor(
         return True
 
     def _confirm_pickup(self, _sup_data):
-        if self.active_delivery_color is not None:
-            self._pick_up_box_model(self.active_delivery_color)
+        pickup = self.pickup_color if self.generic_pickup else self.active_delivery_color
+        if pickup is not None:
+            self._pick_up_box_model(pickup)
         self.pending_color_events.clear()
         self.deferred_color_events.clear()
         self.delivery_phase = "zone"
@@ -486,7 +540,8 @@ class RobotSupervisor(
         self.delivery_target_offsets[(color, target)] = float(message.data)
 
     def _delivery_target_approach_components(self, target: str):
-        color = self.claimed_delivery_color or self.active_delivery_color
+        color = (self.pickup_color if self.generic_pickup and target == "object"
+                 else self.claimed_delivery_color or self.active_delivery_color)
         offset = self.delivery_target_offsets.get(
             (color, target), float("nan")
         )
@@ -502,6 +557,9 @@ class RobotSupervisor(
         color = event.split("_")[1]
         self.pending_color_events.difference_update(
             {
+                f"EV_{color}_not_visible",
+                f"EV_{color}_visible",
+                f"EV_{color}_reached",
                 f"EV_{color}_{self.delivery_phase}_not_visible",
                 f"EV_{color}_{self.delivery_phase}_visible",
                 f"EV_{color}_{self.delivery_phase}_reached",
@@ -679,6 +737,18 @@ class RobotSupervisor(
     # -------------------------------
     # SCT input check functions (uncontrollables)
     # -------------------------------
+
+    def _rearm_timeout(self):
+        """Choose the next timeout deadline, capped at five seconds."""
+        delay_s = self.timeout_rng.uniform(0.0, self.timeout_max_s)
+        self.timeout_deadline = time.monotonic() + delay_s
+
+    def _timeout_check(self, _sup_data) -> bool:
+        """Emit one timeout event when its random deadline is reached."""
+        if time.monotonic() < self.timeout_deadline:
+            return False
+        self._rearm_timeout()
+        return True
     
     def _install_uncontrollable_callbacks(self):
         # Attach callbacks only for events that exist in current supervisor YAML.
@@ -691,13 +761,15 @@ class RobotSupervisor(
         add("path_clear", self.clear_path_check)
         add("obstacle_left", self.left_check)
         add("obstacle_right", self.right_check)
+        add("timeout", self._timeout_check)
         for event in self.sct.EV:
-            if COLOR_EVENT_RE.fullmatch(event):
+            if (COLOR_EVENT_RE.fullmatch(event) or
+                re.fullmatch(r"EV_(?:object|red|green|blue)_(?:not_visible|visible|reached|not_reached)", event)):
                 add(
                     event.removeprefix("EV_"),
                     lambda _sup_data, event=event: self._consume_color_event(event),
                 )
-            elif DELIVERY_RECEIVED_RE.fullmatch(event):
+            elif DELIVERY_RECEIVED_RE.fullmatch(event) or event.startswith("EV_recieve_drop_zone_"):
                 add(
                     event.removeprefix("EV_"),
                     lambda _sup_data, event=event: self._consume_delivery_event(event),
@@ -722,6 +794,8 @@ class RobotSupervisor(
         delivery_motion = {
             "EV_search_object",
             "EV_approach_object",
+            "EV_search_color",
+            "EV_approach_color",
             "EV_search_zone",
             "EV_approach_zone",
         }
@@ -733,6 +807,8 @@ class RobotSupervisor(
             return ActionSpec()
         if ev_name not in delivery_motion:
             return None
+        if ev_name in {"EV_search_color", "EV_approach_color"}:
+            ev_name = ev_name.replace("color", "zone")
         zones = self._effective_obstacle_zones()
         if "CORNER" in zones:
             return ActionSpec(

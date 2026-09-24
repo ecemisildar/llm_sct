@@ -6,6 +6,7 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 import rclpy
+from rcl_interfaces.msg import ParameterDescriptor
 from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Image
@@ -34,9 +35,17 @@ class ColorDetector(Node):
         self.declare_parameter("stale_frame_threshold_s", 2.0)
         self.declare_parameter("pose_topic", "/world/random_world/dynamic_pose/info")
         self.declare_parameter("target_half_extent", 0.075)
-        self.declare_parameter("red_target_pose", [-3.0, -1.5, 0.37])
+        self.declare_parameter("red_target_pose", [-2.0, -1.5, 0.37])
         self.declare_parameter("green_target_pose", [-1.8, 2.6, 1.12])
         self.declare_parameter("blue_target_pose", [2.4, -2.7, 2.31])
+        # Optional flattened [x, y, yaw, ...] list for same-color targets.
+        # Empty preserves the original single-target behavior.
+        for color in COLORS:
+            self.declare_parameter(
+                f"{color}_target_poses",
+                [],
+                ParameterDescriptor(dynamic_typing=True),
+            )
         default_robot_name = self.get_namespace().strip("/").split("/")[-1]
         self.declare_parameter("robot_name", default_robot_name)
 
@@ -121,7 +130,17 @@ class ColorDetector(Node):
         """Return planar distance from the robot point to a rotated target box."""
         if self.robot_xy is None:
             return float("nan")
-        target = list(self.get_parameter(f"{color}_target_pose").value)
+        flattened = list(
+            self.get_parameter(f"{color}_target_poses").value
+        )
+        targets = (
+            [flattened[index:index + 3] for index in range(0, len(flattened), 3)]
+            if flattened and len(flattened) % 3 == 0
+            else [list(self.get_parameter(f"{color}_target_pose").value)]
+        )
+        return min(self._target_surface_distance(target) for target in targets)
+
+    def _target_surface_distance(self, target) -> float:
         target_x, target_y, yaw = (float(value) for value in target)
         dx = self.robot_xy[0] - target_x
         dy = self.robot_xy[1] - target_y

@@ -1,3 +1,0 @@
-[INFO] [1788354077.386671586] [robot_0.stuck_recovery]: Shared stuck recovery active: cmd_vel_supervisor -> cmd_vel (reverse -> turn -> forward)
-[WARN] [1788354087.611387961] [robot_0.stuck_recovery]: STUCK RECOVERY activated (stationary_s=10.22, sequence=reverse->turn->forward, turn_rad=2.36, zone=CLEAR)
-[INFO] [1788354091.610989779] [robot_0.stuck_recovery]: STUCK RECOVERY completed; resuming supervisor.

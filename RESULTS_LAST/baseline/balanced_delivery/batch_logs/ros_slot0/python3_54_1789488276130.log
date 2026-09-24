@@ -1,0 +1,2 @@
+[ERROR] [1789488276.131283025] [rmw_cyclonedds_cpp]: rmw_create_node: failed to create domain, error Error
+[ERROR] [1789488276.131312877] [rcl]: Failed to fini publisher for node: 1

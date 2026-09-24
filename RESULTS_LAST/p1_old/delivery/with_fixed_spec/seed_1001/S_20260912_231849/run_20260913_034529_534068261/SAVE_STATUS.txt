@@ -1,0 +1,22 @@
+Node started
+run_id: run_20260913_034529_534068261
+results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/delivery/with_fixed_spec/seed_1001/S_20260912_231849/run_20260913_034529_534068261
+metadata_yaml: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/delivery/with_fixed_spec/prompt_1/generation_5/S_20260912_231849.yaml
+prompt_file: None
+launch_arguments:
+  sim_world: /tmp/leo_delivery_no_overhead_camera_sbckaue3.sdf
+  headless: true
+  auto_start: true
+  run_duration: 600.0
+  total_robots: 3
+  random_seed: 1001
+  auto_start_supervisor: 
+  results_dir: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/delivery/with_fixed_spec/seed_1001
+  metadata_yaml_path: /home/ecem/sct_ws/src/llm_sct/RESULTS_LAST/YAML/delivery/with_fixed_spec/prompt_1/generation_5/S_20260912_231849.yaml
+robot_2 completed the patrolling task.
+robot_0 completed the patrolling task.
+robot_1 completed the patrolling task.
+Task success: true
+Task duration: 225.541s
+Saving started...
+Saving OK

@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Chosen controllable events by prompt for delivery (LLM). Entries are mean percentages across completed runs, pooling robots within each run and weighting runs equally. Generations and seeds are combined within each prompt; absent events contribute zero.}
+\label{tab:delivery-without-fixed-spec-prompt-events}
+\begin{tabular}{lrrrrrrr}
+\hline
+Chosen event & Baseline (\%) & P1 (\%) & P2 (\%) & P3 (\%) & P4 (\%) & P5 (\%) & P6 (\%) \\
+Runs ($n$) & 10 & 50 & 40 & 50 & 50 & 50 & 40 \\
+\hline
+\texttt{EV\_approach\_color} & 0.00 & 2.82 & 2.00 & 3.79 & 1.65 & 4.74 & 2.93 \\
+\texttt{EV\_approach\_object} & 7.96 & 2.19 & 4.08 & 3.84 & 1.66 & 2.68 & 2.34 \\
+\texttt{EV\_approach\_zone} & 11.72 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_blue} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_green} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_claim\_red} & 0.11 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_drop\_object} & 0.31 & 0.04 & 0.01 & 0.02 & 0.01 & 0.04 & 0.02 \\
+\texttt{EV\_drop\_zone\_blue} & 0.00 & 0.03 & 0.02 & 0.02 & 0.04 & 0.01 & 0.03 \\
+\texttt{EV\_drop\_zone\_red} & 0.00 & 0.03 & 0.02 & 0.01 & 0.04 & 0.02 & 0.03 \\
+\texttt{EV\_move\_backward} & 0.20 & 16.69 & 16.52 & 16.85 & 17.20 & 16.48 & 17.47 \\
+\texttt{EV\_move\_forward} & 45.95 & 16.44 & 16.73 & 16.78 & 17.50 & 16.87 & 17.27 \\
+\texttt{EV\_pick\_up\_object} & 0.31 & 0.09 & 0.07 & 0.08 & 0.06 & 0.10 & 0.06 \\
+\texttt{EV\_rotate\_clockwise} & 1.33 & 16.74 & 16.72 & 16.64 & 17.50 & 16.71 & 17.59 \\
+\texttt{EV\_rotate\_counterclockwise} & 1.69 & 16.94 & 16.75 & 16.67 & 17.20 & 16.68 & 17.72 \\
+\texttt{EV\_search\_color} & 0.00 & 6.76 & 8.28 & 7.26 & 7.87 & 7.16 & 4.78 \\
+\texttt{EV\_search\_object} & 14.60 & 4.63 & 2.25 & 1.40 & 1.74 & 1.58 & 2.33 \\
+\texttt{EV\_search\_zone} & 12.59 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\texttt{EV\_u\_turn} & 3.03 & 16.60 & 16.53 & 16.65 & 17.52 & 16.92 & 17.42 \\
+\hline
+\end{tabular}
+\end{table}

@@ -1,0 +1,7 @@
+prompt,prompt_text
+1,"Search for and visit the red, green, and blue locations in that order, while avoiding obstacles. If you reach a location out of sequence, continue your search for the correct location."
+2,"As a member of a team of robots, go to the red, green, and blue regions precisely in that order. Avoid collisions with obstacles (i.e., walls or other robots).  If you reach a location out of sequence, continue your search for the correct location."
+3,"Visit the red, green, and blue locations."
+4,"As a member of a team, go to the red, green, and blue regions precisely in that order."
+5,Visit the colored locations in any order.
+6,"As a team, visit the blue, green, and red regions as fast as possible."

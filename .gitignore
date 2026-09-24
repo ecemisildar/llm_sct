@@ -2,3 +2,36 @@
 **/selected_events*.csv
 **/collision_depth_frames/
 llm_part/api_key.txt
+
+# Colcon-generated workspace output
+/build/
+/install/
+/log/
+
+# Python-generated caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Generated experiment data and archived run outputs
+/archive/
+/results/
+/new_results/
+/final results/
+/RESULTS_LAST_wrong_prompts_20260912_1030/
+/balanced_delivery_results/
+/llm_part/llm_outputs/
+
+# Runtime recordings and ROS bag data
+*.bag
+*.db3
+*.mcap
+*.mp4
+*.avi
+
+# RESULTS_LAST is the curated result set and is intentionally versioned.
+!/RESULTS_LAST/**/*.mp4
+!/RESULTS_LAST/**/event_percentages*.csv
+!/RESULTS_LAST/**/selected_events*.csv
+!/RESULTS_LAST/**/collision_depth_frames/
+!/RESULTS_LAST/**/collision_depth_frames/**

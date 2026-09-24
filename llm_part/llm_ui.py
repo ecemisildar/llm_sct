@@ -58,6 +58,16 @@ class LLMTaskApp:
         ttk.Entry(options, textvariable=self.model_var).grid(
             row=0, column=1, sticky="ew", padx=(8, 0)
         )
+        ttk.Label(options, text="Collision control:").grid(
+            row=1, column=0, sticky="w", pady=(8, 0)
+        )
+        self.collision_control_var = tk.StringVar(value="fixed")
+        ttk.Combobox(
+            options,
+            textvariable=self.collision_control_var,
+            values=("fixed", "llm"),
+            state="readonly",
+        ).grid(row=1, column=1, sticky="ew", padx=(8, 0), pady=(8, 0))
 
         self.generate_button = ttk.Button(
             frame, text="Generate JSON", command=self.start_generation
@@ -79,6 +89,7 @@ class LLMTaskApp:
         task = self.task_text.get("1.0", tk.END).strip()
         model = self.model_var.get().strip()
         feedback_source = self.feedback_text.get("1.0", tk.END).strip()
+        collision_control = self.collision_control_var.get()
         if not task:
             messagebox.showwarning("Missing task", "Enter a control task first.")
             self.task_text.focus_set()
@@ -101,19 +112,24 @@ class LLMTaskApp:
         self._set_output("")
         threading.Thread(
             target=self._generate_worker,
-            args=(task, model, feedback),
+            args=(task, model, feedback, collision_control),
             daemon=True,
         ).start()
         self.root.after(100, self._poll_worker)
 
     def _generate_worker(
-        self, task: str, model: str, feedback: object | None
+        self,
+        task: str,
+        model: str,
+        feedback: object | None,
+        collision_control: str,
     ) -> None:
         try:
             result = run_pipeline(
                 task=task,
                 model=model,
                 feedback=feedback,
+                collision_control=collision_control,
                 status=lambda message: self.ui_queue.put(("status", message)),
             )
         except Exception as error:
